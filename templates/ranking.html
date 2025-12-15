@@ -63,9 +63,24 @@
 
     <!-- Content -->
     <div class="container mt-4">
-      <div class="d-flex align-items-center justify-content-between mb-3">
-        <h4 class="mb-0">🔥 Ranking - Bài tập phổ biến</h4>
-        <small class="text-muted">*Số lượt dùng đang hardcode (demo)</small>
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+        <div>
+          <h4 class="mb-0">🔥 Ranking - Bài tập phổ biến</h4>
+          <small class="text-muted">*Số lượt dùng đang hardcode (demo)</small>
+        </div>
+
+        <!-- Tabs -->
+        <div class="d-flex gap-2 mb-3">
+            <a href="/ranking?type=gym"
+                class="btn btn-sm {{ 'btn-primary' if ranking_type=='gym' else 'btn-outline-primary' }}">
+                🏋️ Phòng tập
+            </a>
+
+            <a href="/ranking?type=home"
+                class="btn btn-sm {{ 'btn-primary' if ranking_type=='home' else 'btn-outline-primary' }}">
+                🏠 Ở nhà
+            </a>
+        </div>
       </div>
 
       <!-- Ranking List -->
@@ -102,15 +117,21 @@
                 <div class="progress-bar" role="progressbar" style="width: {{ pct|round(0) }}%"></div>
               </div>
 
-            <a href="{{ url_for('exercise.exercise_detail', uid=ex.uid) }}"
-                class="btn btn-outline-primary w-100">
+              <!-- Button luôn nằm dưới -->
+              <a href="{{ url_for('exercise.exercise_detail', uid=ex.uid) }}" class="btn btn-outline-primary w-100 mt-3">
                 Xem bài tập
-            </a>
+              </a>
             </div>
           </div>
         </div>
         {% endfor %}
       </div>
+
+      {% if top_exercises|length == 0 %}
+      <div class="alert alert-warning mt-4">
+        Không có bài tập phù hợp cho loại <b>{{ ranking_type }}</b>. Kiểm tra lại dữ liệu CSV (equipment/bodyweight).
+      </div>
+      {% endif %}
     </div>
 
     <!-- Footer -->

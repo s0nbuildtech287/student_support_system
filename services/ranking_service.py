@@ -16,38 +16,40 @@ FAKE_USES = {
     "Bicep Curl": 650,
 }
 
-def get_top_exercises(limit=9):
+def get_top_exercises(limit=9, mode="all"):
     df = pd.read_csv(DATA_PATH)
 
-    # tìm cột tên bài tập
-    name_col = None
-    for c in df.columns:
-        if c.lower() in ["name", "title", "exercise_name"]:
-            name_col = c
-            break
-    if not name_col:
-        name_col = df.columns[0]
-
     items = []
-    for idx, row in df.iterrows():
-        name = str(row[name_col]).strip()
+    for _, row in df.iterrows():
+        name = str(row.get("name", "")).strip()
+        if not name:
+            continue
+
+        equipment_raw = row.get("equipment", "")
+        equipment = str(equipment_raw).strip()
+        equipment_l = equipment.lower()
+
+        # ✅ HOME nếu equipment có chứa "bodyweight"
+        is_home = "bodyweight" in equipment_l
+
+        if mode == "home" and not is_home:
+            continue
+        if mode == "gym" and is_home:
+            continue
+
+        uid = int(row.get("id"))
+
         uses = int(FAKE_USES.get(name, 200))
 
-        # lấy id nếu có trong CSV, nếu không thì dùng idx+1 (demo)
-        ex_uid = row.get("id", None)
-        if pd.isna(ex_uid) or ex_uid is None:
-            ex_uid = idx + 1
-        ex_uid = int(ex_uid)
-
         items.append({
-            "uid": ex_uid,  # ✅ thêm id để trỏ sang exercise_detail
+            "uid": uid,
             "name": name,
-            "muscle_group": row.get("target", row.get("muscle", "")),
-            "body_part": row.get("bodyPart", row.get("body_part", "")),
-            "equipment": row.get("equipment", ""),
+            "muscle_group": row.get("target", ""),
+            "body_part": row.get("bodyPart", ""),
+            "equipment": equipment,
             "difficulty": row.get("difficulty", "Intermediate"),
-            "image": row.get("image", row.get("gifUrl", "")),
-            "uses": uses
+            "image": row.get("image", ""),
+            "uses": uses,
         })
 
     items.sort(key=lambda x: x["uses"], reverse=True)
