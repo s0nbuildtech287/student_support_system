@@ -102,9 +102,10 @@
                 <div class="progress-bar" role="progressbar" style="width: {{ pct|round(0) }}%"></div>
               </div>
 
-              <a href="/exercise?search={{ ex.name }}" class="btn btn-sm btn-outline-primary mt-auto mt-3">
+            <a href="{{ url_for('exercise.exercise_detail', uid=ex.uid) }}"
+                class="btn btn-outline-primary w-100">
                 Xem bài tập
-              </a>
+            </a>
             </div>
           </div>
         </div>

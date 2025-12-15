@@ -19,7 +19,7 @@ FAKE_USES = {
 def get_top_exercises(limit=9):
     df = pd.read_csv(DATA_PATH)
 
-    # tìm cột name
+    # tìm cột tên bài tập
     name_col = None
     for c in df.columns:
         if c.lower() in ["name", "title", "exercise_name"]:
@@ -29,11 +29,18 @@ def get_top_exercises(limit=9):
         name_col = df.columns[0]
 
     items = []
-    for _, row in df.iterrows():
+    for idx, row in df.iterrows():
         name = str(row[name_col]).strip()
         uses = int(FAKE_USES.get(name, 200))
 
+        # lấy id nếu có trong CSV, nếu không thì dùng idx+1 (demo)
+        ex_uid = row.get("id", None)
+        if pd.isna(ex_uid) or ex_uid is None:
+            ex_uid = idx + 1
+        ex_uid = int(ex_uid)
+
         items.append({
+            "uid": ex_uid,  # ✅ thêm id để trỏ sang exercise_detail
             "name": name,
             "muscle_group": row.get("target", row.get("muscle", "")),
             "body_part": row.get("bodyPart", row.get("body_part", "")),
@@ -45,6 +52,8 @@ def get_top_exercises(limit=9):
 
     items.sort(key=lambda x: x["uses"], reverse=True)
     top = items[:limit]
+
     for i, it in enumerate(top, start=1):
         it["rank"] = i
+
     return top
