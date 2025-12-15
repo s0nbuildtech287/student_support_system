@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <title>Đăng nhập | Workout AI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+      body {
+        min-height: 100vh;
+        background: url("/static/images/gym.jpg") no-repeat center center/cover;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0;
+      }
+      .card {
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      /* Overlay tối */
+      body::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.65);
+        z-index: 1;
+      }
+
+      .login-card {
+        position: relative;
+        z-index: 2;
+        width: 100%;
+        max-width: 380px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Brand (logo / tên hệ thống) */
+      .brand {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #212529; /* đen xám (bootstrap dark) */
+      }
+
+      /* Button login */
+      .btn-login {
+        background-color: #343a40; /* xám đậm */
+        border: none;
+        color: #fff;
+      }
+
+      .btn-login:hover {
+        background-color: #212529; /* đen hơn khi hover */
+      }
+      .register-link {
+        color: #212529; /* xám đậm */
+        text-decoration: none;
+      }
+
+      .register-link:hover {
+        color: #797979; /* xanh thể thao khi hover */
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card login-card p-4">
+      <div class="text-center mb-3">
+        <div class="brand">Workout AI</div>
+        <small class="text-muted"> Hệ thống gợi ý luyện tập thông minh </small>
+      </div>
+
+      <form method="POST" action="/login">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" id="email" name="email" class="form-control mb-3" placeholder="example@gmail.com" required />
+
+        <label for="password" class="form-label">Mật khẩu</label>
+        <input type="password" id="password" name="password" class="form-control mb-3" placeholder="••••••••" required />
+
+        <button type="submit" class="btn btn-login text-white w-100 mb-2">Đăng nhập</button>
+
+        <div class="text-center">
+          <small>
+            Chưa có tài khoản?
+            <a href="/templates/register.html" class="register-link fw-semibold">Đăng ký</a>
+          </small>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <title>{{ exercise.name }} - Workout AI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+      .exercise-img {
+        max-height: 320px;
+        object-fit: cover;
+      }
+
+      .video-wrapper {
+        max-width: 640px; /* to hơn */
+        margin: 0 auto; /* căn giữa */
+      }
+    </style>
+  </head>
+
+  <body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/exercise">← Quay lại danh sách</a>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <!-- IMAGE + INFO -->
+      <div class="row g-4 align-items-start">
+        <!-- Image -->
+        <div class="col-md-5">
+          {% if exercise.image and not exercise.image.startswith('http') %}
+          <img class="img-fluid rounded exercise-img" src="{{ url_for('static', filename='images/exercises/' ~ exercise.image) }}" alt="{{ exercise.name }}" />
+          {% else %}
+          <img class="img-fluid rounded exercise-img" src="{{ url_for('static', filename='images/exercises/placeholder.png') }}" alt="{{ exercise.name }}" />
+          {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div class="col-md-7">
+          <h3 class="fw-bold">{{ exercise.name }}</h3>
+
+          <p><strong>Nhóm cơ:</strong> {{ exercise.target }}</p>
+          <p><strong>Body part:</strong> {{ exercise.bodyPart }}</p>
+          <p><strong>Dụng cụ:</strong> {{ exercise.equipment }}</p>
+
+          <p>
+            <strong>Độ khó:</strong>
+            <span class="badge bg-secondary">{{ exercise.difficulty }}</span>
+          </p>
+
+          <hr />
+
+          <!-- STEPS -->
+          <h5 class="fw-bold">Cách thực hiện</h5>
+          <ol class="mt-2">
+            {% for step in exercise.description.split('.') %} {% set s = step.strip() %} {% if s and not s.isdigit() %}
+            <li>{{ s }}</li>
+            {% endif %} {% endfor %}
+          </ol>
+        </div>
+      </div>
+
+      <!-- VIDEO -->
+      {% if exercise.video %}
+      <div class="row mt-5">
+        <div class="col-12 text-center">
+          <h5 class="fw-bold mb-3">Video hướng dẫn</h5>
+
+          <div class="video-wrapper">
+            <div class="ratio ratio-16x9">
+              <iframe src="{{ exercise.video | replace('watch?v=', 'embed/') }}" allowfullscreen> </iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </body>
+</html>
