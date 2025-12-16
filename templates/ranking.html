@@ -66,20 +66,13 @@
       <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
         <div>
           <h4 class="mb-0">🔥 Ranking - Bài tập phổ biến</h4>
-          <small class="text-muted">*Số lượt dùng đang hardcode (demo)</small>
         </div>
 
         <!-- Tabs -->
         <div class="d-flex gap-2 mb-3">
-            <a href="/ranking?type=gym"
-                class="btn btn-sm {{ 'btn-primary' if ranking_type=='gym' else 'btn-outline-primary' }}">
-                🏋️ Phòng tập
-            </a>
+          <a href="/ranking?type=gym" class="btn btn-sm {{ 'btn-primary' if ranking_type=='gym' else 'btn-outline-primary' }}"> 🏋️ Phòng tập </a>
 
-            <a href="/ranking?type=home"
-                class="btn btn-sm {{ 'btn-primary' if ranking_type=='home' else 'btn-outline-primary' }}">
-                🏠 Ở nhà
-            </a>
+          <a href="/ranking?type=home" class="btn btn-sm {{ 'btn-primary' if ranking_type=='home' else 'btn-outline-primary' }}"> 🏠 Ở nhà </a>
         </div>
       </div>
 
@@ -112,15 +105,13 @@
                 <strong>{{ ex.uses }}</strong>
               </div>
 
-              {% set pct = (ex.uses / max_uses * 100) %}
-              <div class="progress mt-2" style="height: 10px;">
-                <div class="progress-bar" role="progressbar" style="width: {{ pct|round(0) }}%"></div>
+              {% if max_uses > 0 %} {% set pct = (ex.uses / max_uses * 100) %} {% else %} {% set pct = 0 %} {% endif %}
+              <div class="progress mt-2" style="height: 10px">
+                <div class="progress-bar" role="progressbar" style="width: {{ pct|round(0) }}%;"></div>
               </div>
 
               <!-- Button luôn nằm dưới -->
-              <a href="{{ url_for('exercise.exercise_detail', uid=ex.uid) }}" class="btn btn-outline-primary w-100 mt-3">
-                Xem bài tập
-              </a>
+              <a href="{{ url_for('exercise.exercise_detail', uid=ex.uid) }}" class="btn btn-outline-primary w-100 mt-3"> Xem bài tập </a>
             </div>
           </div>
         </div>
@@ -128,9 +119,7 @@
       </div>
 
       {% if top_exercises|length == 0 %}
-      <div class="alert alert-warning mt-4">
-        Không có bài tập phù hợp cho loại <b>{{ ranking_type }}</b>. Kiểm tra lại dữ liệu CSV (equipment/bodyweight).
-      </div>
+      <div class="alert alert-warning mt-4">Không có bài tập phù hợp cho loại <b>{{ ranking_type }}</b>. Kiểm tra lại dữ liệu CSV (equipment/bodyweight).</div>
       {% endif %}
     </div>
 
