@@ -1,3 +1,5 @@
 flask
 requests
 flask-login
+mysql-connector-python
+werkzeug
