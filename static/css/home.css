@@ -1,0 +1,9 @@
+/* Home Page Styles */
+
+.card {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.chart-box {
+  height: 220px;
+}
