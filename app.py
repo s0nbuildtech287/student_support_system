@@ -1,13 +1,14 @@
 from flask import Flask, redirect
 from routes.exercise import exercise_bp
-from routes.home import home_bp 
+from routes.home import home_bp
+from routes.ranking import ranking_bp  
 
 app = Flask(__name__)
 
-# Đăng ký route
-app.register_blueprint(home_bp) 
+# Đăng ký route (Blueprint)
+app.register_blueprint(home_bp)
 app.register_blueprint(exercise_bp)
-
+app.register_blueprint(ranking_bp)       
 # Trang mặc định → Exercise
 @app.route("/")
 def index():
