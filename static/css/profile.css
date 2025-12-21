@@ -1,0 +1,102 @@
+/* Profile Page Styles */
+
+.profile-header {
+  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+  padding: 40px 0;
+  color: #fff;
+  margin-bottom: 30px;
+}
+
+.profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  object-fit: cover;
+  margin-bottom: 20px;
+}
+
+.profile-name {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.profile-email {
+  font-size: 14px;
+  opacity: 0.9;
+  margin-top: 5px;
+}
+
+.profile-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 25px;
+  margin-bottom: 20px;
+}
+
+.profile-card h5 {
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #212529;
+}
+
+.info-value {
+  color: #6c757d;
+}
+
+.badge-custom {
+  display: inline-block;
+  background: #343a40;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.edit-btn {
+  background-color: #343a40;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.edit-btn:hover {
+  background-color: #212529;
+  text-decoration: none;
+  color: #fff;
+}
+
+.back-link {
+  color: #343a40;
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 30px;
+  display: inline-block;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}

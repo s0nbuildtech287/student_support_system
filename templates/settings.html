@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <title>Cài đặt - Workout AI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/settings.css') }}" rel="stylesheet" />
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container d-flex justify-content-between">
+        <a class="navbar-brand fw-bold" href="/">Workout AI</a>
+
+        <div class="collapse navbar-collapse justify-content-center">
+          <ul class="navbar-nav gap-4">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/exercise">Exercise</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/ranking">Ranking</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#">Information</a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- User Avatar -->
+        <div class="user-avatar-wrapper" id="userAvatarBtn">
+          <img src="{{ user.avatar }}" alt="User Avatar" class="user-avatar">
+          <!-- User Dropdown -->
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <div class="user-info">
+                <img src="{{ user.avatar }}" alt="User" class="user-info-avatar">
+                <div class="user-info-text">
+                  <h6>{{ user.name }}</h6>
+                  <small>{{ user.email }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="user-dropdown-menu">
+              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
+              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item active">⚙️ Cài đặt</a>
+              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
+              <div class="user-dropdown-divider"></div>
+              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Settings Header -->
+    <div class="settings-header">
+      <div class="container">
+        <h1>⚙️ Cài đặt</h1>
+        <p>Quản lý cài đặt tài khoản và ứng dụng</p>
+      </div>
+    </div>
+
+    <!-- Settings Content -->
+    <div class="container mt-5">
+      <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-lg-3 mb-4">
+          <div class="settings-nav">
+            <a href="#account" class="settings-nav-item active" data-section="account">👤 Tài khoản</a>
+            <a href="#notification" class="settings-nav-item" data-section="notification">🔔 Thông báo</a>
+            <a href="#privacy" class="settings-nav-item" data-section="privacy">🔒 Bảo mật</a>
+            <a href="#preferences" class="settings-nav-item" data-section="preferences">🎯 Sở thích</a>
+          </div>
+        </div>
+
+        <!-- Settings Content -->
+        <div class="col-lg-9">
+          <!-- Account Settings -->
+          <div id="account" class="settings-section active">
+            <h3>Tài khoản</h3>
+            <div class="settings-card">
+              <h5>Thông tin cá nhân</h5>
+              <form>
+                <div class="mb-3">
+                  <label for="fullname" class="form-label">Họ và tên</label>
+                  <input type="text" class="form-control" id="fullname" value="{{ user.name }}" />
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" class="form-control" id="email" value="{{ user.email }}" />
+                </div>
+                <div class="mb-3">
+                  <label for="age" class="form-label">Tuổi</label>
+                  <input type="number" class="form-control" id="age" value="{{ user.age }}" />
+                </div>
+                <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Notification Settings -->
+          <div id="notification" class="settings-section">
+            <h3>Thông báo</h3>
+            <div class="settings-card">
+              <div class="settings-option">
+                <div class="option-header">
+                  <h5>Thông báo email</h5>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="emailNotif" checked />
+                  </div>
+                </div>
+                <p class="text-muted">Nhận email về các bài tập được đề xuất và tiến trình</p>
+              </div>
+
+              <hr />
+
+              <div class="settings-option">
+                <div class="option-header">
+                  <h5>Thông báo hàng ngày</h5>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="dailyNotif" checked />
+                  </div>
+                </div>
+                <p class="text-muted">Nhận nhắc nhở hàng ngày về việc tập luyện</p>
+              </div>
+
+              <hr />
+
+              <div class="settings-option">
+                <div class="option-header">
+                  <h5>Thông báo thành tích</h5>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="achievementNotif" checked />
+                  </div>
+                </div>
+                <p class="text-muted">Được thông báo khi bạn đạt được thành tích mới</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Privacy & Security -->
+          <div id="privacy" class="settings-section">
+            <h3>Bảo mật</h3>
+            <div class="settings-card">
+              <h5>Đổi mật khẩu</h5>
+              <form>
+                <div class="mb-3">
+                  <label for="currentPass" class="form-label">Mật khẩu hiện tại</label>
+                  <input type="password" class="form-control" id="currentPass" />
+                </div>
+                <div class="mb-3">
+                  <label for="newPass" class="form-label">Mật khẩu mới</label>
+                  <input type="password" class="form-control" id="newPass" />
+                </div>
+                <div class="mb-3">
+                  <label for="confirmPass" class="form-label">Xác nhận mật khẩu</label>
+                  <input type="password" class="form-control" id="confirmPass" />
+                </div>
+                <button type="submit" class="btn btn-warning">🔐 Đổi mật khẩu</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Preferences -->
+          <div id="preferences" class="settings-section">
+            <h3>Sở thích</h3>
+            <div class="settings-card">
+              <h5>Cài đặt tập luyện</h5>
+              <form>
+                <div class="mb-3">
+                  <label for="difficulty" class="form-label">Mức độ khó</label>
+                  <select class="form-select" id="difficulty">
+                    <option>Beginner</option>
+                    <option selected>Intermediate</option>
+                    <option>Advanced</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="goal" class="form-label">Mục tiêu</label>
+                  <select class="form-select" id="goal">
+                    <option>Giảm cân</option>
+                    <option selected>Tăng cơ</option>
+                    <option>Giữ dáng</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="language" class="form-label">Ngôn ngữ</label>
+                  <select class="form-select" id="language">
+                    <option selected>Tiếng Việt</option>
+                    <option>English</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">💾 Lưu cài đặt</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center">
+      <div class="container">
+        <p class="mb-1">© 2025 Workout AI</p>
+        <small>Smart Workout Recommendation System</small>
+      </div>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+  </body>
+</html>
