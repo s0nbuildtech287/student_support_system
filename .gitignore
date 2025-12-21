@@ -1,1 +1,6 @@
 .env
+# Bỏ qua thư mục __pycache__
+__pycache__/
+
+# Bỏ qua thư mục .vscode
+.vscode/
