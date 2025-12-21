@@ -4,3 +4,6 @@ __pycache__/
 
 # Bỏ qua thư mục .vscode
 .vscode/
+
+.exercise.txt
+.requirements.txt
