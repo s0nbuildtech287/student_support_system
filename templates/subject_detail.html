@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <title>{{ subject.subject_name }} - Study With AI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
+
+    <style>
+      .subject-img {
+        max-height: 320px;
+        object-fit: cover;
+      }
+
+      .resource-wrapper {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+    </style>
+  </head>
+
+  <body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand narvar" href="/subject">← Quay lại danh sách môn học</a>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <div class="row g-4 mb-4">
+        <!-- VIDEO -->
+        <div class="col-lg-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="fw-bold mb-3 text-center">🎥 Video học tập</h5>
+              <div class="ratio ratio-16x9">
+                <iframe src="{{ subject.resource_link | replace('watch?v=', 'embed/') }}" allowfullscreen> </iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- GIỚI THIỆU -->
+        <div class="col-lg-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <div class="row g-3 align-items-center">
+                <!-- TEXT -->
+                <div class="col-md-7">
+                  <h3 class="fw-bold">{{ subject.subject_name }}</h3>
+                  <p><strong>Ngành:</strong> {{ subject.category }}</p>
+                  <p><strong>Định hướng nghề nghiệp:</strong> {{ subject.career_group }}</p>
+
+                  <p>
+                    <strong>Cấp độ:</strong>
+                    <span class="badge bg-primary text-capitalize">{{ subject.level }}</span>
+                  </p>
+
+                  <p><strong>Thời lượng học:</strong> {{ subject.study_hours }} giờ</p>
+                  <p>
+                    <strong>Yêu cầu trước:</strong>
+                    {{ subject.prerequisite if subject.prerequisite else "Không yêu cầu" }}
+                  </p>
+                </div>
+
+                <!-- IMAGE -->
+                <div class="col-md-5 text-center">
+                  <img
+                    src="{{ url_for('static', filename='images/subject/' ~ (subject.image or 'placeholder.png')) }}"
+                    class="img-fluid rounded"
+                    style="max-height: 220px; object-fit: contain"
+                    alt="{{ subject.subject_name }}"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-4">
+        <!-- TÀI LIỆU -->
+        <div class="col-lg-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="fw-bold mb-3 text-center">📚 Tài liệu tham khảo</h5>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">Tài liệu 1 – <a href="#" target="_blank">Click here</a></li>
+                <li class="list-group-item">Tài liệu 2 – <a href="#" target="_blank">Click here</a></li>
+                <li class="list-group-item">Tài liệu 3 – <a href="#" target="_blank">Click here</a></li>
+                <li class="list-group-item">Tài liệu 4 – <a href="#" target="_blank">Click here</a></li>
+                <li class="list-group-item">Tài liệu 5 – <a href="#" target="_blank">Click here</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- NỘI DUNG -->
+        <div class="col-lg-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="fw-bold mb-3">Nội dung & kiến thức cần nắm</h5>
+
+              <div class="accordion" id="outlineAccordion">
+                {% for item in subject.outline %}
+                <div class="accordion-item">
+                  <h2 class="accordion-header">
+                    <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
+                      Phần {{ item.order }}: {{ item.title }}
+                    </button>
+                  </h2>
+
+                  <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}">
+                    <div class="accordion-body">
+                      <p class="text-muted">{{ item.knowledge }}</p>
+                      <p class="text-success">{{ item.expected_outcome }}</p>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

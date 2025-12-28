@@ -1,0 +1,193 @@
+id,subject_id,order,title,knowledge,expected_outcome
+1,1,1,Tư duy lập trình,Khái niệm thuật toán và logic,Hiểu cách giải quyết bài toán bằng tư duy lập trình
+2,1,2,Ngôn ngữ lập trình,Các ngôn ngữ phổ biến hiện nay,Phân biệt được các ngôn ngữ lập trình
+3,1,3,Cấu trúc cơ bản,Biến điều kiện vòng lặp,Viết chương trình đơn giản
+4,1,4,Ứng dụng CNTT,Ứng dụng CNTT trong đời sống,Định hướng chuyên ngành phù hợp
+5,2,1,Cú pháp Python,Kiểu dữ liệu và biến,Viết chương trình Python cơ bản
+6,2,2,Cấu trúc điều khiển,If else vòng lặp,Giải quyết bài toán logic
+7,2,3,Hàm và module,Hàm và thư viện Python,Tổ chức code hiệu quả
+8,2,4,Thực hành Python,Bài tập lập trình cơ bản,Tự viết chương trình hoàn chỉnh
+9,3,1,Cấu trúc tuyến tính,Mảng danh sách,Thao tác dữ liệu hiệu quả
+10,3,2,Stack và Queue,LIFO FIFO,Áp dụng trong bài toán thực tế
+11,3,3,Cây nhị phân,Cấu trúc cây và duyệt cây,Hiểu dữ liệu phân cấp
+12,3,4,Đồ thị,BFS DFS,Giải quyết bài toán mạng
+13,3,5,Độ phức tạp thuật toán,O lớn,Phân tích hiệu năng chương trình
+14,4,1,Mô hình dữ liệu,ERD và quan hệ,Thiết kế cơ sở dữ liệu
+15,4,2,SQL cơ bản,Select Insert Update,Truy vấn dữ liệu
+16,4,3,Chuẩn hóa dữ liệu,Normal Form,Thiết kế CSDL tối ưu
+17,4,4,Ứng dụng CSDL,Kết nối DB với ứng dụng,Xây dựng hệ thống lưu trữ
+18,5,1,HTML,Cấu trúc website,Tạo trang web tĩnh
+19,5,2,CSS,Giao diện và responsive,Thiết kế web đẹp
+20,5,3,JavaScript,Tương tác web,Tạo web động
+21,5,4,Dự án Web,Xây website cơ bản,Hoàn thiện website cá nhân
+22,6,1,Kiến trúc Backend,Client Server,Hiểu hệ thống backend
+23,6,2,API REST,HTTP Method,Xây dựng API
+24,6,3,Xử lý dữ liệu,Database backend,Lưu trữ dữ liệu
+25,6,4,Bảo mật backend,Auth phân quyền,Xây hệ thống an toàn
+26,7,1,React cơ bản,Component state,Xây giao diện động
+27,7,2,Routing SPA,Điều hướng ứng dụng,Xây web hiện đại
+28,7,3,API integration,Kết nối backend,Ứng dụng hoàn chỉnh
+29,7,4,UI UX,Trải nghiệm người dùng,Giao diện thân thiện
+30,8,1,Mô hình OSI,7 tầng mạng,Hiểu luồng dữ liệu
+31,8,2,Giao thức mạng,TCP IP HTTP,Phân tích Internet
+32,8,3,Thiết bị mạng,Router Switch,Triển khai mạng cơ bản
+33,9,1,Tiến trình và luồng,Process Thread,Quản lý CPU
+34,9,2,Bộ nhớ,RAM Virtual Memory,Tối ưu hệ thống
+35,9,3,Hệ thống file,File System,Quản lý dữ liệu
+36,10,1,Mô hình phát triển,Waterfall Agile,Hiểu quy trình phần mềm
+37,10,2,Phân tích yêu cầu,Use case,Thu thập yêu cầu
+38,10,3,Quản lý mã nguồn,Git workflow,Làm việc nhóm
+39,10,4,Triển khai sản phẩm,Release bảo trì,Đưa sản phẩm thực tế
+40,11,1,Tổng quan dữ liệu,Khái niệm dữ liệu,Hiểu quy trình phân tích
+41,11,2,Xử lý dữ liệu,Excel Python,Clean dữ liệu
+42,11,3,Phân tích dữ liệu,EDA,Tạo insight
+43,11,4,Trực quan hóa,Chart báo cáo,Trình bày kết quả
+44,12,1,Xác suất cơ bản,Biến cố xác suất,Hiểu dữ liệu ngẫu nhiên
+45,12,2,Thống kê mô tả,Mean median,Phân tích dữ liệu
+46,12,3,Suy luận thống kê,Hypothesis test,Đưa ra kết luận
+47,13,1,Tổng quan ML,Khái niệm ML,Hiểu học máy
+48,13,2,Thuật toán cơ bản,Regression Classification,Áp dụng ML
+49,13,3,Đánh giá mô hình,Accuracy precision,Đánh giá kết quả
+50,13,4,Ứng dụng ML,Bài toán thực tế,Xây model đơn giản
+51,14,1,Mạng nơ ron,Neural Network,Hiểu deep learning
+52,14,2,CNN RNN,Mô hình nâng cao,Áp dụng thực tế
+53,14,3,Training model,Overfitting,Tối ưu mô hình
+54,15,1,Khái niệm AI,Trí tuệ nhân tạo,Hiểu AI
+55,15,2,Ứng dụng AI,AI thực tế,Áp dụng AI
+56,15,3,Đạo đức AI,Rủi ro AI,Sử dụng AI an toàn
+57,16,1,Tổng quan bảo mật,An toàn thông tin,Hiểu nguy cơ
+58,16,2,Mã hóa,Hash encryption,Bảo vệ dữ liệu
+59,16,3,Tấn công mạng,SQLi XSS,Phòng chống tấn công
+60,16,4,Bảo mật hệ thống,Firewall IDS,Triển khai bảo mật
+61,17,1,Kiểm thử phần mềm,Testing concept,Hiểu QA
+62,17,2,Test case,Unit Integration,Viết test
+63,17,3,Automation test,Tool test,Tự động hóa
+64,18,1,DevOps overview,CI CD,Hiểu DevOps
+65,18,2,Pipeline,Build deploy,Tự động hóa
+66,18,3,Cloud server,Deploy app,Vận hành hệ thống
+67,19,1,Cloud computing,Khái niệm cloud,Hiểu điện toán đám mây
+68,19,2,Dịch vụ cloud,IaaS PaaS SaaS,Sử dụng cloud
+69,19,3,Triển khai cloud,Deploy hệ thống,Ứng dụng thực tế
+70,20,1,Phân tích hệ thống,Yêu cầu hệ thống,Hiểu bài toán
+71,20,2,Thiết kế hệ thống,Flow diagram,Thiết kế giải pháp
+72,20,3,Tài liệu hóa,Spec document,Hoàn thiện dự án
+73,21,1,Khái niệm Marketing,Marketing và thị trường,Hiểu bản chất marketing
+74,21,2,Hành vi khách hàng,Nhu cầu và động cơ,Phân tích khách hàng
+75,21,3,Marketing Mix,4P Marketing,Xây dựng chiến lược cơ bản
+76,21,4,Ứng dụng Marketing,Case thực tế,Áp dụng marketing
+77,22,1,Digital overview,Kênh digital,Hiểu marketing số
+78,22,2,SEO & Content,Tối ưu nội dung,Tăng traffic
+79,22,3,Quảng cáo online,Google Facebook Ads,Triển khai chiến dịch
+80,22,4,Đo lường hiệu quả,Analytics KPI,Tối ưu marketing
+81,23,1,Tổng quan quản trị,Chức năng quản trị,Hiểu vai trò quản lý
+82,23,2,Quản trị chiến lược,Mục tiêu doanh nghiệp,Định hướng phát triển
+83,23,3,Quản trị vận hành,Quy trình nội bộ,Tối ưu hoạt động
+84,23,4,Quản trị tài chính,Chi phí lợi nhuận,Ra quyết định kinh doanh
+85,24,1,Tư duy khởi nghiệp,Startup mindset,Hiểu tinh thần startup
+86,24,2,Mô hình kinh doanh,Business Model Canvas,Xây mô hình startup
+87,24,3,Gọi vốn startup,Investor Pitch,Chuẩn bị gọi vốn
+88,24,4,Quản trị tăng trưởng,Scale startup,Phát triển bền vững
+89,25,1,Tổng quan tài chính,Tài chính doanh nghiệp,Hiểu báo cáo tài chính
+90,25,2,Phân tích báo cáo,Balance Sheet,Đọc hiểu số liệu
+91,25,3,Chỉ số tài chính,ROE ROA,Đánh giá hiệu quả
+92,25,4,Ra quyết định tài chính,Đầu tư quản lý vốn,Ứng dụng thực tế
+93,26,1,Nguyên lý kế toán,Tài sản nguồn vốn,Hiểu kế toán cơ bản
+94,26,2,Hạch toán,Ghi sổ kế toán,Làm kế toán đơn giản
+95,26,3,Báo cáo tài chính,Bảng cân đối,Đọc báo cáo
+96,26,4,Ứng dụng kế toán,Case thực tế,Áp dụng kế toán
+97,27,1,Tổng quan nhân sự,HRM,Hiểu quản trị nhân sự
+98,27,2,Tuyển dụng,Quy trình tuyển dụng,Thu hút nhân tài
+99,27,3,Đào tạo nhân sự,Phát triển nhân lực,Nâng cao năng lực
+100,27,4,Đánh giá nhân viên,KPI OKR,Quản lý hiệu suất
+101,28,1,Tổng quan logistics,Chuỗi cung ứng,Hiểu logistics
+102,28,2,Quản lý kho,Vận hành kho bãi,Tối ưu tồn kho
+103,28,3,Vận chuyển,Logistics distribution,Giảm chi phí
+104,28,4,Chuỗi cung ứng số,SCM hiện đại,Ứng dụng thực tế
+105,29,1,Ecommerce overview,TMĐT,Xây mô hình online
+106,29,2,Nền tảng TMĐT,Shopee Lazada,Triển khai bán hàng
+107,29,3,Thanh toán & logistics,Payment delivery,Vận hành TMĐT
+108,29,4,Marketing TMĐT,Tăng doanh số,Phát triển gian hàng
+109,30,1,Tổng quan dự án,Project concept,Hiểu quản trị dự án
+110,30,2,Lập kế hoạch,WBS Timeline,Lập kế hoạch dự án
+111,30,3,Quản lý rủi ro,Risk management,Giảm rủi ro
+112,30,4,Kiểm soát dự án,Theo dõi tiến độ,Hoàn thành dự án
+113,31,1,Khái niệm pháp luật,Hệ thống pháp luật,Hiểu luật cơ bản
+114,31,2,Quy phạm pháp luật,Luật và đạo luật,Nhận diện văn bản luật
+115,31,3,Pháp luật và xã hội,Nhà nước công dân,Ứng dụng luật
+116,31,4,Ý thức pháp luật,Tuân thủ pháp luật,Sống và làm việc đúng luật
+117,32,1,Luật kinh doanh,Pháp luật doanh nghiệp,Hiểu luật kinh tế
+118,32,2,Hợp đồng kinh tế,Ký kết hợp đồng,Soạn thảo hợp đồng
+119,32,3,Tranh chấp kinh tế,Giải quyết tranh chấp,Phòng ngừa rủi ro
+120,32,4,Ứng dụng luật,Case doanh nghiệp,Áp dụng luật kinh tế
+121,33,1,Luật lao động,Quan hệ lao động,Hiểu luật lao động
+122,33,2,Hợp đồng lao động,Quyền nghĩa vụ,Bảo vệ người lao động
+123,33,3,Tranh chấp lao động,Xử lý tranh chấp,Giải quyết xung đột
+124,33,4,An toàn lao động,Quy định an toàn,Môi trường làm việc
+125,34,1,Tổng quan giáo dục,Khoa học giáo dục,Hiểu giáo dục
+126,34,2,Mục tiêu giáo dục,Phát triển con người,Định hướng đào tạo
+127,34,3,Hệ thống giáo dục,Mô hình giáo dục,Hiểu hệ thống
+128,34,4,Ứng dụng giáo dục,Thực tiễn giáo dục,Áp dụng kiến thức
+129,35,1,Lý luận dạy học,Phương pháp giảng dạy,Hiểu sư phạm
+130,35,2,Thiết kế bài giảng,Kế hoạch dạy học,Xây bài giảng
+131,35,3,Kỹ thuật giảng dạy,Hoạt động lớp học,Dạy học hiệu quả
+132,35,4,Đánh giá người học,Kiểm tra đánh giá,Đo lường kết quả
+133,36,1,Tâm lý người học,Đặc điểm tâm lý,Hiểu học sinh
+134,36,2,Động cơ học tập,Thái độ hành vi,Tăng hiệu quả học
+135,36,3,Giao tiếp sư phạm,Tương tác giáo dục,Cải thiện giảng dạy
+136,36,4,Ứng dụng tâm lý,Case giáo dục,Áp dụng tâm lý học
+137,37,1,Tổng quan sinh học,Thế giới sống,Hiểu sinh học
+138,37,2,Tế bào,Cấu trúc tế bào,Hiểu sự sống
+139,37,3,Di truyền,DNA gene,Kiến thức di truyền
+140,37,4,Ứng dụng sinh học,Công nghệ sinh học,Ứng dụng thực tế
+141,38,1,Y học cơ sở,Hệ thống cơ thể,Hiểu y khoa
+142,38,2,Sinh lý học,Hoạt động cơ thể,Kiến thức nền
+143,38,3,Bệnh học,Nguyên nhân bệnh,Nhận diện bệnh
+144,38,4,Ứng dụng y học,Chăm sóc sức khỏe,Áp dụng kiến thức
+145,39,1,Tổng quan dinh dưỡng,Chất dinh dưỡng,Hiểu dinh dưỡng
+146,39,2,Chế độ ăn,Uống ăn khoa học,Xây thực đơn
+147,39,3,Dinh dưỡng và sức khỏe,Phòng bệnh,Nâng cao sức khỏe
+148,39,4,Ứng dụng dinh dưỡng,Tư vấn dinh dưỡng,Áp dụng thực tế
+149,40,1,Y tế cộng đồng,Khái niệm sức khỏe,Hiểu y tế cộng đồng
+150,40,2,Dịch tễ học,Phòng chống dịch,Quản lý sức khỏe
+151,40,3,Chính sách y tế,Quản lý y tế,Cải thiện hệ thống
+152,40,4,Ứng dụng cộng đồng,Chương trình y tế,Áp dụng thực tế
+153,41,1,Khoa học xã hội,Nghiên cứu xã hội,Hiểu xã hội
+154,41,2,Phương pháp nghiên cứu,Định tính định lượng,Nghiên cứu xã hội
+155,41,3,Xã hội hiện đại,Vấn đề xã hội,Phân tích xã hội
+156,41,4,Ứng dụng xã hội,Case thực tế,Áp dụng kiến thức
+157,42,1,Tổng quan tâm lý,Tâm lý học,Hiểu hành vi
+158,42,2,Nhận thức và cảm xúc,Hành vi con người,Phân tích tâm lý
+159,42,3,Tâm lý ứng dụng,Tâm lý học thực hành,Ứng dụng thực tế
+160,42,4,Phát triển cá nhân,Tự nhận thức,Cải thiện bản thân
+161,43,1,Xã hội học,Xã hội hiện đại,Hiểu xã hội
+162,43,2,Cấu trúc xã hội,Giai tầng xã hội,Phân tích xã hội
+163,43,3,Biến đổi xã hội,Toàn cầu hóa,Hiểu thay đổi
+164,43,4,Ứng dụng xã hội học,Case xã hội,Áp dụng thực tế
+165,44,1,Tư duy thiết kế,Design thinking,Hiểu thiết kế
+166,44,2,Photoshop cơ bản,Chỉnh sửa ảnh,Thiết kế hình ảnh
+167,44,3,Nguyên lý thiết kế,Màu sắc bố cục,Thiết kế đẹp
+168,44,4,Dự án thiết kế,Thiết kế thực tế,Hoàn thiện sản phẩm
+169,45,1,UI UX overview,Trải nghiệm người dùng,Hiểu UI UX
+170,45,2,Nghiên cứu người dùng,User research,Thiết kế phù hợp
+171,45,3,Wireframe prototype,Thiết kế giao diện,Xây prototype
+172,45,4,Testing UX,Usability test,Tối ưu trải nghiệm
+173,46,1,Multimedia overview,Thiết kế đa phương tiện,Hiểu multimedia
+174,46,2,Thiết kế video,Video editing,Sản xuất video
+175,46,3,Âm thanh hình ảnh,Xử lý media,Tạo nội dung
+176,46,4,Dự án multimedia,Sản phẩm đa phương tiện,Hoàn thiện dự án
+177,47,1,Tổng quan kiến trúc,Nguyên lý kiến trúc,Hiểu kiến trúc
+178,47,2,Thiết kế công trình,Bản vẽ kiến trúc,Thiết kế cơ bản
+179,47,3,Không gian kiến trúc,Bố trí công năng,Tối ưu không gian
+180,47,4,Ứng dụng kiến trúc,Dự án thực tế,Áp dụng kiến thức
+181,48,1,Tổng quan xây dựng,Ngành xây dựng,Hiểu kỹ thuật
+182,48,2,Kết cấu công trình,Bê tông thép,Thiết kế kết cấu
+183,48,3,Thi công xây dựng,Quy trình thi công,Quản lý công trình
+184,48,4,An toàn xây dựng,An toàn lao động,Thi công an toàn
+185,49,1,Tổng quan điện,Nguyên lý điện,Hiểu kỹ thuật điện
+186,49,2,Mạch điện,Mạch cơ bản,Phân tích mạch
+187,49,3,Hệ thống điện,Điện dân dụng công nghiệp,Thiết kế hệ thống
+188,49,4,An toàn điện,Quy tắc an toàn,Sử dụng điện an toàn
+189,50,1,Tổng quan cơ khí,Kỹ thuật cơ khí,Hiểu cơ khí
+190,50,2,Vật liệu cơ khí,Kim loại hợp kim,Chọn vật liệu
+191,50,3,Thiết kế cơ khí,Bản vẽ kỹ thuật,Thiết kế chi tiết
+192,50,4,Chế tạo cơ khí,Gia công lắp ráp,Sản xuất cơ khí

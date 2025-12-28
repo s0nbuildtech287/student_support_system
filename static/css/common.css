@@ -19,15 +19,15 @@ footer {
   letter-spacing: 0.5px;
 }
 
-.nav-link {
-  color: rgba(255, 255, 255, 0.85) !important;
-  font-weight: 500;
+.navbar .nav-link {
+  transition: all 0.2s ease-in-out;
 }
 
-.nav-link:hover,
-.nav-link.active {
-  color: #ffffff !important;
-  text-decoration: underline;
+.navbar .nav-link.active {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #fff !important;
+  transform: scale(1.05); /* hơi phóng to */
 }
 .btnCommon {
   background-color: #6a64dd;

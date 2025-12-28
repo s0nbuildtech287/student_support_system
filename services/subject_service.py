@@ -3,48 +3,73 @@ import math
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-CSV_PATH = os.path.join(BASE_DIR, "data", "workout_list_exercise.csv")
+CSV_PATH = os.path.join(BASE_DIR, "data", "subject_list.csv")
+OUTLINE_CSV_PATH = os.path.join(BASE_DIR, "data", "subject_outline.csv")
 
 
 def load_csv(path):
     with open(path, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
-# hiển thị tất cả các bài tập
-def load_all_subject_paginated(page=1, per_page=9):
-    all_exercises = load_csv(CSV_PATH)
 
-    # gán uid toàn cục (rất nên có)
-    for i, ex in enumerate(all_exercises, start=1):
-        ex["uid"] = i
+def load_all_subject_paginated(page=1, per_page=9, category="", level=""):
+    subjects = load_csv(CSV_PATH)
 
-    total = len(all_exercises)
-    total_pages = math.ceil(total / per_page)
+    # danh sách category để render select
+    categories = sorted(set(s["category"] for s in subjects))
 
-    # chống page out of range
-    if page < 1:
-        page = 1
-    if page > total_pages:
-        page = total_pages
+    # FILTER
+    if category:
+        subjects = [s for s in subjects if s["category"] == category]
+
+    if level:
+        subjects = [s for s in subjects if s["level"] == level]
+
+    # gán uid sau khi filter
+    for i, s in enumerate(subjects, start=1):
+        s["uid"] = i
+
+    total = len(subjects)
+    total_pages = max(1, math.ceil(total / per_page))
+
+    page = max(1, min(page, total_pages))
 
     start = (page - 1) * per_page
     end = start + per_page
 
     return {
-        "exercises": all_exercises[start:end],
+        "subjects": subjects[start:end],
         "total": total,
         "total_pages": total_pages,
-        "page": page
+        "page": page,
+        "categories": categories
     }
 
-# chi tiết bài tập
-def get_subject_by_uid(uid):
-    all_exercises = load_csv(CSV_PATH)
 
-    for i, ex in enumerate(all_exercises, start=1):
+
+
+def get_subject_by_uid(uid):
+    subjects = load_csv(CSV_PATH)
+
+    for i, s in enumerate(subjects, start=1):
         if i == uid:
-            ex["uid"] = i
-            return ex
+            s["uid"] = i
+            s["outline"] = get_subject_outline(i)
+            return s
 
     return None
+
+
+def get_subject_outline(subject_id):
+    outlines = load_csv(OUTLINE_CSV_PATH)
+
+    # lọc theo subject_id
+    result = [
+        o for o in outlines
+        if int(o["subject_id"]) == subject_id
+    ]
+
+    # sắp xếp theo thứ tự học
+    result.sort(key=lambda x: int(x["order"]))
+
+    return result

@@ -1,0 +1,51 @@
+id,subject_name,category,career_group,level,prerequisite,study_hours,description,resource_type,resource_link
+1,Nhập môn lập trình,IT,IT software,beginner,None,40,Tổng quan CNTT và ứng dụng,video,https://www.youtube.com/watch?v=Mkif3AqLBCQ
+2,Lập trình Python cơ bản,IT,IT software,beginner,None,50,Học cú pháp và tư duy lập trình Python,video,https://example.com/python_basic
+3,Cấu trúc dữ liệu & Giải thuật,IT,IT software,intermediate,Lập trình cơ bản,60,Nắm vững cấu trúc dữ liệu phổ biến,practice,https://example.com/dsa
+4,Cơ sở dữ liệu,IT,IT software,intermediate,Python cơ bản,45,Thiết kế và truy vấn CSDL,video,https://example.com/database
+5,Lập trình Web cơ bản,IT,IT software,beginner,None,50,HTML CSS JS nền tảng,video,https://example.com/web_basic
+6,Lập trình Backend,IT,IT software,intermediate,Web cơ bản,60,Xây dựng API và server,practice,https://example.com/backend
+7,Lập trình Frontend,IT,IT software,intermediate,Web cơ bản,55,React và UI hiện đại,practice,https://example.com/frontend
+8,Mạng máy tính,IT,IT software,intermediate,None,45,Nguyên lý mạng và Internet,video,https://example.com/network
+9,Hệ điều hành,IT,IT software,intermediate,None,50,Quản lý tiến trình và bộ nhớ,video,https://example.com/os
+10,Phát triển phần mềm,IT,IT software,advanced,Backend,60,Quy trình và mô hình phát triển,practice,https://example.com/software_eng
+11,Phân tích dữ liệu cơ bản,IT,IT data,beginner,None,40,Xử lý dữ liệu với Excel & Python,video,https://example.com/data_basic
+12,Thống kê ứng dụng,IT,IT data,beginner,None,45,Thống kê cho phân tích dữ liệu,video,https://example.com/statistics
+13,Machine Learning cơ bản,IT,IT data,intermediate,Phân tích dữ liệu,60,Thuật toán ML nền tảng,video,https://example.com/ml_basic
+14,Deep Learning,IT,IT data,advanced,Machine Learning,70,Mạng nơ-ron sâu,practice,https://example.com/deep_learning
+15,Trí tuệ nhân tạo,IT,IT data,advanced,Machine Learning,65,Ứng dụng AI thực tế,practice,https://example.com/ai
+16,An toàn thông tin,IT,cyber,intermediate,Mạng máy tính,50,Bảo mật hệ thống và dữ liệu,video,https://example.com/security
+17,Kiểm thử phần mềm,IT,IT software,intermediate,Lập trình cơ bản,40,Test và đảm bảo chất lượng,practice,https://example.com/testing
+18,DevOps cơ bản,IT,IT software,intermediate,Backend,50,Tích hợp CI/CD,practice,https://example.com/devops
+19,Điện toán đám mây,IT,IT software,intermediate,None,45,AWS, Cloud Computing,video,https://example.com/cloud
+20,Phân tích hệ thống,IT,IT software,intermediate,None,45,Thu thập và phân tích yêu cầu,video,https://example.com/system_analysis
+21,Nguyên lý Marketing,Business,marketing,beginner,None,40,Các khái niệm marketing cơ bản,video,https://example.com/marketing
+22,Digital Marketing,Business,marketing,intermediate,Nguyên lý Marketing,50,SEO, Ads, Social Media,practice,https://example.com/digital_marketing
+23,Quản trị kinh doanh,Business,business,beginner,None,45,Nền tảng quản trị doanh nghiệp,video,https://example.com/business
+24,Khởi nghiệp,Business,business,intermediate,Quản trị kinh doanh,40,Xây dựng mô hình startup,practice,https://example.com/startup
+25,Phân tích tài chính,Business,finance,intermediate,Kế toán,50,Đọc báo cáo tài chính,video,https://example.com/finance
+26,Kế toán căn bản,Business,finance,beginner,None,45,Nguyên lý kế toán,video,https://example.com/accounting
+27,Quản trị nhân sự,Business,business,beginner,None,40,Quản lý nguồn nhân lực,video,https://example.com/hr
+28,Logistics & Chuỗi cung ứng,Business,logistics,intermediate,Quản trị kinh doanh,50,Quản lý vận hành,video,https://example.com/logistics
+29,Thương mại điện tử,Business,business,intermediate,Marketing,45,Mô hình kinh doanh online,video,https://example.com/ecommerce
+30,Quản trị dự án,Business,business,intermediate,None,45,Lập kế hoạch và kiểm soát dự án,practice,https://example.com/project
+31,Luật đại cương,Law,law,beginner,None,40,Khái niệm pháp luật cơ bản,video,https://example.com/law
+32,Luật kinh tế,Law,law,intermediate,Luật đại cương,45,Pháp luật trong kinh doanh,video,https://example.com/economic_law
+33,Luật lao động,Law,law,intermediate,Luật đại cương,40,Quy định lao động,video,https://example.com/labor_law
+34,Giáo dục học,Education,education,beginner,None,40,Nền tảng khoa học giáo dục,video,https://example.com/education
+35,Phương pháp giảng dạy,Education,education,intermediate,Giáo dục học,45,Kỹ năng sư phạm,practice,https://example.com/teaching
+36,Tâm lý học giáo dục,Education,education,intermediate,Giáo dục học,40,Hiểu tâm lý người học,video,https://example.com/edu_psy
+37,Sinh học đại cương,Health,health,beginner,None,40,Kiến thức sinh học cơ bản,video,https://example.com/biology
+38,Y học cơ sở,Health,health,intermediate,Sinh học,60,Nền tảng y khoa,video,https://example.com/medicine
+39,Dinh dưỡng học,Health,health,beginner,None,35,Nguyên lý dinh dưỡng,video,https://example.com/nutrition
+40,Sức khỏe cộng đồng,Health,health,intermediate,None,45,Quản lý y tế cộng đồng,video,https://example.com/public_health
+41,Khoa học xã hội,Xã hội,social,beginner,None,40,Nghiên cứu xã hội và hành vi,video,https://example.com/social
+42,Tâm lý học,Xã hội,social,intermediate,Khoa học xã hội,45,Phân tích hành vi con người,video,https://example.com/psychology
+43,Xã hội học,Xã hội,social,intermediate,None,40,Nghiên cứu xã hội hiện đại,video,https://example.com/sociology
+44,Thiết kế đồ họa,Creative,design,beginner,None,50,Photoshop và tư duy thiết kế,practice,https://example.com/design
+45,UI UX Design,Creative,design,intermediate,Thiết kế đồ họa,55,Thiết kế trải nghiệm người dùng,practice,https://example.com/uiux
+46,Thiết kế đa phương tiện,Creative,design,intermediate,None,50,Video và multimedia,practice,https://example.com/multimedia
+47,Thiết kế kiến trúc,Engineering,architecture,beginner,None,60,Nguyên lý kiến trúc,video,https://example.com/architecture
+48,Kỹ thuật xây dựng,Engineering,engineering,intermediate,Toán kỹ thuật,65,Thiết kế công trình,video,https://example.com/civil
+49,Kỹ thuật điện,Engineering,engineering,beginner,None,55,Hệ thống điện cơ bản,video,https://example.com/electrical
+50,Kỹ thuật cơ khí,Engineering,engineering,intermediate,None,60,Thiết kế và chế tạo cơ khí,video,https://example.com/mechanical
