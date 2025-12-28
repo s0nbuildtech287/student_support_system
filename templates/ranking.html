@@ -19,17 +19,44 @@
   <body>
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="collapse navbar-collapse justify-content-center">
-        <ul class="navbar-nav gap-4">
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/subject">Subject</a></li>
-          <li class="nav-item"><a class="nav-link" href="/roadmap">Roadmap</a></li>
-          <li class="nav-item"><a class="nav-link active" href="/ranking">Ranking</a></li>
-          <li class="nav-item">
-            <a class="nav-link" href="/yourplan">YourPlan</a>
-          </li>
-          <li class="nav-item"><a class="nav-link" href="/information">Blog</a></li>
-        </ul>
+      <div class="container d-flex justify-content-between">
+        <a class="navbar-brand fw-bold" href="/">Study With AI</a>
+
+        <div class="collapse navbar-collapse justify-content-center">
+          <ul class="navbar-nav gap-4">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/subject">Subject</a></li>
+            <li class="nav-item"><a class="nav-link" href="/roadmap">Roadmap</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/ranking">Ranking</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="/yourplan">YourPlan</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="/information">Blog</a></li>
+          </ul>
+        </div>
+        <!-- User Avatar -->
+        <div class="user-avatar-wrapper" id="userAvatarBtn">
+          <img src="/static/images/avatar.jpg" alt="User Avatar" class="user-avatar" />
+
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <div class="user-info">
+                <img src="/static/images/avatar.jpg" alt="User" class="user-info-avatar" />
+                <div class="user-info-text">
+                  <h6>Khang Nguyen</h6>
+                  <small>khang@example.com</small>
+                </div>
+              </div>
+            </div>
+            <div class="user-dropdown-menu">
+              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
+              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
+              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
+              <div class="user-dropdown-divider"></div>
+              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
 
