@@ -1,15 +1,32 @@
-.roadmap-card { transition: 0.15s ease; border: 1px solid rgba(0,0,0,0.08); }
-.roadmap-card:hover { transform: translateY(-2px); border-color: rgba(13,110,253,0.35); }
-
-.roadmap-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  background: rgba(13,110,253,0.08);
-  display: flex; align-items: center; justify-content: center;
-  overflow: hidden;
+.roadmap-card {
+  transition: 0.15s ease;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #f8f9ff, #e5e9f7);
 }
-.roadmap-icon img { width: 32px; height: 32px; object-fit: contain; }
+.roadmap-card:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+  border-color: rgba(84, 139, 221, 0.35);
+}
+.roadmap-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
 
-.detail-icon { width: 52px; height: 52px; object-fit: contain; }
+.roadmap-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* hoặc cover */
+}
+
+.detail-icon {
+  border-radius: 10px;
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
 
 .step-badge {
   min-width: 86px;
@@ -18,7 +35,9 @@
   font-size: 13px;
   padding: 8px 10px;
   border-radius: 12px;
-  background: rgba(0,0,0,0.06);
+  background: rgba(0, 0, 0, 0.06);
 }
 
-.step-row { border: 1px solid rgba(0,0,0,0.06); }
+.step-row {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}

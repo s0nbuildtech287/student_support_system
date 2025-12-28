@@ -67,7 +67,7 @@
               src="{{ url_for('static', filename='images/roadmaps/' ~ roadmap.image) }}"
               alt="icon"
               class="detail-icon"
-              onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/roadmaps/default.png') }}';"
+              data-default="{{ url_for('static', filename='images/roadmaps/default.png') }}"
             />
           </div>
         </div>
@@ -85,26 +85,19 @@
 
                 <div>
                   {% if s.subject %}
-                    <a class="fw-bold text-decoration-none"
-                       href="/subject/{{ s.subject.id }}">
-                      {{ s.subject.subject_name }}
-                    </a>
-                    <div class="text-muted small">
-                      {{ s.subject.career_group }} • {{ s.subject.category }}
-                    </div>
+                  <a class="fw-bold text-decoration-none" href="/subject/{{ s.subject.id }}"> {{ s.subject.subject_name }} </a>
+                  <div class="text-muted small">{{ s.subject.career_group }} • {{ s.subject.category }}</div>
                   {% else %}
-                    <div class="text-danger fw-bold">Missing subject_id={{ s.subject_id }}</div>
-                  {% endif %}
-
-                  {% if s.note %}
-                    <div class="small mt-1">{{ s.note }}</div>
+                  <div class="text-danger fw-bold">Missing subject_id={{ s.subject_id }}</div>
+                  {% endif %} {% if s.note %}
+                  <div class="small mt-1">{{ s.note }}</div>
                   {% endif %}
                 </div>
               </div>
 
               <div>
                 {% if s.subject %}
-                  <a href="/subject/{{ s.subject.id }}" class="btn btn-sm btn-primary btnCommon">Xem môn</a>
+                <a href="/subject/{{ s.subject.id }}" class="btn btn-sm btn-primary btnCommon">Xem môn</a>
                 {% endif %}
               </div>
             </div>
@@ -123,6 +116,12 @@
     </footer>
 
     <script>
+      document.querySelectorAll(".roadmap-img").forEach((img) => {
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = img.dataset.default;
+        };
+      });
       // User dropdown
       const userAvatarBtn = document.getElementById("userAvatarBtn");
       const userDropdown = document.getElementById("userDropdown");

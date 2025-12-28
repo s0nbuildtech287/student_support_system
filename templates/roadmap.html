@@ -77,7 +77,7 @@
             <input id="searchRoadmap" class="form-control" placeholder="Tìm roadmap (vd: Backend, Data...)" />
           </div>
           <div class="col-md-4">
-            <select id="filterGroup" class="form-select">
+            <select aria-label="xs" id="filterGroup" class="form-select">
               <option value="">Tất cả nhóm</option>
               <option value="IT software">IT software</option>
               <option value="IT data">IT data</option>
@@ -91,7 +91,7 @@
             </select>
           </div>
           <div class="col-md-4">
-            <select id="filterLevel" class="form-select">
+            <select aria-label="xs" id="filterLevel" class="form-select">
               <option value="">Tất cả level</option>
               <option value="beginner">beginner</option>
               <option value="intermediate">intermediate</option>
@@ -102,28 +102,24 @@
 
         <div class="row g-3" id="roadmapGrid">
           {% for r in roadmaps %}
-          <div class="col-md-6 col-lg-4 roadmap-item"
-               data-name="{{ r.roadmap_name|lower }}"
-               data-group="{{ r.career_group }}"
-               data-level="{{ r.level }}">
+          <div class="col-md-6 col-lg-4 roadmap-item" data-name="{{ r.roadmap_name|lower }}" data-group="{{ r.career_group }}" data-level="{{ r.level }}">
             <a href="/roadmap/{{ r.roadmap_id }}" class="text-decoration-none">
               <div class="card h-100 p-3 roadmap-card">
                 <div class="d-flex align-items-center gap-3">
                   <div class="roadmap-icon">
                     <img
-                    src="{{ url_for('static', filename='images/roadmaps/' ~ r.image) }}"
-                    alt="icon"
-                    onerror="this.onerror=null; this.src='{{ url_for('static', filename='images/roadmaps/default.png') }}';"
-                    />                   
+                      alt="xs"
+                      src="{{ url_for('static', filename='images/roadmaps/' ~ r.image) }}"
+                      data-default="{{ url_for('static', filename='images/roadmaps/default.png') }}"
+                      class="roadmap-img"
+                    />
                   </div>
                   <div>
                     <h6 class="fw-bold mb-1 text-dark">{{ r.roadmap_name }}</h6>
                     <div class="small text-muted">{{ r.career_group }} • {{ r.level }}</div>
                   </div>
                 </div>
-                <div class="mt-2 text-muted small">
-                  {{ r.description }}
-                </div>
+                <div class="mt-2 text-muted small">{{ r.description }}</div>
                 <div class="mt-3">
                   <span class="btn btn-sm btn-outline-primary">Xem chi tiết</span>
                 </div>
@@ -144,6 +140,12 @@
     </footer>
 
     <script>
+      document.querySelectorAll(".roadmap-img").forEach((img) => {
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = img.dataset.default;
+        };
+      });
       // User dropdown (y chang template bạn)
       const userAvatarBtn = document.getElementById("userAvatarBtn");
       const userDropdown = document.getElementById("userDropdown");
@@ -163,7 +165,7 @@
         const g = filterGroup.value;
         const l = filterLevel.value;
 
-        items.forEach(it => {
+        items.forEach((it) => {
           const name = it.dataset.name;
           const group = it.dataset.group;
           const level = it.dataset.level;
@@ -172,11 +174,11 @@
           const okGroup = !g || group === g;
           const okLevel = !l || level === l;
 
-          it.style.display = (okName && okGroup && okLevel) ? "" : "none";
+          it.style.display = okName && okGroup && okLevel ? "" : "none";
         });
       }
 
-      [searchInput, filterGroup, filterLevel].forEach(el => el.addEventListener("input", applyFilter));
+      [searchInput, filterGroup, filterLevel].forEach((el) => el.addEventListener("input", applyFilter));
     </script>
 
     <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>
