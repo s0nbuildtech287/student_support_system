@@ -25,6 +25,29 @@
             <li class="nav-item"><a class="nav-link" href="/information">Blog</a></li>
           </ul>
         </div>
+         <!-- User Avatar -->
+        <div class="user-avatar-wrapper" id="userAvatarBtn">
+          <img src="/static/images/avatar.jpg" alt="User Avatar" class="user-avatar" />
+
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <div class="user-info">
+                <img src="/static/images/avatar.jpg" alt="User" class="user-info-avatar" />
+                <div class="user-info-text">
+                  <h6>Khang Nguyen</h6>
+                  <small>khang@example.com</small>
+                </div>
+              </div>
+            </div>
+            <div class="user-dropdown-menu">
+              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
+              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
+              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
+              <div class="user-dropdown-divider"></div>
+              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
+            </div>
+          </div>
+        </div>
       </div>
     </nav>
 
@@ -162,5 +185,20 @@
       <p class="mb-1">© 2025 Study With AI</p>
       <small>Hệ thống gợi ý lộ trình học tập thông minh</small>
     </footer>
+    <script>
+       // User dropdown
+      const userAvatarBtn = document.getElementById("userAvatarBtn");
+      const userDropdown = document.getElementById("userDropdown");
+
+      userAvatarBtn.addEventListener("click", () => {
+        userDropdown.classList.toggle("show");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!userAvatarBtn.contains(e.target)) {
+          userDropdown.classList.remove("show");
+        }
+      });
+    </script>
   </body>
 </html>
