@@ -1,161 +1,211 @@
 <!DOCTYPE html>
 <html lang="vi">
   <head>
-    <title>Ranking - Workout AI</title>
+    <title>Study With AI - Ranking</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Common CSS -->
     <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/ranking.css') }}" rel="stylesheet" />
 
-    <style>
-      body {
-        background-color: #f8f9fa;
-      }
-
-      .card {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-        transition: transform 0.2s;
-      }
-
-      .card:hover {
-        transform: translateY(-3px);
-      }
-
-      .exercise-img {
-        height: 180px;
-        object-fit: cover;
-        background: #e9ecef;
-      }
-
-      footer {
-        background: #212529;
-        color: #fff;
-        padding: 15px 0;
-        margin-top: 40px;
-      }
-    </style>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
 
   <body>
-    <!-- Navbar -->
+    <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
-        <a class="navbar-brand" href="/">Workout AI</a>
-
-        <div class="collapse navbar-collapse justify-content-center">
-          <ul class="navbar-nav gap-4">
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('home.home') }}">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/exercise">Exercise</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="/ranking">Ranking</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Information</a>
-            </li>
-          </ul>
-        </div>
-        <!-- User Avatar -->
-        <div class="user-avatar-wrapper" id="userAvatarBtn">
-          <img src="https://i.pravatar.cc/150?img=1" alt="User Avatar" class="user-avatar" />
-          <!-- User Dropdown -->
-          <div class="user-dropdown" id="userDropdown">
-            <div class="user-dropdown-header">
-              <div class="user-info">
-                <img src="https://i.pravatar.cc/150?img=1" alt="User" class="user-info-avatar" />
-                <div class="user-info-text">
-                  <h6>Khang Nguyen</h6>
-                  <small>khang@example.com</small>
-                </div>
-              </div>
-            </div>
-            <div class="user-dropdown-menu">
-              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
-              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
-              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
-              <div class="user-dropdown-divider"></div>
-              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
-            </div>
-          </div>
-        </div>
+      <div class="collapse navbar-collapse justify-content-center">
+        <ul class="navbar-nav gap-4">
+          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="/subject">Subject</a></li>
+          <li class="nav-item"><a class="nav-link" href="/roadmap">Roadmap</a></li>
+          <li class="nav-item"><a class="nav-link active" href="/ranking">Ranking</a></li>
+          <li class="nav-item">
+            <a class="nav-link" href="/yourplan">YourPlan</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="/information">Blog</a></li>
+        </ul>
       </div>
     </nav>
 
-    <!-- Content -->
-    <div class="container mt-4">
-      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
-        <div>
-          <h4 class="mb-0">🔥 Ranking - Bài tập phổ biến</h4>
+    <!-- MAIN -->
+    <div class="container mt-4 mb-5">
+      <div class="card p-4 shadow-sm">
+        <h4 class="fw-bold text-center mb-4">📊 Bảng xếp hạng học tập</h4>
+
+        <!-- FILTER -->
+        <div class="row g-2 mb-4">
+          <div class="col-md-4">
+            <select aria-label="xs" id="filterMonth" class="form-select">
+              <option>Tháng</option>
+              <option>01</option>
+              <option>02</option>
+              <option>03</option>
+              <option>04</option>
+              <option>05</option>
+              <option>06</option>
+              <option>07</option>
+              <option>08</option>
+              <option>09</option>
+              <option>10</option>
+              <option>11</option>
+              <option>12</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <select aria-label="xs" id="filterYear" class="form-select">
+              <option>Năm</option>
+              <option>2021</option>
+              <option>2022</option>
+              <option>2023</option>
+              <option>2024</option>
+              <option selected>2025</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <select id="filterField" aria-label="xs" class="form-select">
+              <option>Lĩnh vực</option>
+              <option>IT software</option>
+              <option>IT data</option>
+              <option>Business</option>
+            </select>
+          </div>
         </div>
 
-        <!-- Tabs -->
-        <div class="d-flex gap-2 mb-3">
-          <a href="/ranking?type=gym" class="btn btn-sm {{ 'btn-primary' if ranking_type=='gym' else 'btn-outline-primary' }}"> 🏋️ Phòng tập </a>
+        <!-- CONTENT -->
+        <div class="row g-4">
+          <!-- LEFT -->
+          <div class="col-lg-6 d-flex flex-column gap-4">
+            <!-- Top Roadmap -->
+            <div class="card p-3 ranking-card">
+              <h6 class="fw-bold mb-3">🔥 Top 10 lộ trình được theo dõi nhiều nhất</h6>
+              <canvas id="roadmapChart"></canvas>
+            </div>
 
-          <a href="/ranking?type=home" class="btn btn-sm {{ 'btn-primary' if ranking_type=='home' else 'btn-outline-primary' }}"> 🏠 Ở nhà </a>
-        </div>
-      </div>
+            <!-- Top Subject -->
+            <div class="card p-3 ranking-card">
+              <h6 class="fw-bold mb-3">📘 Top 10 môn học có lượt học cao nhất</h6>
+              <canvas id="subjectChart"></canvas>
+            </div>
+          </div>
 
-      <!-- Ranking List -->
-      <div class="row g-4">
-        {% for ex in top_exercises %}
-        <div class="col-md-4">
-          <div class="card h-100">
-            {% if ex.image and ex.image.startswith('http') %}
-            <img class="exercise-img" src="{{ ex.image }}" alt="{{ ex.name }}" />
-            {% elif ex.image %}
-            <img class="exercise-img" src="{{ url_for('static', filename='images/exercises/' ~ ex.image) }}" alt="{{ ex.name }}" />
-            {% else %}
-            <img class="exercise-img" src="{{ url_for('static', filename='images/exercises/placeholder.png') }}" alt="{{ ex.name }}" />
-            {% endif %}
+          <!-- RIGHT -->
+          <div class="col-lg-6 d-flex flex-column gap-4">
+            <!-- Top Completed -->
+            <div class="card p-3 ranking-card">
+              <h6 class="fw-bold mb-3">🏆 Top 10 người hoàn thành nhiều môn nhất</h6>
 
-            <div class="card-body d-flex flex-column">
-              <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="badge bg-dark">TOP {{ ex.rank }}</span>
-                <span class="badge bg-secondary">{{ ex.difficulty }}</span>
+              <div class="ranking-scroll">
+                <ul class="list-group list-group-flush">
+                  {% for u in top_completed %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ loop.index }}. {{ u.name }}</span>
+                    <span class="fw-bold">{{ u.completed }} môn</span>
+                  </li>
+                  {% endfor %}
+                </ul>
               </div>
+            </div>
 
-              <h6 class="fw-bold">{{ ex.name }}</h6>
-              <p class="mb-1"><strong>Nhóm cơ:</strong> {{ ex.muscle_group }}</p>
-              <p class="mb-1"><strong>Body part:</strong> {{ ex.body_part }}</p>
-              <p class="mb-2"><strong>Dụng cụ:</strong> {{ ex.equipment }}</p>
+            <!-- Top Score -->
+            <div class="card p-3 ranking-card">
+              <h6 class="fw-bold mb-3">⭐ Top 10 người có tổng điểm cao nhất</h6>
 
-              <div class="d-flex justify-content-between align-items-center">
-                <small class="text-muted">Lượt sử dụng</small>
-                <strong>{{ ex.uses }}</strong>
+              <div class="ranking-scroll">
+                <ul class="list-group list-group-flush">
+                  {% for u in top_score %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>{{ loop.index }}. {{ u.name }}</span>
+                    <span class="fw-bold text-success"> {{ u.score }} điểm </span>
+                  </li>
+                  {% endfor %}
+                </ul>
               </div>
-
-              {% if max_uses > 0 %} {% set pct = (ex.uses / max_uses * 100) %} {% else %} {% set pct = 0 %} {% endif %}
-              <div class="progress mt-2" style="height: 10px">
-                <div class="progress-bar" role="progressbar" style="width: {{ pct|round(0) }}%;"></div>
-              </div>
-
-              <!-- Button luôn nằm dưới -->
-              <a href="{{ url_for('exercise.exercise_detail', uid=ex.uid) }}" class="btn btn-outline-primary w-100 mt-3"> Xem bài tập </a>
             </div>
           </div>
         </div>
-        {% endfor %}
       </div>
-
-      {% if top_exercises|length == 0 %}
-      <div class="alert alert-warning mt-4">Không có bài tập phù hợp cho loại <b>{{ ranking_type }}</b>. Kiểm tra lại dữ liệu CSV (equipment/bodyweight).</div>
-      {% endif %}
     </div>
 
-    <!-- Footer -->
-    <footer class="text-center">
-      <div class="container">
-        <p class="mb-1">© 2025 Workout AI</p>
-        <small>Smart Workout Recommendation System</small>
-      </div>
-    </footer>
+    <!-- CHART -->
 
-    <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>
+    <script type="">
+        // ===== FILTER ELEMENTS =====
+        const monthEl = document.getElementById("filterMonth");
+        const yearEl = document.getElementById("filterYear");
+        const fieldEl = document.getElementById("filterField");
+
+        // ===== DATA FROM BACKEND =====
+        const roadmapLabels = {{ roadmap_labels | tojson }};
+        const roadmapBaseValues = {{ roadmap_values | tojson }};
+        const subjectLabels = {{ subject_labels | tojson }};
+        const subjectValues = {{ subject_values | tojson }};
+
+        // ===== CHARTS =====
+        const roadmapChart = new Chart(
+          document.getElementById("roadmapChart"),
+          {
+            type: "bar",
+            data: {
+              labels: roadmapLabels,
+              datasets: [{
+                label: "Lượt theo dõi",
+                data: [...roadmapBaseValues],
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+            }
+          }
+        );
+
+        const subjectChart = new Chart(
+          document.getElementById("subjectChart"),
+          {
+            type: "doughnut",
+            data: {
+              labels: subjectLabels,
+              datasets: [{
+                data: subjectValues,
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+            }
+          }
+        );
+
+        // ===== FILTER MOCK LOGIC =====
+       function reloadRanking() {
+        const m = monthEl.value;
+        const y = yearEl.value;
+        const f = fieldEl.value;
+
+        console.log("FILTER:", m, y, f); // 👈 nhìn thấy rõ
+
+        let newValues = [...roadmapBaseValues];
+
+        if (m !== "Tháng" || y !== "Năm" || f !== "Lĩnh vực") {
+          newValues = newValues.map(v =>
+            Math.floor(v * (0.4 + Math.random() * 1.2))
+          );
+        }
+
+        roadmapChart.data.datasets[0].data = newValues;
+        roadmapChart.update();
+      }
+
+
+        [monthEl, yearEl, fieldEl].forEach(el =>
+          el.addEventListener("change", reloadRanking)
+        );
+    </script>
   </body>
 </html>
