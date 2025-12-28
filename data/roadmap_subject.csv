@@ -1,0 +1,103 @@
+roadmap_id,subject_id,step_order,note
+1,1,1,beginner: Tổng quan CNTT và ứng dụng
+1,2,2,beginner: Học cú pháp và tư duy lập trình Python
+1,3,3,intermediate: Nắm vững cấu trúc dữ liệu phổ biến
+1,4,4,intermediate: Thiết kế và truy vấn CSDL
+1,5,5,beginner: HTML CSS JS nền tảng
+1,6,6,intermediate: Xây dựng API và server
+1,8,7,intermediate: Nguyên lý mạng và Internet
+1,9,8,intermediate: Quản lý tiến trình và bộ nhớ
+1,18,9,intermediate: Tích hợp CI/CD
+1,16,10,intermediate: Bảo mật hệ thống và dữ liệu
+1,10,11,advanced: Quy trình và mô hình phát triển
+1,17,12,intermediate: Test và đảm bảo chất lượng
+2,1,1,beginner: Tổng quan CNTT và ứng dụng
+2,5,2,beginner: HTML CSS JS nền tảng
+2,44,3,beginner: Photoshop và tư duy thiết kế
+2,45,4,intermediate: Thiết kế trải nghiệm người dùng
+2,7,5,intermediate: React và UI hiện đại
+2,46,6,intermediate: Video và multimedia
+2,20,7,intermediate: Thu thập và phân tích yêu cầu
+2,10,8,advanced: Quy trình và mô hình phát triển
+2,17,9,intermediate: Test và đảm bảo chất lượng
+3,1,1,beginner: Tổng quan CNTT và ứng dụng
+3,2,2,beginner: Học cú pháp và tư duy lập trình Python
+3,5,3,beginner: HTML CSS JS nền tảng
+3,7,4,intermediate: React và UI hiện đại
+3,6,5,intermediate: Xây dựng API và server
+3,4,6,intermediate: Thiết kế và truy vấn CSDL
+3,3,7,intermediate: Nắm vững cấu trúc dữ liệu phổ biến
+3,20,8,intermediate: Thu thập và phân tích yêu cầu
+3,10,9,advanced: Quy trình và mô hình phát triển
+3,18,10,intermediate: Tích hợp CI/CD
+3,16,11,intermediate: Bảo mật hệ thống và dữ liệu
+3,17,12,intermediate: Test và đảm bảo chất lượng
+4,11,1,beginner: Xử lý dữ liệu với Excel & Python
+4,12,2,beginner: Thống kê cho phân tích dữ liệu
+4,4,3,intermediate: Thiết kế và truy vấn CSDL
+4,2,4,beginner: Học cú pháp và tư duy lập trình Python
+4,25,5,intermediate: Đọc báo cáo tài chính
+4,23,6,beginner: Nền tảng quản trị doanh nghiệp
+4,29,7,intermediate: Mô hình kinh doanh online
+4,30,8,intermediate: Lập kế hoạch và kiểm soát dự án
+5,11,1,beginner: Xử lý dữ liệu với Excel & Python
+5,12,2,beginner: Thống kê cho phân tích dữ liệu
+5,2,3,beginner: Học cú pháp và tư duy lập trình Python
+5,4,4,intermediate: Thiết kế và truy vấn CSDL
+5,13,5,intermediate: Thuật toán ML nền tảng
+5,14,6,advanced: Mạng nơ-ron sâu
+5,15,7,advanced: Ứng dụng AI thực tế
+5,18,8,intermediate: Triển khai CI/CD và vận hành hệ thống
+6,8,1,intermediate: Nguyên lý mạng và Internet
+6,9,2,intermediate: Quản lý tiến trình và bộ nhớ
+6,4,3,intermediate: Thiết kế và truy vấn CSDL
+6,16,4,intermediate: Bảo mật hệ thống và dữ liệu
+6,18,5,intermediate: Tích hợp CI/CD
+6,18,6,intermediate: Vận hành và triển khai hệ thống
+6,17,7,intermediate: Test và đảm bảo chất lượng
+7,21,1,beginner: Các khái niệm marketing cơ bản
+7,23,2,beginner: Nền tảng quản trị doanh nghiệp
+7,29,3,intermediate: Kinh doanh online (thay cho SEO/Ads)
+7,29,4,intermediate: Mô hình kinh doanh online
+7,24,5,intermediate: Xây dựng mô hình startup
+7,25,6,intermediate: Đọc báo cáo tài chính
+7,30,7,intermediate: Lập kế hoạch và kiểm soát dự án
+8,23,1,beginner: Nền tảng quản trị doanh nghiệp
+8,30,2,intermediate: Lập kế hoạch và kiểm soát dự án
+8,27,3,beginner: Quản lý nguồn nhân lực
+8,24,4,intermediate: Xây dựng mô hình startup
+8,25,5,intermediate: Đọc báo cáo tài chính
+8,28,6,intermediate: Quản lý vận hành
+8,29,7,intermediate: Mô hình kinh doanh online
+9,26,1,beginner: Nguyên lý kế toán
+9,25,2,intermediate: Đọc báo cáo tài chính
+9,23,3,beginner: Nền tảng quản trị doanh nghiệp
+9,30,4,intermediate: Lập kế hoạch và kiểm soát dự án
+9,29,5,intermediate: Mô hình kinh doanh online
+10,23,1,beginner: Nền tảng quản trị doanh nghiệp
+10,28,2,intermediate: Quản lý vận hành
+10,29,3,intermediate: Mô hình kinh doanh online
+10,30,4,intermediate: Lập kế hoạch và kiểm soát dự án
+10,25,5,intermediate: Đọc báo cáo tài chính
+10,21,6,beginner: Các khái niệm marketing cơ bản
+10,29,7,intermediate: Kinh doanh online (thay cho SEO/Ads)
+11,34,1,beginner: Nền tảng khoa học giáo dục
+11,36,2,intermediate: Hiểu tâm lý người học
+11,35,3,intermediate: Kỹ năng sư phạm
+11,41,4,beginner: Nghiên cứu xã hội và hành vi
+11,42,5,intermediate: Phân tích hành vi con người
+12,37,1,beginner: Kiến thức sinh học cơ bản
+12,38,2,intermediate: Nền tảng y khoa
+12,39,3,beginner: Nguyên lý dinh dưỡng
+12,40,4,intermediate: Quản lý y tế cộng đồng
+12,41,5,beginner: Nghiên cứu xã hội và hành vi
+13,31,1,beginner: Khái niệm pháp luật cơ bản
+13,32,2,intermediate: Pháp luật trong kinh doanh
+13,33,3,intermediate: Quy định lao động
+13,27,4,beginner: Quản lý nguồn nhân lực
+13,30,5,intermediate: Lập kế hoạch và kiểm soát dự án
+14,48,1,intermediate: Thiết kế công trình
+14,49,2,beginner: Hệ thống điện cơ bản
+14,50,3,intermediate: Thiết kế và chế tạo cơ khí
+14,9,4,intermediate: Quản lý tiến trình và bộ nhớ
+14,8,5,intermediate: Nguyên lý mạng và Internet

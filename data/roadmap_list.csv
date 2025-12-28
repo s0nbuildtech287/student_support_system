@@ -1,0 +1,15 @@
+roadmap_id,roadmap_name,career_group,level,description,image
+1,Backend Developer,IT software,beginner,"Lộ trình trở thành lập trình viên Backend (API, CSDL, DevOps).",backend.jpg
+2,Frontend Developer,IT software,beginner,Lộ trình Frontend (Web cơ bản → UI/UX → React).,frontend.jpg
+3,Fullstack Developer,IT software,intermediate,Kết hợp Frontend + Backend để xây dựng sản phẩm end-to-end.,fullstack.jpg
+4,Data Analyst,IT data,beginner,Phân tích dữ liệu từ cơ bản đến trực quan & báo cáo.,data_analysis.jpeg
+5,AI Engineer,IT data,advanced,Lộ trình AI/ML: dữ liệu → ML → DL → ứng dụng AI.,AI_engineer.webp
+6,Cybersecurity Analyst,cyber,intermediate,"Nền tảng mạng, hệ điều hành và bảo mật hệ thống.",cyber_security_analyst.webp
+7,Digital Marketing,marketing,beginner,Marketing nền tảng → Digital → E-commerce.,marketing.jpg
+8,Business & Project Management,business,beginner,Quản trị kinh doanh + dự án + nhân sự + khởi nghiệp.,PM.jpg
+9,Accounting & Finance,finance,beginner,Kế toán căn bản → phân tích tài chính → quản trị dự án.,finance.jpg
+10,Logistics & Supply Chain,logistics,beginner,"Vận hành logistics, chuỗi cung ứng và thương mại điện tử.",logistics.jpg
+11,Education / Teacher Track,education,beginner,Giáo dục học + tâm lý + phương pháp giảng dạy.,teacher.webp
+12,Health & Nutrition Basics,health,beginner,"Kiến thức y-sinh cơ bản, dinh dưỡng và sức khỏe cộng đồng.",health.avif
+13,Law Basics,law,beginner,Luật đại cương → luật kinh tế → luật lao động (ứng dụng doanh nghiệp).,law.png
+14,Engineering Overview,engineering,beginner,"Tổng quan các ngành kỹ thuật: xây dựng, điện, cơ khí.",engineering.webp
