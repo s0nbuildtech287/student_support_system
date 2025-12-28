@@ -1,16 +1,41 @@
 /* Common Styles */
 
 body {
-  background-color: #f8f9fa;
+  background: linear-gradient(180deg, #f4f6fb 0%, #e6f5f4 100%);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
 }
-
+.navbar {
+  background: linear-gradient(90deg, #b3b2c9 0%, #6366f1 50%, #b3b2c9 100%) !important;
+}
 footer {
-  background: #212529;
-  color: #fff;
-  padding: 15px 0;
+  background: linear-gradient(90deg, #b3b2c9 0%, #6366f1 50%, #b3b2c9 100%);
+  color: #c7d2fe;
+  padding: 18px 0;
   margin-top: 40px;
 }
+.navbar-brand {
+  color: #ffffff !important;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
 
+.nav-link {
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 500;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: #ffffff !important;
+  text-decoration: underline;
+}
+.btnCommon {
+  background-color: #6a64dd;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
 /* User Avatar */
 .user-avatar-wrapper {
   display: flex;

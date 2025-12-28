@@ -10,7 +10,7 @@
     <style>
       body {
         min-height: 100vh;
-        background: url("/static/images/gym.jpg") no-repeat center center/cover;
+        background: url("/static/images/learn.jpg") no-repeat center center/cover;
         position: relative;
         display: flex;
         align-items: center;
@@ -28,7 +28,7 @@
         content: "";
         position: absolute;
         inset: 0;
-        background: rgba(0, 0, 0, 0.65);
+        background: rgba(0, 0, 0, 0.315);
         z-index: 1;
       }
 
@@ -38,7 +38,7 @@
         width: 100%;
         max-width: 420px;
         border-radius: 12px;
-        background: rgba(255, 255, 255, 0.95);
+        background: rgba(255, 255, 255, 0.5);
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
       }
 
@@ -78,24 +78,27 @@
       </div>
 
       <form method="POST" action="/register">
-        <label for="fullname" class="form-label">Họ và tên</label>
+        <label for="fullname" class="form-label">Your name</label>
         <input type="text" id="fullname" name="fullname" class="form-control mb-3" placeholder="Nguyễn Văn A" required />
 
         <label for="email" class="form-label">Email</label>
         <input type="email" id="email" name="email" class="form-control mb-3" placeholder="example@gmail.com" required />
 
-        <label for="password" class="form-label">Mật khẩu</label>
+        <label for="password" class="form-label">Password</label>
         <input type="password" id="password" name="password" class="form-control mb-3" placeholder="••••••••" required />
 
-        <label for="confirm_password" class="form-label">Xác nhận mật khẩu</label>
+        <label for="confirm_password" class="form-label">Comfirm password</label>
         <input type="password" id="confirm_password" name="confirm_password" class="form-control mb-3" placeholder="••••••••" required />
 
-        <button type="submit" class="btn btn-register w-100 mb-2">Đăng ký</button>
+        <label for="email" class="form-label">Phone</label>
+        <input type="email" id="email" name="email" class="form-control mb-3" placeholder="0866*******" required />
+
+        <button type="submit" class="btn btn-register w-100 mb-2">Register</button>
 
         <div class="text-center">
           <small>
-            Đã có tài khoản?
-            <a href="/templates/login.html" class="login-link fw-semibold">Đăng nhập</a>
+            You already have account?
+            <a href="/templates/login.html" class="login-link fw-semibold">Login</a>
           </small>
         </div>
       </form>

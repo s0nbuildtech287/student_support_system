@@ -12,7 +12,7 @@ def load_csv(path):
         return list(csv.DictReader(f))
 
 # hiển thị tất cả các bài tập
-def load_all_exercises_paginated(page=1, per_page=9):
+def load_all_subject_paginated(page=1, per_page=9):
     all_exercises = load_csv(CSV_PATH)
 
     # gán uid toàn cục (rất nên có)
@@ -39,7 +39,7 @@ def load_all_exercises_paginated(page=1, per_page=9):
     }
 
 # chi tiết bài tập
-def get_exercise_by_uid(uid):
+def get_subject_by_uid(uid):
     all_exercises = load_csv(CSV_PATH)
 
     for i, ex in enumerate(all_exercises, start=1):

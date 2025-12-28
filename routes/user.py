@@ -12,7 +12,7 @@ CURRENT_USER = {
     "weight": 75,
     "goal": "Build Muscle",
     "experience": "Intermediate",
-    "avatar": "https://i.pravatar.cc/150?img=1",
+    "avatar": "./static/images/avatar.jpg",
     "joined_date": "2024-01-15",
     "total_workouts": 45
 }
