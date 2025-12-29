@@ -1,0 +1,10 @@
+sua giao dien profile, them ten canh avt
+nhung superset vao thong ke profile
+defi chat bot
+
+
+
+
+nhap thong tin hoc tap sinh vien thi -> bot goi y lo trinh hoc tap(chat bot co pahn input)
+
+your plan 

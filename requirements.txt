@@ -1,3 +1,9 @@
 flask
-requests
+flask-sqlalchemy
 flask-login
+flask-migrate
+requests
+PyMySQL
+python-dotenv
+cryptography
+groq

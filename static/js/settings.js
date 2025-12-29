@@ -21,11 +21,3 @@ document.querySelectorAll('.settings-nav-item').forEach(item => {
     document.getElementById(sectionId).classList.add('active');
   });
 });
-
-// Form submissions (placeholder functionality)
-document.querySelectorAll('.settings-card form').forEach(form => {
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    alert('✓ Cài đặt đã được lưu thành công!');
-  });
-});

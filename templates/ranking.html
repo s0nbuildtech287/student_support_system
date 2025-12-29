@@ -36,6 +36,7 @@
         </div>
         <!-- User Avatar -->
         <div class="user-avatar-wrapper" id="userAvatarBtn">
+          <span class="user-name">Khang Nguyen</span>
           <img src="/static/images/avatar.jpg" alt="User Avatar" class="user-avatar" />
 
           <div class="user-dropdown" id="userDropdown">
@@ -49,11 +50,11 @@
               </div>
             </div>
             <div class="user-dropdown-menu">
-              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
-              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
-              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
+              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">Hồ sơ cá nhân</a>
+              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">Cài đặt</a>
+              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">Thống kê</a>
               <div class="user-dropdown-divider"></div>
-              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
+              <a href="{{ url_for('user.logout') }}" class="user-dropdown-item">Đăng xuất</a>
             </div>
           </div>
         </div>
@@ -141,7 +142,7 @@
 
             <!-- Top Score -->
             <div class="card p-3 ranking-card">
-              <h6 class="fw-bold mb-3">⭐ Top 10 người có tổng điểm cao nhất</h6>
+              <h6 class="fw-bold mb-3">Top 10 người có tổng điểm cao nhất</h6>
 
               <div class="ranking-scroll">
                 <ul class="list-group list-group-flush">

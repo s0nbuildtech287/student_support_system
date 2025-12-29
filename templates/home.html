@@ -41,24 +41,25 @@
 
         <!-- User Avatar -->
         <div class="user-avatar-wrapper" id="userAvatarBtn">
-          <img src="/static/images/avatar.jpg" alt="User Avatar" class="user-avatar" />
+          <span class="user-name">{{ user.name }}</span>
+          <img src="{{ user.avatar or '/static/images/avatar.jpg' }}" alt="User Avatar" class="user-avatar" />
 
           <div class="user-dropdown" id="userDropdown">
             <div class="user-dropdown-header">
               <div class="user-info">
-                <img src="/static/images/avatar.jpg" alt="User" class="user-info-avatar" />
+                <img src="{{ user.avatar or '/static/images/avatar.jpg' }}" alt="User" class="user-info-avatar" />
                 <div class="user-info-text">
-                  <h6>Khang Nguyen</h6>
-                  <small>khang@example.com</small>
+                  <h6>{{ user.name }}</h6>
+                  <small>{{ user.email }}</small>
                 </div>
               </div>
             </div>
             <div class="user-dropdown-menu">
-              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
-              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
-              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
+              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">Hồ sơ cá nhân</a>
+              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">Cài đặt</a>
+              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">Thống kê</a>
               <div class="user-dropdown-divider"></div>
-              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
+              <a href="{{ url_for('user.logout') }}" class="user-dropdown-item">Đăng xuất</a>
             </div>
           </div>
         </div>
@@ -73,7 +74,7 @@
           <div class="card h-100 p-4">
             <h5 class="text-center mb-3 fw-bold">Thông tin học tập sinh viên</h5>
 
-            <form method="POST" action="/recommend">
+            <form id="recommendForm" method="POST" action="/recommend">
               <!-- Year -->
               <input id="year" name="year" type="number" class="form-control mb-2" placeholder="Năm học (1 - 4)" required />
 
@@ -173,14 +174,97 @@
         </div>
       </div>
     </div>
-    <!-- AI đưa câu trả lời phía dưới -->
+
+    <!-- Floating Chat Bubble (Always Visible) -->
+    <div id="chatBubbleContainer" style="position: fixed; bottom: 120px; right: 20px; width: 400px; max-width: 90%; z-index: 999; opacity: 0; transform: translateY(400px); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); pointer-events: none;">
+      <div style="background: white; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); overflow: hidden; display: flex; flex-direction: column; height: 600px;">
+        <!-- Chat Header -->
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+          <h5 style="margin: 0; font-size: 16px; font-weight: 600;">Chat Về Khóa Học</h5>
+          <button id="closeChatBubble" style="background: rgba(255,255,255,0.3); border: none; color: white; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 18px; transition: background 0.2s;">×</button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="directChatMessages" class="chat-messages" style="flex: 1; overflow-y: auto; padding: 15px; background-color: #f9f9f9; border: none;">
+          <p class="text-muted text-center" style="font-size: 14px;">Hỏi AI về khóa học</p>
+        </div>
+
+        <!-- Chat Input -->
+        <div style="padding: 12px; border-top: 1px solid #e0e0e0; background: white;">
+          <div style="display: flex; gap: 8px;">
+            <input 
+              type="text" 
+              id="directChatInput" 
+              class="form-control" 
+              placeholder="Nhập câu hỏi..." 
+              style="flex: 1; border: 1px solid #ddd; border-radius: 20px; padding: 8px 15px; font-size: 14px;"
+              autocomplete="off"
+            />
+            <button 
+              type="button" 
+              id="sendDirectChatBtn" 
+              style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 50%; width: 36px; height: 36px; cursor: pointer; font-size: 16px; transition: transform 0.2s;"
+            >
+              ⏎
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Chat Button (Toggle) -->
+    <button id="openChatBubbleBtn" style="position: fixed; bottom: 120px; right: 30px; z-index: 1000; width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; font-size: 24px; cursor: pointer; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); transition: all 0.3s ease; opacity: 1; transform: scale(1);" title="Chat về khóa học">
+      💬
+    </button>
+
+    <!-- Roadmap Section (Recommendation + Follow-up Chat) -->
     <div class="container mt-4">
       <div class="row">
         <div class="col-12">
           <div class="card p-4">
-            <h4 class="fw-bold mb-3 text-center">🤖 Lộ trình học tập được AI đề xuất</h4>
+            <h4 class="fw-bold mb-3 text-center">Lộ trình học tập được AI đề xuất</h4>
 
-            <div class="roadmap-content">{{ roadmap | safe }}</div>
+            <div id="roadmapContent" class="roadmap-content">
+              <p class="text-muted text-center">Vui lòng điền thông tin và nhấn "Gợi ý lộ trình học tập" để nhận đề xuất từ AI</p>
+            </div>
+            
+            <div id="loadingSpinner" style="display: none; text-align: center;">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Đang tạo đề xuất...</span>
+              </div>
+              <p class="mt-2">Đang tạo đề xuất lộ trình cho bạn...</p>
+            </div>
+
+            <!-- Chat Section (Follow-up Chat Only) -->
+            <div id="chatSection" style="display: none; margin-top: 30px; border-top: 2px solid #e0e0e0; padding-top: 20px;">
+              <!-- Follow-up Chat Section -->
+              <h5 class="fw-bold mb-3">Hỏi thêm về lộ trình của bạn</h5>
+              
+              <!-- Chat Messages -->
+              <div id="chatMessages" class="chat-messages" style="height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; padding: 15px; background-color: #f9f9f9; margin-bottom: 15px;">
+                <p class="text-muted text-center text-sm">Hỏi AI bất kỳ câu hỏi nào về lộ trình được đề xuất</p>
+              </div>
+
+              <!-- Chat Input -->
+              <div class="input-group">
+                <input 
+                  type="text" 
+                  id="chatInput" 
+                  class="form-control" 
+                  placeholder="Nhập câu hỏi của bạn..." 
+                  autocomplete="off"
+                />
+                <button 
+                  type="button" 
+                  id="sendChatBtn" 
+                  class="btn btn-primary"
+                  style="padding: 10px 20px;"
+                >
+                  Gửi
+                </button>
+              </div>
+              <small class="text-muted d-block mt-2">Gợi ý: Hỏi về thời gian học, điều kiện tiên quyết, hoặc các khóa học cụ thể</small>
+            </div>
           </div>
         </div>
       </div>
@@ -212,6 +296,273 @@
           datasets: [{ data: [45, 38, 42, 50, 28] }],
         },
         options: { responsive: true, maintainAspectRatio: false },
+      });
+
+      // ========== DIRECT CHAT FUNCTIONALITY ==========
+      const directChatInput = document.getElementById("directChatInput");
+      const sendDirectChatBtn = document.getElementById("sendDirectChatBtn");
+      const directChatMessages = document.getElementById("directChatMessages");
+      const chatBubbleContainer = document.getElementById("chatBubbleContainer");
+      const openChatBubbleBtn = document.getElementById("openChatBubbleBtn");
+      const closeChatBubble = document.getElementById("closeChatBubble");
+      let chatBubbleOpen = false;
+
+      // Toggle Chat Bubble
+      openChatBubbleBtn.addEventListener("click", () => {
+        chatBubbleOpen = true;
+        chatBubbleContainer.style.opacity = "1";
+        chatBubbleContainer.style.transform = "translateY(0)";
+        chatBubbleContainer.style.pointerEvents = "all";
+        openChatBubbleBtn.style.display = "none";
+        directChatInput.focus();
+      });
+
+      closeChatBubble.addEventListener("click", () => {
+        chatBubbleOpen = false;
+        chatBubbleContainer.style.opacity = "0";
+        chatBubbleContainer.style.transform = "translateY(400px)";
+        chatBubbleContainer.style.pointerEvents = "none";
+        openChatBubbleBtn.style.display = "block";
+      });
+
+      function markdownToHtml(markdown) {
+        let html = markdown;
+        // Bold: **text** -> <strong>text</strong>
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        // Italic: *text* -> <em>text</em>
+        html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+        // Headings: ## Title -> <h5>Title</h5>
+        html = html.replace(/^### (.+?)$/gm, '<h6 style="margin-top: 10px; margin-bottom: 5px; font-weight: 600; color: #333;">$1</h6>');
+        html = html.replace(/^## (.+?)$/gm, '<h5 style="margin-top: 12px; margin-bottom: 8px; font-weight: 700; color: #222;">$1</h5>');
+        html = html.replace(/^# (.+?)$/gm, '<h4 style="margin-top: 15px; margin-bottom: 10px; font-weight: 700; color: #111;">$1</h4>');
+        // Lists: - item -> <li>item</li>
+        html = html.replace(/^- (.+?)$/gm, '<li style="margin-left: 20px; margin-bottom: 4px;">$1</li>');
+        // Numbers list: 1. item -> <li>item</li> with ol
+        html = html.replace(/^\d+\. (.+?)$/gm, '<li style="margin-left: 20px; margin-bottom: 4px;">$1</li>');
+        // Line breaks
+        html = html.replace(/\n\n/g, '</p><p style="margin-bottom: 10px;">');
+        html = '<p style="margin-bottom: 10px;">' + html + '</p>';
+        // Code: `code` -> <code>code</code>
+        html = html.replace(/`(.+?)`/g, '<code style="background: #f0f0f0; padding: 2px 5px; border-radius: 3px; color: #d73a49;">$1</code>');
+        return html;
+      }
+
+      function addDirectMessage(message, isUser) {
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `chat-message ${isUser ? 'user' : 'assistant'}`;
+        
+        if (isUser) {
+          // User messages - plain text
+          msgDiv.textContent = message;
+        } else {
+          // Assistant messages - render formatted HTML
+          msgDiv.innerHTML = markdownToHtml(message);
+        }
+        
+        // Clear placeholder if first message
+        if (directChatMessages.children.length === 1 && directChatMessages.children[0].textContent.includes("Hỏi AI")) {
+          directChatMessages.innerHTML = "";
+        }
+        directChatMessages.appendChild(msgDiv);
+        directChatMessages.scrollTop = directChatMessages.scrollHeight;
+      }
+
+      // Handle Enter key to send message
+      directChatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendDirectChatBtn.click();
+        }
+      });
+
+      sendDirectChatBtn.addEventListener("click", async () => {
+        const message = directChatInput.value.trim();
+        if (!message) return;
+
+        // Add user message
+        addDirectMessage(message, true);
+        directChatInput.value = "";
+        sendDirectChatBtn.disabled = true;
+
+        try {
+          // Add loading message
+          const loadingMsg = document.createElement("div");
+          loadingMsg.className = "chat-message loading";
+          loadingMsg.textContent = "Đang suy nghĩ...";
+          loadingMsg.id = "directLoadingMsg";
+          directChatMessages.appendChild(loadingMsg);
+          directChatMessages.scrollTop = directChatMessages.scrollHeight;
+
+          // Send to backend
+          const response = await fetch("/chat-direct", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              message: message
+            })
+          });
+
+          const data = await response.json();
+
+          // Remove loading message
+          document.getElementById("directLoadingMsg")?.remove();
+
+          if (data.success) {
+            addDirectMessage(data.response, false);
+          } else {
+            addDirectMessage(`Lỗi: ${data.message}`, false);
+          }
+        } catch (error) {
+          document.getElementById("directLoadingMsg")?.remove();
+          addDirectMessage(`Lỗi: ${error.message}`, false);
+        } finally {
+          sendDirectChatBtn.disabled = false;
+          directChatInput.focus();
+        }
+      });
+
+      // Send on Enter key for direct chat
+      directChatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !sendDirectChatBtn.disabled) {
+          sendDirectChatBtn.click();
+        }
+      });
+
+      // ========== RECOMMENDATION & FOLLOW-UP CHAT FUNCTIONALITY ==========
+      // Form submission handler for AI recommendation
+      const recommendForm = document.getElementById("recommendForm");
+      recommendForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const loadingSpinner = document.getElementById("loadingSpinner");
+        const roadmapContent = document.getElementById("roadmapContent");
+        
+        // Show loading state
+        loadingSpinner.style.display = "block";
+        roadmapContent.style.display = "none";
+
+        try {
+          const formData = new FormData(recommendForm);
+          const response = await fetch("/recommend", {
+            method: "POST",
+            body: formData
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            // Display the recommendation with markdown formatting
+            const recommendationDiv = document.createElement("div");
+            recommendationDiv.innerHTML = markdownToHtml(data.recommendation);
+            recommendationDiv.style.lineHeight = "1.6";
+            roadmapContent.innerHTML = "";
+            roadmapContent.appendChild(recommendationDiv);
+            roadmapContent.style.display = "block";
+            
+            // Show chat section
+            document.getElementById("chatSection").style.display = "block";
+            document.getElementById("chatMessages").innerHTML = '<p class="text-muted text-center text-sm">Hỏi AI bất kỳ câu hỏi nào về lộ trình được đề xuất</p>';
+            
+            // Store current recommendation for chat
+            window.currentRecommendation = data.recommendation;
+            window.chatHistory = [];
+          } else {
+            roadmapContent.innerHTML = `<div class='alert alert-danger'>${data.message}</div>`;
+            roadmapContent.style.display = "block";
+            document.getElementById("chatSection").style.display = "none";
+          }
+        } catch (error) {
+          roadmapContent.innerHTML = `<div class='alert alert-danger'>Lỗi: ${error.message}</div>`;
+          roadmapContent.style.display = "block";
+          document.getElementById("chatSection").style.display = "none";
+        } finally {
+          loadingSpinner.style.display = "none";
+        }
+      });
+
+      // Chat functionality
+      const chatInput = document.getElementById("chatInput");
+      const sendChatBtn = document.getElementById("sendChatBtn");
+      const chatMessages = document.getElementById("chatMessages");
+
+      function addMessageToChat(message, isUser) {
+        const msgDiv = document.createElement("div");
+        msgDiv.className = `chat-message ${isUser ? 'user' : 'assistant'}`;
+        
+        if (isUser) {
+          // User messages - plain text
+          msgDiv.textContent = message;
+        } else {
+          // Assistant messages - render formatted HTML
+          msgDiv.innerHTML = markdownToHtml(message);
+        }
+        
+        chatMessages.appendChild(msgDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+
+      sendChatBtn.addEventListener("click", async () => {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        // Add user message to chat
+        addMessageToChat(message, true);
+        chatInput.value = "";
+        sendChatBtn.disabled = true;
+
+        try {
+          // Add loading message
+          const loadingMsg = document.createElement("div");
+          loadingMsg.className = "chat-message loading";
+          loadingMsg.textContent = "Đang suy nghĩ...";
+          loadingMsg.id = "loadingMsg";
+          chatMessages.appendChild(loadingMsg);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          // Send to backend
+          const response = await fetch("/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              message: message,
+              recommendation: window.currentRecommendation,
+              history: window.chatHistory
+            })
+          });
+
+          const data = await response.json();
+
+          // Remove loading message
+          document.getElementById("loadingMsg")?.remove();
+
+          if (data.success) {
+            // Add assistant response
+            addMessageToChat(data.response, false);
+            
+            // Update chat history
+            window.chatHistory.push({role: "user", content: message});
+            window.chatHistory.push({role: "assistant", content: data.response});
+          } else {
+            addMessageToChat(`Lỗi: ${data.message}`, false);
+          }
+        } catch (error) {
+          document.getElementById("loadingMsg")?.remove();
+          addMessageToChat(`Lỗi: ${error.message}`, false);
+        } finally {
+          sendChatBtn.disabled = false;
+          chatInput.focus();
+        }
+      });
+
+      // Send on Enter key
+      chatInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter" && !sendChatBtn.disabled) {
+          sendChatBtn.click();
+        }
       });
 
       // Logic: online thì hiện nguồn học

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
   <head>
-    <title>Hồ sơ cá nhân - Workout AI</title>
+    <title>Hồ sơ cá nhân - Study With AI</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -14,7 +14,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container d-flex justify-content-between">
-        <a class="navbar-brand fw-bold" href="/">Workout AI</a>
+        <a class="navbar-brand fw-bold" href="/">Study With AI</a>
 
         <div class="collapse navbar-collapse justify-content-center">
           <ul class="navbar-nav gap-4">
@@ -22,19 +22,24 @@
               <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/exercise">Exercise</a>
+              <a class="nav-link" href="/subject">Subject</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/roadmap">Roadmap</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/ranking">Ranking</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Information</a>
+              <a class="nav-link" href="/yourplan">YourPlan</a>
             </li>
+            <li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
           </ul>
         </div>
 
         <!-- User Avatar -->
         <div class="user-avatar-wrapper" id="userAvatarBtn">
+          <span class="user-name">{{ user.name }}</span>
           <img src="{{ user.avatar }}" alt="User Avatar" class="user-avatar">
           <!-- User Dropdown -->
           <div class="user-dropdown" id="userDropdown">
@@ -48,11 +53,11 @@
               </div>
             </div>
             <div class="user-dropdown-menu">
-              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item active">👤 Hồ sơ cá nhân</a>
-              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
-              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
+              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item active">Hồ sơ cá nhân</a>
+              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">Cài đặt</a>
+              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">Thống kê</a>
               <div class="user-dropdown-divider"></div>
-              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
+              <a href="{{ url_for('user.logout') }}" class="user-dropdown-item">Đăng xuất</a>
             </div>
           </div>
         </div>
@@ -62,7 +67,12 @@
     <!-- Profile Header -->
     <div class="profile-header">
       <div class="container text-center">
-        <img src="{{ user.avatar }}" alt="{{ user.name }}" class="profile-avatar">
+        <img src="{{ user.avatar }}" alt="{{ user.name }}" class="profile-avatar" id="profileAvatarImg">
+        <div class="mt-2">
+          <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#changeAvatarModal">
+            🖼️ Thay đổi ảnh đại diện
+          </button>
+        </div>
         <h1 class="profile-name">{{ user.name }}</h1>
         <p class="profile-email">{{ user.email }}</p>
       </div>
@@ -70,13 +80,13 @@
 
     <!-- Profile Content -->
     <div class="container">
-      <a href="/exercise" class="back-link">← Quay lại</a>
+      <a href="/" class="back-link">← Quay lại</a>
 
       <div class="row">
         <!-- Thông tin cơ bản -->
         <div class="col-lg-6">
           <div class="profile-card">
-            <h5>📋 Thông tin cơ bản</h5>
+            <h5>Thông tin cơ bản</h5>
             <div class="info-item">
               <span class="info-label">Tên:</span>
               <span class="info-value">{{ user.name }}</span>
@@ -96,44 +106,69 @@
           </div>
         </div>
 
-        <!-- Thông tin thể chất -->
+        <!-- Thông tin học tập -->
         <div class="col-lg-6">
           <div class="profile-card">
-            <h5>💪 Thông tin thể chất</h5>
+            <h5>Thông tin học tập</h5>
             <div class="info-item">
-              <span class="info-label">Chiều cao:</span>
-              <span class="info-value">{{ user.height }} cm</span>
+              <span class="info-label">Năm học:</span>
+              <span class="info-value">Năm {{ user.year }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">Cân nặng:</span>
-              <span class="info-value">{{ user.weight }} kg</span>
+              <span class="info-label">Chuyên ngành:</span>
+              <span class="info-value">{{ user.major }}</span>
             </div>
             <div class="info-item">
-              <span class="info-label">Mục tiêu:</span>
-              <span class="info-value">{{ user.goal }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Kinh nghiệm:</span>
-              <span class="info-value"><span class="badge-custom">{{ user.experience }}</span></span>
+              <span class="info-label">Trạng thái:</span>
+              <span class="info-value"><span class="badge-custom">{{ user.status }}</span></span>
             </div>
           </div>
         </div>
 
-        <!-- Thống kê tập luyện -->
+        <!-- Thông tin mục tiêu -->
         <div class="col-lg-12">
           <div class="profile-card">
-            <h5>📊 Thống kê tập luyện</h5>
+            <h5>🎯 Thông tin mục tiêu</h5>
             <div class="info-item">
-              <span class="info-label">Tổng số buổi tập:</span>
-              <span class="info-value">{{ user.total_workouts }} buổi</span>
+              <span class="info-label">Mục tiêu nghề nghiệp:</span>
+              <span class="info-value">{{ user.career_goal }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Số khóa học đang học:</span>
+              <span class="info-value">{{ user.total_courses }} khóa</span>
             </div>
           </div>
         </div>
 
         <!-- Actions -->
         <div class="col-lg-12 mb-4">
-          <button class="edit-btn">✏️ Chỉnh sửa hồ sơ</button>
-          <button class="edit-btn" style="background-color: #6c757d; margin-left: 10px;">🔐 Đổi mật khẩu</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Avatar Modal -->
+    <div class="modal fade" id="changeAvatarModal" tabindex="-1" aria-labelledby="changeAvatarModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="changeAvatarModalLabel">🖼️ Thay đổi ảnh đại diện</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3 text-center">
+              <img id="avatarPreview" src="{{ user.avatar }}" alt="Avatar Preview" style="max-width: 200px; max-height: 200px; border-radius: 50%; margin-bottom: 15px;">
+            </div>
+            <div class="mb-3">
+              <label for="avatarFile" class="form-label">Chọn ảnh</label>
+              <input type="file" class="form-control" id="avatarFile" accept="image/*" required>
+              <small class="form-text text-muted">Chấp nhận: PNG, JPG, JPEG, GIF, AVIF, WebP. Tối đa 5MB</small>
+            </div>
+            <div id="changeAvatarMessage" class="alert alert-info d-none" role="alert"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+            <button type="button" class="btn btn-primary" id="saveAvatarBtn">Lưu ảnh</button>
+          </div>
         </div>
       </div>
     </div>
@@ -141,11 +176,161 @@
     <!-- Footer -->
     <footer class="text-center">
       <div class="container">
-        <p class="mb-1">© 2025 Workout AI</p>
-        <small>Smart Workout Recommendation System</small>
+        <p class="mb-1">© 2025 Study With AI</p>
+        <small>Hệ thống gợi ý lộ trình học tập thông minh cho sinh viên</small>
       </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>
+    <script>
+      // Handle avatar file change - show preview
+      document.getElementById("avatarFile").addEventListener("change", function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            document.getElementById("avatarPreview").src = event.target.result;
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Handle avatar upload
+      document.getElementById("saveAvatarBtn").addEventListener("click", async function() {
+        const file = document.getElementById("avatarFile").files[0];
+        const messageDiv = document.getElementById("changeAvatarMessage");
+
+        if (!file) {
+          messageDiv.textContent = "Vui lòng chọn ảnh";
+          messageDiv.className = "alert alert-danger";
+          messageDiv.classList.remove("d-none");
+          return;
+        }
+
+        // Check file size (5MB max)
+        if (file.size > 5 * 1024 * 1024) {
+          messageDiv.textContent = "Ảnh quá lớn (tối đa 5MB)";
+          messageDiv.className = "alert alert-danger";
+          messageDiv.classList.remove("d-none");
+          return;
+        }
+
+        try {
+          const formData = new FormData();
+          formData.append("avatar", file);
+
+          const response = await fetch("/profile/update-avatar", {
+            method: "POST",
+            body: formData
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            messageDiv.textContent = data.message;
+            messageDiv.className = "alert alert-success";
+            messageDiv.classList.remove("d-none");
+
+            // Update page content
+            document.getElementById("profileAvatarImg").src = data.avatar;
+            document.querySelector(".user-avatar").src = data.avatar;
+            document.querySelector(".user-info-avatar").src = data.avatar;
+
+            // Close modal after 1.5 seconds
+            setTimeout(function() {
+              bootstrap.Modal.getInstance(document.getElementById("changeAvatarModal")).hide();
+              document.getElementById("avatarFile").value = ""; // Reset file input
+            }, 1500);
+          } else {
+            messageDiv.textContent = data.message;
+            messageDiv.className = "alert alert-danger";
+            messageDiv.classList.remove("d-none");
+          }
+        } catch (error) {
+          messageDiv.textContent = "Lỗi: " + error.message;
+          messageDiv.className = "alert alert-danger";
+          messageDiv.classList.remove("d-none");
+        }
+      });
+
+      // Reset message when modal is shown
+      document.getElementById("changeAvatarModal").addEventListener("show.bs.modal", function() {
+        document.getElementById("changeAvatarMessage").classList.add("d-none");
+        document.getElementById("avatarPreview").src = document.getElementById("profileAvatarImg").src;
+      });
+
+      // Handle profile edit
+      document.getElementById("saveProfileBtn").addEventListener("click", async function() {
+        const name = document.getElementById("editName").value.trim();
+        const email = document.getElementById("editEmail").value.trim();
+        const messageDiv = document.getElementById("editProfileMessage");
+
+        // Validate
+        if (!name) {
+          messageDiv.textContent = "Tên không được để trống";
+          messageDiv.className = "alert alert-danger";
+          messageDiv.classList.remove("d-none");
+          return;
+        }
+
+        if (!email || !email.includes("@")) {
+          messageDiv.textContent = "Email không hợp lệ";
+          messageDiv.className = "alert alert-danger";
+          messageDiv.classList.remove("d-none");
+          return;
+        }
+
+        try {
+          const response = await fetch("/profile/update", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name: name,
+              email: email
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            messageDiv.textContent = data.message;
+            messageDiv.className = "alert alert-success";
+            messageDiv.classList.remove("d-none");
+
+            // Update page content
+            document.querySelector(".profile-name").textContent = data.user.name;
+            document.querySelector(".profile-email").textContent = data.user.email;
+            document.querySelectorAll(".info-value")[0].textContent = data.user.name; // Tên trong card
+            document.querySelectorAll(".info-value")[1].textContent = data.user.email; // Email trong card
+
+            // Update navbar
+            document.querySelector(".user-name").textContent = data.user.name;
+            document.querySelector(".user-info-text h6").textContent = data.user.name;
+            document.querySelector(".user-info-text small").textContent = data.user.email;
+
+            // Close modal after 1.5 seconds
+            setTimeout(function() {
+              bootstrap.Modal.getInstance(document.getElementById("editProfileModal")).hide();
+            }, 1500);
+          } else {
+            messageDiv.textContent = data.message;
+            messageDiv.className = "alert alert-danger";
+            messageDiv.classList.remove("d-none");
+          }
+        } catch (error) {
+          messageDiv.textContent = "Lỗi: " + error.message;
+          messageDiv.className = "alert alert-danger";
+          messageDiv.classList.remove("d-none");
+        }
+      });
+
+      // Reset message when modal is shown
+      document.getElementById("editProfileModal").addEventListener("show.bs.modal", function() {
+        document.getElementById("editProfileMessage").classList.add("d-none");
+      });
+    </script>
   </body>
 </html>

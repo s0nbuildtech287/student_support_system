@@ -7,3 +7,151 @@
 .chart-box {
   height: 220px;
 }
+/* Chat Styles */
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chat-message {
+  padding: 12px 15px;
+  border-radius: 8px;
+  word-wrap: break-word;
+  max-width: 85%;
+  line-height: 1.6;
+  overflow-wrap: break-word;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  background-color: #007bff;
+  color: white;
+}
+
+.chat-message.assistant {
+  align-self: flex-start;
+  background-color: #e9ecef;
+  color: #333;
+}
+
+.chat-message.assistant h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  color: #222;
+}
+
+.chat-message.assistant h5 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.chat-message.assistant h6 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  color: #444;
+}
+
+.chat-message.assistant p {
+  margin-bottom: 10px;
+}
+
+.chat-message.assistant li {
+  margin-left: 20px;
+  margin-bottom: 4px;
+}
+
+.chat-message.assistant strong {
+  font-weight: 700;
+  color: #222;
+}
+
+.chat-message.assistant em {
+  font-style: italic;
+}
+
+.chat-message.assistant code {
+  background: #f0f0f0;
+  padding: 2px 5px;
+  border-radius: 3px;
+  color: #d73a49;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.chat-message.error {
+  align-self: flex-start;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.chat-message.loading {
+  align-self: flex-start;
+  background-color: #e9ecef;
+  color: #333;
+  font-style: italic;
+}
+
+#chatMessages {
+  scroll-behavior: smooth;
+}
+
+#directChatMessages {
+  scroll-behavior: smooth;
+}
+
+#directChatMessages .chat-message.user {
+  background-color: rgba(0, 123, 255, 0.8);
+}
+
+#directChatMessages .chat-message.assistant {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+#directChatMessages .chat-message.assistant h4,
+#directChatMessages .chat-message.assistant h5,
+#directChatMessages .chat-message.assistant h6 {
+  color: #222;
+}
+
+#directChatMessages .chat-message.loading {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #333;
+}
+
+#chatInput {
+  border: 1px solid #ddd;
+}
+
+#chatInput:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+#sendChatBtn {
+  border: 1px solid #007bff;
+}
+
+#sendChatBtn:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+#sendChatBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#sendDirectChatBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

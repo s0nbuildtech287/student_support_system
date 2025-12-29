@@ -43,6 +43,14 @@ footer {
   gap: 10px;
   cursor: pointer;
   position: relative;
+  flex-direction: row-reverse;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  white-space: nowrap;
 }
 
 .user-avatar {
