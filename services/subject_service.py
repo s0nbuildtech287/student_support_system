@@ -46,8 +46,6 @@ def load_all_subject_paginated(page=1, per_page=9, category="", level=""):
     }
 
 
-
-
 def get_subject_by_uid(uid):
     subjects = load_csv(CSV_PATH)
 
@@ -56,7 +54,7 @@ def get_subject_by_uid(uid):
             s["uid"] = i
             s["outline"] = get_subject_outline(i)
             return s
-
+            
     return None
 
 
