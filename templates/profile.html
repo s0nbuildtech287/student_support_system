@@ -1,151 +1,153 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <title>Hồ sơ cá nhân - Workout AI</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='css/profile.css') }}" rel="stylesheet" />
-  </head>
+<head>
+  <title>Hồ sơ cá nhân - Workout AI</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container d-flex justify-content-between">
-        <a class="navbar-brand fw-bold" href="/">Workout AI</a>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/profile.css') }}" rel="stylesheet" />
+</head>
 
-        <div class="collapse navbar-collapse justify-content-center">
-          <ul class="navbar-nav gap-4">
-            <li class="nav-item">
-              <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/exercise">Exercise</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/ranking">Ranking</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Information</a>
-            </li>
-          </ul>
-        </div>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container d-flex justify-content-between">
+      <a class="navbar-brand fw-bold" href="/">Workout AI</a>
 
-        <!-- User Avatar -->
-        <div class="user-avatar-wrapper" id="userAvatarBtn">
-          <img src="{{ user.avatar }}" alt="User Avatar" class="user-avatar">
-          <!-- User Dropdown -->
-          <div class="user-dropdown" id="userDropdown">
-            <div class="user-dropdown-header">
-              <div class="user-info">
-                <img src="{{ user.avatar }}" alt="User" class="user-info-avatar">
-                <div class="user-info-text">
-                  <h6>{{ user.name }}</h6>
-                  <small>{{ user.email }}</small>
-                </div>
+      <div class="collapse navbar-collapse justify-content-center">
+        <ul class="navbar-nav gap-4">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/exercise">Exercise</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/ranking">Ranking</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Information</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Avatar -->
+      <div class="user-avatar-wrapper" id="userAvatarBtn">
+        <img src="{{ user.avatar }}" alt="User Avatar" class="user-avatar">
+        <!-- User Dropdown -->
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <div class="user-info">
+              <img src="{{ user.avatar }}" alt="User" class="user-info-avatar">
+              <div class="user-info-text">
+                <h6>{{ user.fullname }}</h6>
+                <small>{{ user.email }}</small>
               </div>
             </div>
-            <div class="user-dropdown-menu">
-              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item active">👤 Hồ sơ cá nhân</a>
-              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
-              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
-              <div class="user-dropdown-divider"></div>
-              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
-            </div>
+          </div>
+          <div class="user-dropdown-menu">
+            <a href="{{ url_for('user.profile') }}" class="user-dropdown-item active">👤 Hồ sơ cá nhân</a>
+            <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
+            <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
+            <div class="user-dropdown-divider"></div>
+            <a href="{{ url_for('user.logout') }}" class="user-dropdown-item">🚪 Đăng xuất</a>
           </div>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <!-- Profile Header -->
-    <div class="profile-header">
-      <div class="container text-center">
-        <img src="{{ user.avatar }}" alt="{{ user.name }}" class="profile-avatar">
-        <h1 class="profile-name">{{ user.name }}</h1>
-        <p class="profile-email">{{ user.email }}</p>
+  <!-- Profile Header -->
+  <div class="profile-header">
+    <div class="container text-center">
+      <img src="{{ user.avatar }}" alt="{{ user.fullname }}" class="profile-avatar">
+      <h1 class="profile-name">{{ user.fullname }}</h1>
+      <p class="profile-email">{{ user.email }}</p>
+    </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="container">
+    <a href="/exercise" class="back-link">← Quay lại</a>
+
+    <div class="row">
+      <!-- Thông tin cơ bản -->
+      <div class="col-lg-6">
+        <div class="profile-card">
+          <h5>📋 Thông tin cơ bản</h5>
+          <div class="info-item">
+            <span class="info-label">Tên:</span>
+            <span class="info-value">{{ user.fullname }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Email:</span>
+            <span class="info-value">{{ user.email }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Tuổi:</span>
+            <span class="info-value">{{ user.age }} tuổi</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Ngày tham gia:</span>
+            <span class="info-value">{{ user.joined_date }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thông tin thể chất -->
+      <div class="col-lg-6">
+        <div class="profile-card">
+          <h5>💪 Thông tin thể chất</h5>
+          <div class="info-item">
+            <span class="info-label">Chiều cao:</span>
+            <span class="info-value">{{ user.height }} cm</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Cân nặng:</span>
+            <span class="info-value">{{ user.weight }} kg</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Mục tiêu:</span>
+            <span class="info-value">{{ user.goal }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Kinh nghiệm:</span>
+            <span class="info-value"><span class="badge-custom">{{ user.experience }}</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thống kê tập luyện -->
+      <div class="col-lg-12">
+        <div class="profile-card">
+          <h5>📊 Thống kê tập luyện</h5>
+          <div class="info-item">
+            <span class="info-label">Tổng số buổi tập:</span>
+            <span class="info-value">{{ user.total_workouts }} buổi</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="col-lg-12 mb-4">
+        <button class="edit-btn">✏️ Chỉnh sửa hồ sơ</button>
+        <button class="edit-btn" style="background-color: #6c757d; margin-left: 10px;">🔐 Đổi mật khẩu</button>
       </div>
     </div>
+  </div>
 
-    <!-- Profile Content -->
+  <!-- Footer -->
+  <footer class="text-center">
     <div class="container">
-      <a href="/exercise" class="back-link">← Quay lại</a>
-
-      <div class="row">
-        <!-- Thông tin cơ bản -->
-        <div class="col-lg-6">
-          <div class="profile-card">
-            <h5>📋 Thông tin cơ bản</h5>
-            <div class="info-item">
-              <span class="info-label">Tên:</span>
-              <span class="info-value">{{ user.name }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Email:</span>
-              <span class="info-value">{{ user.email }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Tuổi:</span>
-              <span class="info-value">{{ user.age }} tuổi</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Ngày tham gia:</span>
-              <span class="info-value">{{ user.joined_date }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Thông tin thể chất -->
-        <div class="col-lg-6">
-          <div class="profile-card">
-            <h5>💪 Thông tin thể chất</h5>
-            <div class="info-item">
-              <span class="info-label">Chiều cao:</span>
-              <span class="info-value">{{ user.height }} cm</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Cân nặng:</span>
-              <span class="info-value">{{ user.weight }} kg</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Mục tiêu:</span>
-              <span class="info-value">{{ user.goal }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">Kinh nghiệm:</span>
-              <span class="info-value"><span class="badge-custom">{{ user.experience }}</span></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Thống kê tập luyện -->
-        <div class="col-lg-12">
-          <div class="profile-card">
-            <h5>📊 Thống kê tập luyện</h5>
-            <div class="info-item">
-              <span class="info-label">Tổng số buổi tập:</span>
-              <span class="info-value">{{ user.total_workouts }} buổi</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Actions -->
-        <div class="col-lg-12 mb-4">
-          <button class="edit-btn">✏️ Chỉnh sửa hồ sơ</button>
-          <button class="edit-btn" style="background-color: #6c757d; margin-left: 10px;">🔐 Đổi mật khẩu</button>
-        </div>
-      </div>
+      <p class="mb-1">© 2025 Workout AI</p>
+      <small>Smart Workout Recommendation System</small>
     </div>
+  </footer>
 
-    <!-- Footer -->
-    <footer class="text-center">
-      <div class="container">
-        <p class="mb-1">© 2025 Workout AI</p>
-        <small>Smart Workout Recommendation System</small>
-      </div>
-    </footer>
+  <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>
+</body>
 
-    <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>
-  </body>
 </html>

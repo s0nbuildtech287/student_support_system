@@ -77,7 +77,16 @@
         <small class="text-muted"> Learning step by step with AL</small>
       </div>
 
-      <form method="POST" action="/login">
+      <form method="POST" action="{{ url_for('user.login') }}">
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} py-2">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
         <label for="email" class="form-label">Email</label>
         <input type="email" id="email" name="email" class="form-control mb-3" placeholder="example@gmail.com" required />
 
@@ -89,7 +98,7 @@
         <div class="text-center">
           <small>
             You don't have account?
-            <a href="/templates/register.html" class="register-link fw-semibold">Register</a>
+            <a href="{{ url_for('user.register') }}" class="register-link fw-semibold">Register</a>
           </small>
         </div>
       </form>

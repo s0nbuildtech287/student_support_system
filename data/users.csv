@@ -1,0 +1,3 @@
+id,fullname,email,password_hash,phone,age,height,weight,goal,experience,avatar,joined_date,total_workouts
+1,Định Phan,tomboynet11@gmail.com,scrypt:32768:8:1$qrjJJGweo7CfvpRZ$628d8ed944b190b7c02010e9d21d11b06d5f4979ec1e4897e06b28e2913269ac6822e7e39f228c0450cd9d90ba1e70883aa8b6388ef6dfb2948901e3db4878fb,0987068525,0,0,0,Not set,Beginner,/static/images/avatar.jpg,2025-12-30,0
+2,Định Phan,aghiepga112212@gmail.com,scrypt:32768:8:1$VY3EK6S5Opv6Xx0T$1025190974fde5aaa12f30d031a620902d46a8f86bd7786bbb210d4c326ed422c12bdc3d496e086e7918b651ee2e77f43e7cb9c8ca125db4115a90f4d03a0acc,0987068525,0,0,0,Not set,Beginner,/static/images/avatar.jpg,2025-12-30,0

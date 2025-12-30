@@ -1,263 +1,269 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <title>Study With AI</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<head>
+  <title>Study With AI</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
-    <link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet" />
-  </head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-  <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container d-flex justify-content-between">
-        <a class="navbar-brand fw-bold" href="/">Study With AI</a>
+  <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='css/home.css') }}" rel="stylesheet" />
+</head>
 
-        <div class="collapse navbar-collapse justify-content-center">
-          <ul class="navbar-nav gap-4">
-            <li class="nav-item">
-              <a class="nav-link active" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/subject">Subject</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/roadmap">Roadmap</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/ranking">Ranking</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/yourplan">YourPlan</a>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
-          </ul>
-        </div>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container d-flex justify-content-between">
+      <a class="navbar-brand fw-bold" href="/">Study With AI</a>
 
-        <!-- User Avatar -->
-        <div class="user-avatar-wrapper" id="userAvatarBtn">
-          <img src="/static/images/avatar.jpg" alt="User Avatar" class="user-avatar" />
+      <div class="collapse navbar-collapse justify-content-center">
+        <ul class="navbar-nav gap-4">
+          <li class="nav-item">
+            <a class="nav-link active" href="/">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/subject">Subject</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/roadmap">Roadmap</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/ranking">Ranking</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/yourplan">YourPlan</a>
+          </li>
+          <li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
+        </ul>
+      </div>
 
-          <div class="user-dropdown" id="userDropdown">
-            <div class="user-dropdown-header">
-              <div class="user-info">
-                <img src="/static/images/avatar.jpg" alt="User" class="user-info-avatar" />
-                <div class="user-info-text">
-                  <h6>Khang Nguyen</h6>
-                  <small>khang@example.com</small>
-                </div>
+      <!-- User Avatar -->
+      <div class="user-avatar-wrapper" id="userAvatarBtn">
+        <img src="/static/images/avatar.jpg" alt="User Avatar" class="user-avatar" />
+
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <div class="user-info">
+              <img src="/static/images/avatar.jpg" alt="User" class="user-info-avatar" />
+              <div class="user-info-text">
+                <h6>Khang Nguyen</h6>
+                <small>khang@example.com</small>
               </div>
             </div>
-            <div class="user-dropdown-menu">
-              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
-              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
-              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
-              <div class="user-dropdown-divider"></div>
-              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
-            </div>
+          </div>
+          <div class="user-dropdown-menu">
+            <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
+            <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
+            <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
+            <div class="user-dropdown-divider"></div>
+            <a href="{{ url_for('user.logout') }}" class="user-dropdown-item">🚪 Đăng xuất</a>
           </div>
         </div>
       </div>
-    </nav>
+    </div>
+  </nav>
 
-    <!-- Main -->
-    <div class="container mt-4">
-      <div class="row g-4">
-        <!-- Form -->
-        <div class="col-md-5">
-          <div class="card h-100 p-4">
-            <h5 class="text-center mb-3 fw-bold">Thông tin học tập sinh viên</h5>
+  <!-- Main -->
+  <div class="container mt-4">
+    <div class="row g-4">
+      <!-- Form -->
+      <div class="col-md-5">
+        <div class="card h-100 p-4">
+          <h5 class="text-center mb-3 fw-bold">Thông tin học tập sinh viên</h5>
 
-            <form method="POST" action="/recommend">
-              <!-- Year -->
-              <input id="year" name="year" type="number" class="form-control mb-2" placeholder="Năm học (1 - 4)" required />
+          <form method="POST" action="/recommend">
+            <!-- Year -->
+            <input id="year" name="year" type="number" class="form-control mb-2" placeholder="Năm học (1 - 4)"
+              required />
 
-              <!-- GPA -->
-              <input id="gpa" name="gpa" type="number" step="0.01" class="form-control mb-2" placeholder="GPA hiện tại" required />
+            <!-- GPA -->
+            <input id="gpa" name="gpa" type="number" step="0.01" class="form-control mb-2" placeholder="GPA hiện tại"
+              required />
 
-              <!-- Study time -->
-              <input id="study_time" name="study_time" type="number" class="form-control mb-2" placeholder="Số giờ học mỗi tuần" required />
+            <!-- Study time -->
+            <input id="study_time" name="study_time" type="number" class="form-control mb-2"
+              placeholder="Số giờ học mỗi tuần" required />
 
-              <!-- Career goal -->
-              <select aria-label="Mục tiêu nghề nghiệp" id="goal" name="goal" class="form-select mb-2" required>
-                <option value="">-- Mục tiêu nghề nghiệp --</option>
+            <!-- Career goal -->
+            <select aria-label="Mục tiêu nghề nghiệp" id="goal" name="goal" class="form-select mb-2" required>
+              <option value="">-- Mục tiêu nghề nghiệp --</option>
 
-                <!-- Công nghệ -->
-                <option value="it_software">Công nghệ thông tin / Phần mềm</option>
-                <option value="it_data">Dữ liệu / AI</option>
+              <!-- Công nghệ -->
+              <option value="it_software">Công nghệ thông tin / Phần mềm</option>
+              <option value="it_data">Dữ liệu / AI</option>
 
-                <!-- Kinh tế -->
-                <option value="business">Kinh tế / Quản trị</option>
-                <option value="finance">Tài chính / Kế toán</option>
-                <option value="marketing">Marketing / Truyền thông</option>
+              <!-- Kinh tế -->
+              <option value="business">Kinh tế / Quản trị</option>
+              <option value="finance">Tài chính / Kế toán</option>
+              <option value="marketing">Marketing / Truyền thông</option>
 
-                <!-- Kỹ thuật -->
-                <option value="engineering">Kỹ thuật / Công nghiệp</option>
+              <!-- Kỹ thuật -->
+              <option value="engineering">Kỹ thuật / Công nghiệp</option>
 
-                <!-- Giáo dục -->
-                <option value="education">Giáo dục / Sư phạm</option>
+              <!-- Giáo dục -->
+              <option value="education">Giáo dục / Sư phạm</option>
 
-                <!-- Y tế -->
-                <option value="health">Y tế / Chăm sóc sức khỏe</option>
+              <!-- Y tế -->
+              <option value="health">Y tế / Chăm sóc sức khỏe</option>
 
-                <!-- Xã hội -->
-                <option value="law">Luật</option>
-                <option value="social">Khoa học xã hội</option>
+              <!-- Xã hội -->
+              <option value="law">Luật</option>
+              <option value="social">Khoa học xã hội</option>
 
-                <!-- Khác -->
-                <option value="other">Khác</option>
-              </select>
-              <!-- Input hiện khi chọn "Khác" -->
-              <div id="custom-goal-wrapper" style="display: none">
-                <input type="text" id="custom_goal" name="custom_goal" class="form-control mb-2" placeholder="Nhập mục tiêu nghề nghiệp cụ thể (vd: Du lịch, Logistics, Thiết kế...)" />
-              </div>
-
-              <!-- Learning mode -->
-              <select aria-label="Hình thức học" id="learning_mode" name="learning_mode" class="form-select mb-2">
-                <option value="">Hình thức học</option>
-                <option value="online">Online</option>
-                <option value="offline">Trên lớp</option>
-                <option value="hybrid">Kết hợp</option>
-              </select>
-
-              <!-- Resource -->
-              <div id="equipment-wrapper" style="display: none">
-                <select id="resource" name="resource" class="form-select mb-2">
-                  <option value="">-- Nguồn học tập --</option>
-                  <option value="video">Video / MOOC</option>
-                  <option value="book">Giáo trình / Sách</option>
-                  <option value="practice">Bài tập thực hành</option>
-                </select>
-              </div>
-
-              <!-- Level -->
-              <select aria-label="trình độ" id="level" name="level" class="form-select mb-3">
-                <option value="beginner">Cơ bản</option>
-                <option value="intermediate">Trung cấp</option>
-                <option value="advanced">Nâng cao</option>
-              </select>
-
-              <button type="submit" class="btn btn-primary w-100 btnCommon">Gợi ý lộ trình học tập</button>
-            </form>
-          </div>
-        </div>
-
-        <!-- Charts -->
-        <div class="col-md-7">
-          <div class="row g-4">
-            <!-- Pie -->
-            <div class="col-12">
-              <div class="card p-3">
-                <h6 class="text-center fw-bold">Tiến trình học tập</h6>
-                <div class="chart-box">
-                  <canvas id="progressChart"></canvas>
-                </div>
-              </div>
+              <!-- Khác -->
+              <option value="other">Khác</option>
+            </select>
+            <!-- Input hiện khi chọn "Khác" -->
+            <div id="custom-goal-wrapper" style="display: none">
+              <input type="text" id="custom_goal" name="custom_goal" class="form-control mb-2"
+                placeholder="Nhập mục tiêu nghề nghiệp cụ thể (vd: Du lịch, Logistics, Thiết kế...)" />
             </div>
 
-            <!-- Bar -->
-            <div class="col-12">
-              <div class="card p-3">
-                <h6 class="text-center fw-bold">Xu hướng ngành nghề sinh viên</h6>
-                <div class="chart-box">
-                  <canvas id="trendChart"></canvas>
-                </div>
+            <!-- Learning mode -->
+            <select aria-label="Hình thức học" id="learning_mode" name="learning_mode" class="form-select mb-2">
+              <option value="">Hình thức học</option>
+              <option value="online">Online</option>
+              <option value="offline">Trên lớp</option>
+              <option value="hybrid">Kết hợp</option>
+            </select>
+
+            <!-- Resource -->
+            <div id="equipment-wrapper" style="display: none">
+              <select id="resource" name="resource" class="form-select mb-2">
+                <option value="">-- Nguồn học tập --</option>
+                <option value="video">Video / MOOC</option>
+                <option value="book">Giáo trình / Sách</option>
+                <option value="practice">Bài tập thực hành</option>
+              </select>
+            </div>
+
+            <!-- Level -->
+            <select aria-label="trình độ" id="level" name="level" class="form-select mb-3">
+              <option value="beginner">Cơ bản</option>
+              <option value="intermediate">Trung cấp</option>
+              <option value="advanced">Nâng cao</option>
+            </select>
+
+            <button type="submit" class="btn btn-primary w-100 btnCommon">Gợi ý lộ trình học tập</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="col-md-7">
+        <div class="row g-4">
+          <!-- Pie -->
+          <div class="col-12">
+            <div class="card p-3">
+              <h6 class="text-center fw-bold">Tiến trình học tập</h6>
+              <div class="chart-box">
+                <canvas id="progressChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bar -->
+          <div class="col-12">
+            <div class="card p-3">
+              <h6 class="text-center fw-bold">Xu hướng ngành nghề sinh viên</h6>
+              <div class="chart-box">
+                <canvas id="trendChart"></canvas>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <!-- AI đưa câu trả lời phía dưới -->
-    <div class="container mt-4">
-      <div class="row">
-        <div class="col-12">
-          <div class="card p-4">
-            <h4 class="fw-bold mb-3 text-center">🤖 Lộ trình học tập được AI đề xuất</h4>
+  </div>
+  <!-- AI đưa câu trả lời phía dưới -->
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-12">
+        <div class="card p-4">
+          <h4 class="fw-bold mb-3 text-center">🤖 Lộ trình học tập được AI đề xuất</h4>
 
-            <div class="roadmap-content">{{ roadmap | safe }}</div>
-          </div>
+          <div class="roadmap-content">{{ roadmap | safe }}</div>
         </div>
       </div>
     </div>
+  </div>
 
-    <!-- Footer -->
-    <footer class="text-center">
-      <div class="container">
-        <p class="mb-1">© 2025 Study With AI</p>
-        <small>Hệ thống gợi ý lộ trình học tập thông minh cho sinh viên</small>
-      </div>
-    </footer>
+  <!-- Footer -->
+  <footer class="text-center">
+    <div class="container">
+      <p class="mb-1">© 2025 Study With AI</p>
+      <small>Hệ thống gợi ý lộ trình học tập thông minh cho sinh viên</small>
+    </div>
+  </footer>
 
-    <!-- Charts -->
-    <script>
-      new Chart(document.getElementById("progressChart"), {
-        type: "pie",
-        data: {
-          labels: ["Đã hoàn thành", "Chưa hoàn thành"],
-          datasets: [{ data: [18, 12] }],
-        },
-        options: { responsive: true, maintainAspectRatio: false },
-      });
+  <!-- Charts -->
+  <script>
+    new Chart(document.getElementById("progressChart"), {
+      type: "pie",
+      data: {
+        labels: ["Đã hoàn thành", "Chưa hoàn thành"],
+        datasets: [{ data: [18, 12] }],
+      },
+      options: { responsive: true, maintainAspectRatio: false },
+    });
 
-      new Chart(document.getElementById("trendChart"), {
-        type: "bar",
-        data: {
-          labels: ["IT", "Lawer", "Sales", "Architere", "Doctor"],
-          datasets: [{ data: [45, 38, 42, 50, 28] }],
-        },
-        options: { responsive: true, maintainAspectRatio: false },
-      });
+    new Chart(document.getElementById("trendChart"), {
+      type: "bar",
+      data: {
+        labels: ["IT", "Lawer", "Sales", "Architere", "Doctor"],
+        datasets: [{ data: [45, 38, 42, 50, 28] }],
+      },
+      options: { responsive: true, maintainAspectRatio: false },
+    });
 
-      // Logic: online thì hiện nguồn học
-      const learningMode = document.getElementById("learning_mode");
-      const resourceWrapper = document.getElementById("equipment-wrapper");
-      const resource = document.getElementById("resource");
+    // Logic: online thì hiện nguồn học
+    const learningMode = document.getElementById("learning_mode");
+    const resourceWrapper = document.getElementById("equipment-wrapper");
+    const resource = document.getElementById("resource");
 
-      learningMode.addEventListener("change", () => {
-        if (learningMode.value === "online") {
-          resourceWrapper.style.display = "block";
-        } else {
-          resourceWrapper.style.display = "none";
-          resource.value = "";
-        }
-      });
-      // Logic: nếu chọn "Khác" thì hiện input nhập mục tiêu nghề nghiệp cụ thể
-      const goalSelect = document.getElementById("goal");
-      const customGoalWrapper = document.getElementById("custom-goal-wrapper");
-      const customGoalInput = document.getElementById("custom_goal");
+    learningMode.addEventListener("change", () => {
+      if (learningMode.value === "online") {
+        resourceWrapper.style.display = "block";
+      } else {
+        resourceWrapper.style.display = "none";
+        resource.value = "";
+      }
+    });
+    // Logic: nếu chọn "Khác" thì hiện input nhập mục tiêu nghề nghiệp cụ thể
+    const goalSelect = document.getElementById("goal");
+    const customGoalWrapper = document.getElementById("custom-goal-wrapper");
+    const customGoalInput = document.getElementById("custom_goal");
 
-      goalSelect.addEventListener("change", () => {
-        if (goalSelect.value === "other") {
-          customGoalWrapper.style.display = "block";
-          customGoalInput.required = true;
-        } else {
-          customGoalWrapper.style.display = "none";
-          customGoalInput.required = false;
-          customGoalInput.value = "";
-        }
-      });
+    goalSelect.addEventListener("change", () => {
+      if (goalSelect.value === "other") {
+        customGoalWrapper.style.display = "block";
+        customGoalInput.required = true;
+      } else {
+        customGoalWrapper.style.display = "none";
+        customGoalInput.required = false;
+        customGoalInput.value = "";
+      }
+    });
 
-      // User dropdown
-      const userAvatarBtn = document.getElementById("userAvatarBtn");
-      const userDropdown = document.getElementById("userDropdown");
+    // User dropdown
+    const userAvatarBtn = document.getElementById("userAvatarBtn");
+    const userDropdown = document.getElementById("userDropdown");
 
-      userAvatarBtn.addEventListener("click", () => {
-        userDropdown.classList.toggle("show");
-      });
+    userAvatarBtn.addEventListener("click", () => {
+      userDropdown.classList.toggle("show");
+    });
 
-      document.addEventListener("click", (e) => {
-        if (!userAvatarBtn.contains(e.target)) {
-          userDropdown.classList.remove("show");
-        }
-      });
-    </script>
+    document.addEventListener("click", (e) => {
+      if (!userAvatarBtn.contains(e.target)) {
+        userDropdown.classList.remove("show");
+      }
+    });
+  </script>
 
-    <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>
-  </body>
+  <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>
+</body>
+
 </html>
