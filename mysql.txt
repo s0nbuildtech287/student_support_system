@@ -27,7 +27,6 @@ CREATE TABLE subjects (
     image VARCHAR(255)
 );
 
-
 CREATE TABLE study_plans (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -35,9 +34,9 @@ CREATE TABLE study_plans (
     description TEXT,
     is_started TINYINT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    started_at TIMESTAMP NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE plan_subjects (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -45,7 +44,6 @@ CREATE TABLE plan_subjects (
     subject_id INT NOT NULL,
     progress INT DEFAULT 0,
     status ENUM('not_started','studying','completed') DEFAULT 'not_started',
-
     FOREIGN KEY (plan_id) REFERENCES study_plans(id) ON DELETE CASCADE,
     FOREIGN KEY (subject_id) REFERENCES subjects(id),
     UNIQUE(plan_id, subject_id)
