@@ -256,6 +256,19 @@
 
         document.getElementById("commentInput").value = "";
       }
+           // User dropdown
+      const userAvatarBtn = document.getElementById("userAvatarBtn");
+      const userDropdown = document.getElementById("userDropdown");
+
+      userAvatarBtn.addEventListener("click", () => {
+        userDropdown.classList.toggle("show");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!userAvatarBtn.contains(e.target)) {
+          userDropdown.classList.remove("show");
+        }
+      });
     </script>
   </body>
 </html>

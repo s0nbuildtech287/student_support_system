@@ -239,6 +239,19 @@
         [monthEl, yearEl, fieldEl].forEach(el =>
           el.addEventListener("change", reloadRanking)
         );
+             // User dropdown
+      const userAvatarBtn = document.getElementById("userAvatarBtn");
+      const userDropdown = document.getElementById("userDropdown");
+
+      userAvatarBtn.addEventListener("click", () => {
+        userDropdown.classList.toggle("show");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!userAvatarBtn.contains(e.target)) {
+          userDropdown.classList.remove("show");
+        }
+      });
     </script>
   </body>
 </html>
