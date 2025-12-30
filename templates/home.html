@@ -41,15 +41,16 @@
 
         <!-- User Avatar -->
         <div class="user-avatar-wrapper" id="userAvatarBtn">
-          <img src="/static/images/avatar.jpg" alt="User Avatar" class="user-avatar" />
+          <span class="user-name">{{ user.name }}</span>
+          <img src="{{ user.avatar }}" alt="User Avatar" class="user-avatar" />
 
           <div class="user-dropdown" id="userDropdown">
             <div class="user-dropdown-header">
               <div class="user-info">
-                <img src="/static/images/avatar.jpg" alt="User" class="user-info-avatar" />
+                <img src="{{ user.avatar }}" alt="User" class="user-info-avatar" />
                 <div class="user-info-text">
-                  <h6>Khang Nguyen</h6>
-                  <small>khang@example.com</small>
+                  <h6>{{ user.name }}</h6>
+                  <small>{{ user.email }}</small>
                 </div>
               </div>
             </div>
@@ -58,7 +59,7 @@
               <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
               <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
               <div class="user-dropdown-divider"></div>
-              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
+              <a href="{{ url_for('user.logout') }}" class="user-dropdown-item">🚪 Đăng xuất</a>
             </div>
           </div>
         </div>

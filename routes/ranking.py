@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from routes.user import CURRENT_USER
 
 ranking_bp = Blueprint("ranking", __name__)
 
@@ -53,5 +54,6 @@ def ranking():
         subject_labels=subject_labels,
         subject_values=subject_values,
         top_completed=top_completed,
-        top_score=top_score
+        top_score=top_score,
+        user=CURRENT_USER
     )

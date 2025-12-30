@@ -3,6 +3,7 @@ from services.subject_service import (
     load_all_subject_paginated,
     get_subject_by_uid
 )
+from routes.user import CURRENT_USER
 
 subject_bp = Blueprint("subject", __name__)
 
@@ -31,7 +32,8 @@ def subject_list():
         categories=data["categories"],
         selected_category=category,
         selected_level=level,
-        keyword=""   # bỏ qua keyword
+        keyword="",   # bỏ qua keyword
+        user=CURRENT_USER
     )
 
 
@@ -46,5 +48,6 @@ def subject_detail(uid):
 
     return render_template(
         "subject_detail.html",
-        subject=subject
+        subject=subject,
+        user=CURRENT_USER
     )

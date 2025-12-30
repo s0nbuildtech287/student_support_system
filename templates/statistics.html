@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
   <head>
-    <title>Thống kê - Workout AI</title>
+    <title>Thống kê - Study With AI</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -13,29 +13,34 @@
 
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
       <div class="container d-flex justify-content-between">
-        <a class="navbar-brand fw-bold" href="/">Workout AI</a>
+        <a class="navbar-brand fw-bold" href="/">Study With AI</a>
 
         <div class="collapse navbar-collapse justify-content-center">
           <ul class="navbar-nav gap-4">
             <li class="nav-item">
-              <a class="nav-link" href="/">Home</a>
+              <a class="nav-link" href="{{ url_for('home.home') }}">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/exercise">Exercise</a>
+              <a class="nav-link" href="{{ url_for('subject.subject_list') }}">Subject</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/ranking">Ranking</a>
+              <a class="nav-link" href="{{ url_for('roadmap.roadmap_page') }}">Roadmap</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Information</a>
+              <a class="nav-link" href="{{ url_for('ranking.ranking') }}">Ranking</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/yourplan">YourPlan</a>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
           </ul>
         </div>
 
         <!-- User Avatar -->
         <div class="user-avatar-wrapper" id="userAvatarBtn">
+          <span class="user-name">{{ user.name }}</span>
           <img src="{{ user.avatar }}" alt="User Avatar" class="user-avatar">
           <!-- User Dropdown -->
           <div class="user-dropdown" id="userDropdown">
@@ -49,11 +54,11 @@
               </div>
             </div>
             <div class="user-dropdown-menu">
-              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
-              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">⚙️ Cài đặt</a>
-              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item active">📊 Thống kê</a>
+              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">Hồ sơ cá nhân</a>
+              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">Cài đặt</a>
+              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item active">Thống kê</a>
               <div class="user-dropdown-divider"></div>
-              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
+              <a href="{{ url_for('user.logout') }}" class="user-dropdown-item">Đăng xuất</a>
             </div>
           </div>
         </div>
@@ -63,8 +68,8 @@
     <!-- Statistics Header -->
     <div class="statistics-header">
       <div class="container">
-        <h1>📊 Thống kê tập luyện</h1>
-        <p>Theo dõi tiến trình và thành tích của bạn</p>
+        <h1>Thống kê học tập</h1>
+        <p>Theo dõi tiến trình và thành tích học tập của bạn</p>
       </div>
     </div>
 
@@ -74,34 +79,34 @@
       <div class="row g-4 mb-5">
         <div class="col-md-3">
           <div class="stat-card">
-            <div class="stat-icon">🏋️</div>
-            <h5>Tổng buổi tập</h5>
-            <p class="stat-value">{{ user.total_workouts }}</p>
-            <small>buổi</small>
+            <div class="stat-icon">📚</div>
+            <h5>Khóa học đã học</h5>
+            <p class="stat-value">{{ user.enrollments|length }}</p>
+            <small>môn học</small>
           </div>
         </div>
         <div class="col-md-3">
           <div class="stat-card">
-            <div class="stat-icon">🔥</div>
-            <h5>Calo đốt cháy</h5>
-            <p class="stat-value">2,450</p>
-            <small>kcal/tuần</small>
+            <div class="stat-icon">✓</div>
+            <h5>Bài học hoàn thành</h5>
+            <p class="stat-value">{{ user.progress|length }}</p>
+            <small>bài học</small>
           </div>
         </div>
         <div class="col-md-3">
           <div class="stat-card">
             <div class="stat-icon">⏱️</div>
-            <h5>Thời gian tập</h5>
-            <p class="stat-value">156</p>
+            <h5>Thời gian học</h5>
+            <p class="stat-value">{{ (user.progress|length * 1.5)|int }}</p>
             <small>giờ tổng</small>
           </div>
         </div>
         <div class="col-md-3">
           <div class="stat-card">
-            <div class="stat-icon">🎯</div>
-            <h5>Mục tiêu hoàn thành</h5>
-            <p class="stat-value">78%</p>
-            <small>tháng này</small>
+            <div class="stat-icon">★</div>
+            <h5>Điểm trung bình</h5>
+            <p class="stat-value">{{ (user.gpa or 3.5)|round(1) }}</p>
+            <small>trên 4.0</small>
           </div>
         </div>
       </div>
@@ -111,17 +116,17 @@
         <!-- Weekly Progress -->
         <div class="col-lg-6">
           <div class="chart-card">
-            <h5>📈 Tiến độ hàng tuần</h5>
+            <h5>Tiến độ theo tháng</h5>
             <div class="chart-container">
               <canvas id="weeklyChart"></canvas>
             </div>
           </div>
         </div>
 
-        <!-- Body Part Focus -->
+        <!-- Subject Focus -->
         <div class="col-lg-6">
           <div class="chart-card">
-            <h5>💪 Nhóm cơ tập nhiều nhất</h5>
+            <h5>Môn học yêu thích</h5>
             <div class="chart-container">
               <canvas id="bodyPartChart"></canvas>
             </div>
@@ -133,7 +138,7 @@
       <div class="row mb-5">
         <div class="col-lg-12">
           <div class="chart-card">
-            <h5>📅 Xu hướng tập luyện hàng tháng</h5>
+            <h5>Xu hướng học tập hàng tháng</h5>
             <div class="chart-container" style="height: 300px">
               <canvas id="monthlyChart"></canvas>
             </div>
@@ -145,35 +150,35 @@
       <div class="row">
         <div class="col-lg-12">
           <div class="chart-card">
-            <h5>🏆 Thành tích</h5>
+            <h5>Thành tích</h5>
             <div class="achievements-grid">
               <div class="achievement-item">
-                <div class="achievement-icon">🥇</div>
-                <h6>Người tập luyện</h6>
-                <small>Đã hoàn thành 10 buổi tập</small>
+                <div class="achievement-icon">★</div>
+                <h6>Người học chăm chỉ</h6>
+                <small>Đã hoàn thành 5 khóa học</small>
               </div>
               <div class="achievement-item">
-                <div class="achievement-icon">🔥</div>
-                <h6>Chuỗi ngày</h6>
-                <small>Tập 7 ngày liên tiếp</small>
+                <div class="achievement-icon">★</div>
+                <h6>Chuỗi ngày học</h6>
+                <small>Học 7 ngày liên tiếp</small>
               </div>
               <div class="achievement-item">
-                <div class="achievement-icon">💪</div>
-                <h6>Siêu nhân</h6>
-                <small>Đã tập tất cả các nhóm cơ</small>
+                <div class="achievement-icon">★</div>
+                <h6>Bác sĩ học</h6>
+                <small>Đã học tất cả các lĩnh vực</small>
               </div>
               <div class="achievement-item">
-                <div class="achievement-icon">⚡</div>
+                <div class="achievement-icon">★</div>
                 <h6>Tốc độ</h6>
                 <small>Hoàn thành bài tập nhanh nhất</small>
               </div>
               <div class="achievement-item">
-                <div class="achievement-icon">🎯</div>
-                <h6>Bất biến</h6>
+                <div class="achievement-icon">★</div>
+                <h6>Hoàn thành mục tiêu</h6>
                 <small>Đạt mục tiêu hàng tháng</small>
               </div>
               <div class="achievement-item">
-                <div class="achievement-icon">⭐</div>
+                <div class="achievement-icon">★</div>
                 <h6>Sao mười</h6>
                 <small>Nhận 5 sao từ cộng đồng</small>
               </div>
@@ -186,8 +191,8 @@
     <!-- Footer -->
     <footer class="text-center">
       <div class="container">
-        <p class="mb-1">© 2025 Workout AI</p>
-        <small>Smart Workout Recommendation System</small>
+        <p class="mb-1">© 2025 Study With AI</p>
+        <small>Hệ thống gợi ý khóa học thông minh cho sinh viên</small>
       </div>
     </footer>
 

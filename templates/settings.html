@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
   <head>
-    <title>Cài đặt - Workout AI</title>
+    <title>Cài đặt - Study With AI</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -14,7 +14,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container d-flex justify-content-between">
-        <a class="navbar-brand fw-bold" href="/">Workout AI</a>
+        <a class="navbar-brand fw-bold" href="/">Study With AI</a>
 
         <div class="collapse navbar-collapse justify-content-center">
           <ul class="navbar-nav gap-4">
@@ -22,19 +22,24 @@
               <a class="nav-link" href="/">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/exercise">Exercise</a>
+              <a class="nav-link" href="/subject">Subject</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/roadmap">Roadmap</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="/ranking">Ranking</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Information</a>
+              <a class="nav-link" href="/yourplan">YourPlan</a>
             </li>
+            <li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
           </ul>
         </div>
 
         <!-- User Avatar -->
         <div class="user-avatar-wrapper" id="userAvatarBtn">
+          <span class="user-name">{{ user.name }}</span>
           <img src="{{ user.avatar }}" alt="User Avatar" class="user-avatar">
           <!-- User Dropdown -->
           <div class="user-dropdown" id="userDropdown">
@@ -48,11 +53,11 @@
               </div>
             </div>
             <div class="user-dropdown-menu">
-              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">👤 Hồ sơ cá nhân</a>
-              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item active">⚙️ Cài đặt</a>
-              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">📊 Thống kê</a>
+              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">Hồ sơ cá nhân</a>
+              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item active">Cài đặt</a>
+              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">Thống kê</a>
               <div class="user-dropdown-divider"></div>
-              <a href="#" class="user-dropdown-item">🚪 Đăng xuất</a>
+              <a href="{{ url_for('user.logout') }}" class="user-dropdown-item">Đăng xuất</a>
             </div>
           </div>
         </div>
@@ -62,7 +67,7 @@
     <!-- Settings Header -->
     <div class="settings-header">
       <div class="container">
-        <h1>⚙️ Cài đặt</h1>
+        <h1>Cài đặt</h1>
         <p>Quản lý cài đặt tài khoản và ứng dụng</p>
       </div>
     </div>
@@ -73,36 +78,72 @@
         <!-- Sidebar Navigation -->
         <div class="col-lg-3 mb-4">
           <div class="settings-nav">
-            <a href="#account" class="settings-nav-item active" data-section="account">👤 Tài khoản</a>
-            <a href="#notification" class="settings-nav-item" data-section="notification">🔔 Thông báo</a>
-            <a href="#privacy" class="settings-nav-item" data-section="privacy">🔒 Bảo mật</a>
-            <a href="#preferences" class="settings-nav-item" data-section="preferences">🎯 Sở thích</a>
+            <a href="#account" class="settings-nav-item active" data-section="account">Tài khoản</a>
+            <a href="#notification" class="settings-nav-item" data-section="notification">Thông báo</a>
+            <a href="#privacy" class="settings-nav-item" data-section="privacy">Bảo mật</a>
+            <a href="#preferences" class="settings-nav-item" data-section="preferences">Sở thích</a>
           </div>
         </div>
 
         <!-- Settings Content -->
         <div class="col-lg-9">
+          <!-- Flash Messages -->
+          {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+              {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                  <strong>{% if category == 'success' %}✅ Thành công!{% else %}❌ Lỗi!{% endif %}</strong> {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            {% endif %}
+          {% endwith %}
+
           <!-- Account Settings -->
           <div id="account" class="settings-section active">
             <h3>Tài khoản</h3>
-            <div class="settings-card">
-              <h5>Thông tin cá nhân</h5>
-              <form>
+            <form method="POST" action="{{ url_for('user.update_profile') }}">
+              <div class="settings-card">
+                <h5>Thông tin cá nhân</h5>
                 <div class="mb-3">
                   <label for="fullname" class="form-label">Họ và tên</label>
-                  <input type="text" class="form-control" id="fullname" value="{{ user.name }}" />
+                  <input type="text" class="form-control" name="name" id="fullname" value="{{ user.name }}" required />
                 </div>
                 <div class="mb-3">
                   <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control" id="email" value="{{ user.email }}" />
+                  <input type="email" class="form-control" name="email" id="email" value="{{ user.email }}" required />
                 </div>
                 <div class="mb-3">
                   <label for="age" class="form-label">Tuổi</label>
-                  <input type="number" class="form-control" id="age" value="{{ user.age }}" />
+                  <input type="number" class="form-control" name="age" id="age" value="{{ user.age or '' }}" />
                 </div>
-                <button type="submit" class="btn btn-primary">💾 Lưu thay đổi</button>
-              </form>
-            </div>
+              </div>
+
+              <div class="settings-card" style="margin-top: 20px;">
+                <h5>Thông tin học tập</h5>
+                <div class="mb-3">
+                  <label for="year" class="form-label">Năm học (1-4)</label>
+                  <input type="number" class="form-control" name="year" id="year" value="{{ user.year or '' }}" min="1" max="4" />
+                </div>
+                <div class="mb-3">
+                  <label for="major" class="form-label">Chuyên ngành</label>
+                  <input type="text" class="form-control" name="major" id="major" value="{{ user.major or '' }}" placeholder="VD: Công nghệ thông tin" />
+                </div>
+                <div class="mb-3">
+                  <label for="career_goal" class="form-label">Mục tiêu nghề nghiệp</label>
+                  <input type="text" class="form-control" name="career_goal" id="career_goal" value="{{ user.career_goal or '' }}" placeholder="VD: Software Engineer" />
+                </div>
+                <div class="mb-3">
+                  <label for="status" class="form-label">Trạng thái</label>
+                  <select class="form-control" name="status" id="status">
+                    <option value="Đang học" {% if user.status == 'Đang học' %}selected{% endif %}>Đang học</option>
+                    <option value="Tạm dừng" {% if user.status == 'Tạm dừng' %}selected{% endif %}>Tạm dừng</option>
+                    <option value="Hoàn thành" {% if user.status == 'Hoàn thành' %}selected{% endif %}>Hoàn thành</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+              </div>
+            </form>
           </div>
 
           <!-- Notification Settings -->
@@ -113,7 +154,7 @@
                 <div class="option-header">
                   <h5>Thông báo email</h5>
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="emailNotif" checked />
+                    <input aria-label="xs" class="form-check-input" type="checkbox" id="emailNotif" checked />
                   </div>
                 </div>
                 <p class="text-muted">Nhận email về các bài tập được đề xuất và tiến trình</p>
@@ -125,7 +166,7 @@
                 <div class="option-header">
                   <h5>Thông báo hàng ngày</h5>
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="dailyNotif" checked />
+                    <input aria-label="xs" class="form-check-input" type="checkbox" id="dailyNotif" checked />
                   </div>
                 </div>
                 <p class="text-muted">Nhận nhắc nhở hàng ngày về việc tập luyện</p>
@@ -137,7 +178,7 @@
                 <div class="option-header">
                   <h5>Thông báo thành tích</h5>
                   <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="achievementNotif" checked />
+                    <input aria-label="xs" class="form-check-input" type="checkbox" id="achievementNotif" checked />
                   </div>
                 </div>
                 <p class="text-muted">Được thông báo khi bạn đạt được thành tích mới</p>
@@ -150,54 +191,64 @@
             <h3>Bảo mật</h3>
             <div class="settings-card">
               <h5>Đổi mật khẩu</h5>
-              <form>
+              <form method="POST" action="{{ url_for('user.change_password') }}">
                 <div class="mb-3">
                   <label for="currentPass" class="form-label">Mật khẩu hiện tại</label>
-                  <input type="password" class="form-control" id="currentPass" />
+                  <input type="password" class="form-control" name="current_password" id="currentPass" required />
                 </div>
                 <div class="mb-3">
                   <label for="newPass" class="form-label">Mật khẩu mới</label>
-                  <input type="password" class="form-control" id="newPass" />
+                  <input type="password" class="form-control" name="new_password" id="newPass" required />
                 </div>
                 <div class="mb-3">
                   <label for="confirmPass" class="form-label">Xác nhận mật khẩu</label>
-                  <input type="password" class="form-control" id="confirmPass" />
+                  <input type="password" class="form-control" name="confirm_password" id="confirmPass" required />
                 </div>
-                <button type="submit" class="btn btn-warning">🔐 Đổi mật khẩu</button>
+                <button type="submit" class="btn btn-warning">Đổi mật khẩu</button>
               </form>
             </div>
           </div>
 
           <!-- Preferences -->
           <div id="preferences" class="settings-section">
-            <h3>Sở thích</h3>
+            <h3>Sở thích Học tập</h3>
             <div class="settings-card">
-              <h5>Cài đặt tập luyện</h5>
-              <form>
+              <h5>Cài đặt học tập</h5>
+              <form method="POST" action="{{ url_for('user.update_preferences') }}">
                 <div class="mb-3">
-                  <label for="difficulty" class="form-label">Mức độ khó</label>
-                  <select class="form-select" id="difficulty">
-                    <option>Beginner</option>
-                    <option selected>Intermediate</option>
-                    <option>Advanced</option>
+                  <label for="study_level" class="form-label">Mức độ học</label>
+                  <select class="form-select" name="study_level" id="study_level">
+                    <option value="Sơ cấp" {% if user.study_level == 'Sơ cấp' %}selected{% endif %}>Sơ cấp - Phù hợp cho người mới bắt đầu</option>
+                    <option value="Trung cấp" {% if user.study_level == 'Trung cấp' %}selected{% endif %}>Trung cấp - Tôi có kiến thức cơ bản</option>
+                    <option value="Nâng cao" {% if user.study_level == 'Nâng cao' %}selected{% endif %}>Nâng cao - Tôi đã có kinh nghiệm</option>
                   </select>
                 </div>
                 <div class="mb-3">
-                  <label for="goal" class="form-label">Mục tiêu</label>
-                  <select class="form-select" id="goal">
-                    <option>Giảm cân</option>
-                    <option selected>Tăng cơ</option>
-                    <option>Giữ dáng</option>
+                  <label for="study_goal" class="form-label">Mục tiêu học tập</label>
+                  <select class="form-select" name="study_goal" id="study_goal">
+                    <option value="Nâng cao kỹ năng" {% if user.study_goal == 'Nâng cao kỹ năng' %}selected{% endif %}>Nâng cao kỹ năng chuyên môn</option>
+                    <option value="Học để thi" {% if user.study_goal == 'Học để thi' %}selected{% endif %}>Học để thi cấp chứng chỉ</option>
+                    <option value="Khám phá lĩnh vực mới" {% if user.study_goal == 'Khám phá lĩnh vực mới' %}selected{% endif %}>Khám phá lĩnh vực mới</option>
+                    <option value="Chuẩn bị sự nghiệp" {% if user.study_goal == 'Chuẩn bị sự nghiệp' %}selected{% endif %}>Chuẩn bị cho sự nghiệp</option>
                   </select>
                 </div>
                 <div class="mb-3">
-                  <label for="language" class="form-label">Ngôn ngữ</label>
-                  <select class="form-select" id="language">
-                    <option selected>Tiếng Việt</option>
-                    <option>English</option>
+                  <label for="study_style" class="form-label">Phong cách học tập yêu thích</label>
+                  <select class="form-select" name="study_style" id="study_style">
+                    <option value="Video & Bài tập" {% if user.study_style == 'Video & Bài tập' %}selected{% endif %}>Video & Bài tập thực hành</option>
+                    <option value="Video & Tài liệu" {% if user.study_style == 'Video & Tài liệu' %}selected{% endif %}>Video & Tài liệu đọc</option>
+                    <option value="Tài liệu & Bài tập" {% if user.study_style == 'Tài liệu & Bài tập' %}selected{% endif %}>Tài liệu & Bài tập tự làm</option>
+                    <option value="Dự án thực tế" {% if user.study_style == 'Dự án thực tế' %}selected{% endif %}>Dự án thực tế</option>
                   </select>
                 </div>
-                <button type="submit" class="btn btn-primary">💾 Lưu cài đặt</button>
+                <div class="mb-3">
+                  <label for="preferred_language" class="form-label">Ngôn ngữ ưa thích</label>
+                  <select class="form-select" name="preferred_language" id="preferred_language">
+                    <option value="Tiếng Việt" {% if user.preferred_language == 'Tiếng Việt' %}selected{% endif %}>Tiếng Việt</option>
+                    <option value="Tiếng Anh" {% if user.preferred_language == 'Tiếng Anh' %}selected{% endif %}>Tiếng Anh</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-success">Lưu sở thích</button>
               </form>
             </div>
           </div>
@@ -208,8 +259,8 @@
     <!-- Footer -->
     <footer class="text-center">
       <div class="container">
-        <p class="mb-1">© 2025 Workout AI</p>
-        <small>Smart Workout Recommendation System</small>
+        <p class="mb-1">© 2025 Study With AI</p>
+        <small>Hệ thống gợi ý khóa học thông minh cho sinh viên</small>
       </div>
     </footer>
 
