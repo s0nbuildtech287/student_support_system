@@ -1,7 +1,7 @@
 /* Settings Page Styles */
 
 .settings-header {
-  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 40px 0;
   color: #fff;
   margin-bottom: 30px;
@@ -45,7 +45,7 @@
 }
 
 .settings-nav-item.active {
-  background: #343a40;
+  background: #764ba2;
   color: #fff;
   border-color: #343a40;
 }
@@ -112,12 +112,12 @@
 }
 
 .settings-card .btn-primary {
-  background-color: #343a40;
+  background-color: #667eea;
   border-color: #343a40;
 }
 
 .settings-card .btn-primary:hover {
-  background-color: #212529;
+  background-color: #764ba2;
   border-color: #212529;
 }
 
@@ -168,7 +168,7 @@
 }
 
 .form-check-input:checked {
-  background-color: #343a40;
+  background-color: #764ba2;
   border-color: #343a40;
 }
 

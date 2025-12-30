@@ -1,7 +1,7 @@
 /* Statistics Page Styles */
 
 .statistics-header {
-  background: linear-gradient(135deg, #343a40 0%, #212529 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 40px 0;
   color: #fff;
   margin-bottom: 30px;
@@ -87,7 +87,7 @@
 }
 
 .achievement-item {
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 12px;
   padding: 20px;
   text-align: center;
@@ -97,25 +97,26 @@
 
 .achievement-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-  border-color: #ffc107;
-  background: linear-gradient(135deg, #fff 0%, #fffacd 100%);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+  border-color: #f093fb;
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 }
 
 .achievement-icon {
   font-size: 36px;
   margin-bottom: 10px;
+  color: #fff;
 }
 
 .achievement-item h6 {
   font-weight: 700;
-  color: #212529;
+  color: #fff;
   margin-bottom: 5px;
   font-size: 13px;
 }
 
 .achievement-item small {
-  color: #6c757d;
+  color: #e9ecef;
   font-size: 11px;
   display: block;
 }

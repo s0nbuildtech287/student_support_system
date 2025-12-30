@@ -25,8 +25,8 @@ if (weeklyCtx) {
         {
           label: 'Buổi tập',
           data: [1, 2, 1, 2, 1, 0, 1],
-          backgroundColor: '#343a40',
-          borderColor: '#212529',
+          backgroundColor: '#667eea',
+          borderColor: '#764ba2',
           borderWidth: 1,
           borderRadius: 6
         }
@@ -36,22 +36,22 @@ if (weeklyCtx) {
   });
 }
 
-// Body Part Focus Chart
+// Favorite Subject Chart
 const bodyPartCtx = document.getElementById('bodyPartChart');
 if (bodyPartCtx) {
   new Chart(bodyPartCtx, {
     type: 'doughnut',
     data: {
-      labels: ['Chân', 'Lưng', 'Ngực', 'Vai', 'Tay'],
+      labels: ['Lập trình Python cơ bản', 'Cấu trúc dữ liệu & Giải thuật', 'Machine Learning cơ bản', 'Lập trình Web cơ bản', 'Cơ sở dữ liệu'],
       datasets: [
         {
           data: [25, 22, 20, 18, 15],
           backgroundColor: [
-            '#343a40',
-            '#495057',
-            '#6c757d',
-            '#adb5bd',
-            '#dee2e6'
+            '#667eea',
+            '#764ba2',
+            '#f093fb',
+            '#4facfe',
+            '#00f2fe'
           ],
           borderColor: '#fff',
           borderWidth: 2
@@ -73,13 +73,13 @@ if (monthlyCtx) {
         {
           label: 'Buổi tập',
           data: [5, 7, 6, 8],
-          borderColor: '#343a40',
-          backgroundColor: 'rgba(52, 58, 64, 0.1)',
+          borderColor: '#764ba2',
+          backgroundColor: 'rgba(102, 126, 234, 0.1)',
           borderWidth: 3,
           fill: true,
           tension: 0.4,
           pointRadius: 6,
-          pointBackgroundColor: '#343a40',
+          pointBackgroundColor: '#667eea',
           pointBorderColor: '#fff',
           pointBorderWidth: 2
         }

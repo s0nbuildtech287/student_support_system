@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template
-from routes.user import CURRENT_USER
+from routes.user import get_current_user, login_required
 
 feedback_bp = Blueprint("feedback", __name__)
 
 @feedback_bp.route("/feedback")
 def feedback():
-    return render_template("feedback.html", user=CURRENT_USER)
+    user = get_current_user()
+    return render_template("feedback.html", user=user)
