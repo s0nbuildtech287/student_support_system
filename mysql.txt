@@ -1,0 +1,13 @@
+CREATE DATABASE student_support
+
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
+    avatar VARCHAR(255) DEFAULT '/static/images/avatar.jpg',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
