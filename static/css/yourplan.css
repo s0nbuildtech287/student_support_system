@@ -1,0 +1,71 @@
+
+      .plan-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+      .plan-card:hover {
+        border-color: #6366f1;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+      }
+      .plan-card.active {
+        border-color: #6366f1;
+        background: #f8f9ff;
+      }
+      .subject-item {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.2s;
+      }
+      .subject-item:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .subject-item .info {
+        flex: 1;
+      }
+      .subject-item .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+      }
+      .empty-state img {
+        width: 120px;
+        opacity: 0.5;
+        margin-bottom: 20px;
+      }
+      .modal-subject-item {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .modal-subject-item:hover {
+        background: #f8f9fa;
+        border-color: #6366f1;
+      }
+      .modal-subject-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+      .badge-level {
+        font-size: 11px;
+        padding: 4px 8px;
+      }
