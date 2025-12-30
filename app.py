@@ -5,6 +5,7 @@ from routes.ranking import ranking_bp
 from routes.user import user_bp
 from routes.roadmap import roadmap_bp
 from routes.feedback import feedback_bp
+from routes.yourplan import yourplan_bp
 from config import Config
 
 app = Flask(__name__)
@@ -17,6 +18,7 @@ app.register_blueprint(subject_bp)
 app.register_blueprint(ranking_bp)       
 app.register_blueprint(roadmap_bp)
 app.register_blueprint(feedback_bp)
+app.register_blueprint(yourplan_bp)
 
 # Route mặc định
 @app.route("/")

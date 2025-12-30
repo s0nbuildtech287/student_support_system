@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <title>Lộ trình của bạn - Study With AI</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
+    
+    <style>
+      .plan-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+      .plan-card:hover {
+        border-color: #6366f1;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+      }
+      .plan-card.active {
+        border-color: #6366f1;
+        background: #f8f9ff;
+      }
+      .subject-item {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        transition: all 0.2s;
+      }
+      .subject-item:hover {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      }
+      .subject-item .info {
+        flex: 1;
+      }
+      .subject-item .actions {
+        display: flex;
+        gap: 8px;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+      }
+      .empty-state img {
+        width: 120px;
+        opacity: 0.5;
+        margin-bottom: 20px;
+      }
+      .modal-subject-item {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .modal-subject-item:hover {
+        background: #f8f9fa;
+        border-color: #6366f1;
+      }
+      .modal-subject-item img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 6px;
+      }
+      .badge-level {
+        font-size: 11px;
+        padding: 4px 8px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container d-flex justify-content-between">
+        <a class="navbar-brand fw-bold" href="/">Study With AI</a>
+
+        <div class="collapse navbar-collapse justify-content-center">
+          <ul class="navbar-nav gap-4">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/subject">Subject</a></li>
+            <li class="nav-item"><a class="nav-link" href="/roadmap">Roadmap</a></li>
+            <li class="nav-item"><a class="nav-link" href="/ranking">Ranking</a></li>
+            <li class="nav-item"><a class="nav-link active" href="/yourplan">YourPlan</a></li>
+            <li class="nav-item"><a class="nav-link" href="/feedback">Feedback</a></li>
+          </ul>
+        </div>
+
+        <!-- User Avatar -->
+        <div class="user-avatar-wrapper" id="userAvatarBtn">
+          <span class="user-name">{{ user.name if user else 'Guest' }}</span>
+          <img src="{{ url_for('static', filename='images/avatar.jpg') }}" 
+               alt="User Avatar" 
+               class="user-avatar">
+          
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-header">
+              <div class="user-info">
+                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" 
+                     alt="User" 
+                     class="user-info-avatar">
+                <div class="user-info-text">
+                  <h6>{{ user.name if user else 'Guest' }}</h6>
+                  <small>{{ user.email if user else '' }}</small>
+                </div>
+              </div>
+            </div>
+            <div class="user-dropdown-menu">
+              <a href="{{ url_for('user.profile') }}" class="user-dropdown-item">Hồ sơ cá nhân</a>
+              <a href="{{ url_for('user.settings') }}" class="user-dropdown-item">Cài đặt</a>
+              <a href="{{ url_for('user.statistics') }}" class="user-dropdown-item">Thống kê</a>
+              <div class="user-dropdown-divider"></div>
+              <a href="{{ url_for('user.logout') }}" class="user-dropdown-item">Đăng xuất</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3 class="fw-bold mb-1">🎯 Lộ trình học tập của bạn</h3>
+          <p class="text-muted mb-0">Tự do xây dựng và quản lý lộ trình học tập riêng</p>
+        </div>
+        <button class="btn btn-primary btnCommon" data-bs-toggle="modal" data-bs-target="#createPlanModal" 
+                {% if plans|length >= 3 %}disabled title="Đã đạt giới hạn 3 lộ trình"{% endif %}>
+          ➕ Tạo lộ trình mới
+        </button>
+      </div>
+
+      <!-- Plans List -->
+      <div class="row g-3 mb-4">
+        {% for plan in plans %}
+        <div class="col-md-4">
+          <div class="card plan-card {% if plan.is_active %}active{% endif %}" data-plan-id="{{ plan.id }}">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="fw-bold mb-0">{{ plan.name }}</h5>
+                <div class="dropdown" onclick="event.stopPropagation();">
+                  <button class="btn btn-sm btn-light" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><button type="button" class="dropdown-item" data-action="edit" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">✏️ Sửa tên</button></li>
+                    <li><button type="button" class="dropdown-item text-danger" data-action="delete" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">🗑️ Xóa</button></li>
+                  </ul>
+                </div>
+              </div>
+              <p class="text-muted small mb-2">{{ plan.description }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="badge bg-secondary">{{ plan.subjects|length }} môn học</span>
+                {% if plan.is_started %}
+                <span class="badge bg-success">Đang học</span>
+                {% else %}
+                <span class="badge bg-warning text-dark">Chưa bắt đầu</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <!-- Empty state if no plans -->
+        {% if plans|length == 0 %}
+        <div class="col-12">
+          <div class="empty-state">
+            <p class="fs-1">📚</p>
+            <h5>Chưa có lộ trình nào</h5>
+            <p class="text-muted">Hãy tạo lộ trình học tập đầu tiên của bạn!</p>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Selected Plan Details -->
+      {% if selected_plan %}
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">📋 {{ selected_plan.name }}</h5>
+          <div>
+            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addSubjectModal">
+              ➕ Thêm môn học
+            </button>
+            {% if not selected_plan.is_started %}
+            <button class="btn btn-success btn-sm" 
+                    data-action="start" 
+                    data-plan-id="{{ selected_plan.id }}">
+              🚀 Bắt đầu lộ trình
+            </button>
+            {% endif %}
+          </div>
+        </div>
+        <div class="card-body">
+          {% if selected_plan.subjects|length > 0 %}
+            {% for subject in selected_plan.subjects %}
+            <div class="subject-item">
+              <div class="info">
+                <div class="d-flex align-items-center gap-2">
+                  <strong>{{ loop.index }}. {{ subject.subject_name }}</strong>
+                  <span class="badge badge-level bg-primary">{{ subject.level }}</span>
+                </div>
+                <small class="text-muted">
+                  {{ subject.category }} • {{ subject.study_hours }} giờ
+                </small>
+              </div>
+              <div class="actions">
+                <a href="/subject/{{ subject.uid }}" class="btn btn-sm btn-outline-info" target="_blank">
+                  👁️ Xem
+                </a>
+                <button class="btn btn-sm btn-outline-danger" 
+                        data-action="remove-subject" 
+                        data-plan-id="{{ selected_plan.id }}" 
+                        data-subject-uid="{{ subject.uid }}">
+                  🗑️ Xóa
+                </button>
+              </div>
+            </div>
+            {% endfor %}
+            
+            <div class="mt-3 p-3 bg-light rounded">
+              <strong>Tổng kết:</strong>
+              <ul class="mb-0 mt-2">
+                <li>Tổng số môn: <strong>{{ selected_plan.subjects|length }}</strong></li>
+                <li>Tổng thời gian học: <strong>{{ selected_plan.total_hours }} giờ</strong></li>
+              </ul>
+            </div>
+          {% else %}
+          <div class="empty-state">
+            <p class="fs-2">📝</p>
+            <p class="text-muted">Lộ trình chưa có môn học nào. Hãy thêm môn học!</p>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Modal: Create Plan -->
+    <div class="modal fade" id="createPlanModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">➕ Tạo lộ trình mới</h5>
+            <button aria-label="xs" type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <form method="POST" action="/yourplan/create">
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Tên lộ trình *</label>
+                <input type="text" name="name" class="form-control" placeholder="VD: Lộ trình AI & Machine Learning" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Mô tả</label>
+                <textarea name="description" class="form-control" rows="3" placeholder="Mô tả ngắn về lộ trình này..."></textarea>
+              </div>
+              <p class="text-muted small mb-0">
+                💡 Bạn có thể tạo tối đa 3 lộ trình. Hiện tại: {{ plans|length }}/3
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+              <button type="submit" class="btn btn-primary btnCommon">Tạo lộ trình</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Add Subject -->
+    <div class="modal fade" id="addSubjectModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">➕ Thêm môn học vào lộ trình</h5>
+            <button aria-label="xs" type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Search -->
+            <div class="mb-3">
+              <input type="text" id="searchSubject" class="form-control" placeholder="🔍 Tìm kiếm môn học...">
+            </div>
+            
+            <!-- Subject List -->
+            <div id="subjectList" style="max-height: 400px; overflow-y: auto;">
+              {% for subject in all_subjects %}
+              <div class="modal-subject-item" 
+                   data-action="add-subject" 
+                   data-subject-uid="{{ subject.uid }}">
+                <img src="{{ url_for('static', filename='images/subject/' ~ (subject.image or 'placeholder.png')) }}" alt="{{ subject.subject_name }}">
+                <div class="flex-grow-1">
+                  <strong>{{ subject.subject_name }}</strong>
+                  <br>
+                  <small class="text-muted">{{ subject.category }} • {{ subject.study_hours }}h</small>
+                  <span class="badge badge-level bg-primary ms-2">{{ subject.level }}</span>
+                </div>
+                <button class="btn btn-sm btn-primary btnCommon">➕ Thêm</button>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center mt-5">
+      <div class="container">
+        <p class="mb-1">© 2025 Study With AI</p>
+        <small>Hệ thống gợi ý lộ trình học tập thông minh cho sinh viên</small>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // User dropdown
+      const userAvatarBtn = document.getElementById("userAvatarBtn");
+      const userDropdown = document.getElementById("userDropdown");
+
+      userAvatarBtn.addEventListener("click", () => {
+        userDropdown.classList.toggle("show");
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!userAvatarBtn.contains(e.target)) {
+          userDropdown.classList.remove("show");
+        }
+      });
+
+      // Get selected plan ID from template
+      const SELECTED_PLAN_ID = {{ selected_plan.id if selected_plan else 'null' }};
+
+      // Select plan - Click vào card
+      document.querySelectorAll('.plan-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+          // Không trigger nếu click vào dropdown
+          if (e.target.closest('.dropdown')) return;
+          
+          const planId = this.dataset.planId;
+          window.location.href = '/yourplan?plan_id=' + planId;
+        });
+      });
+
+      // Direct event handlers cho edit & delete buttons
+      document.querySelectorAll('[data-action="edit"]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const planId = parseInt(this.getAttribute('data-plan-id'));
+          console.log('Edit plan ID:', planId);
+          
+          const newName = prompt("Nhập tên mới cho lộ trình:");
+          if (newName && newName.trim()) {
+            fetch('/yourplan/edit/' + planId, {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({name: newName.trim()})
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                alert('Cập nhật thành công!');
+                location.reload();
+              } else {
+                alert(data.message || 'Có lỗi xảy ra');
+              }
+            })
+            .catch(err => {
+              console.error('Error:', err);
+              alert('Lỗi: ' + err);
+            });
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-action="delete"]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const planId = parseInt(this.getAttribute('data-plan-id'));
+          console.log('Delete plan ID:', planId);
+          
+          if (confirm("Bạn có chắc chắn muốn xóa lộ trình này?")) {
+            fetch('/yourplan/delete/' + planId, {
+              method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                alert('Xóa thành công!');
+                location.reload();
+              } else {
+                alert(data.message || 'Có lỗi xảy ra');
+              }
+            })
+            .catch(err => {
+              console.error('Error:', err);
+              alert('Lỗi: ' + err);
+            });
+          }
+        });
+      });
+
+      // Event delegation cho tất cả actions (chỉ cho start, add-subject, remove-subject)
+      document.addEventListener('click', function(e) {
+        const target = e.target.closest('[data-action]');
+        if (!target) return;
+        
+        const action = target.dataset.action;
+        
+        // START PLAN
+        if (action === 'start') {
+          e.preventDefault();
+          const planId = parseInt(target.getAttribute('data-plan-id'));
+          console.log('Start plan ID:', planId);
+          if (confirm("Bắt đầu lộ trình học tập này? Bạn sẽ không thể thay đổi sau khi bắt đầu.")) {
+            fetch('/yourplan/start/' + planId, {
+              method: 'POST'
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                alert('Bắt đầu lộ trình thành công!');
+                location.reload();
+              } else {
+                alert(data.message || 'Có lỗi xảy ra');
+              }
+            })
+            .catch(err => {
+              console.error('Error:', err);
+              alert('Lỗi: ' + err);
+            });
+          }
+        }
+        
+        // ADD SUBJECT
+        else if (action === 'add-subject') {
+          if (!SELECTED_PLAN_ID) {
+            alert("Vui lòng chọn lộ trình trước!");
+            return;
+          }
+          
+          const subjectUid = parseInt(target.getAttribute('data-subject-uid'));
+          console.log('Add subject UID:', subjectUid, 'to plan:', SELECTED_PLAN_ID);
+          
+          fetch('/yourplan/add-subject', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              plan_id: SELECTED_PLAN_ID,
+              subject_id: subjectUid
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              alert('Đã thêm môn học!');
+              location.reload();
+            } else {
+              alert(data.message || 'Có lỗi xảy ra');
+            }
+          })
+          .catch(err => {
+            console.error('Error:', err);
+            alert('Lỗi: ' + err);
+          });
+        }
+        
+        // REMOVE SUBJECT
+        else if (action === 'remove-subject') {
+          e.preventDefault();
+          const planId = parseInt(target.getAttribute('data-plan-id'));
+          const subjectUid = parseInt(target.getAttribute('data-subject-uid'));
+          console.log('Remove subject UID:', subjectUid, 'from plan:', planId);
+          
+          if (confirm("Xóa môn học này khỏi lộ trình?")) {
+            fetch('/yourplan/remove-subject', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                plan_id: planId,
+                subject_id: subjectUid
+              })
+            })
+            .then(res => res.json())
+            .then(data => {
+              if (data.success) {
+                alert('Đã xóa môn học!');
+                location.reload();
+              } else {
+                alert(data.message || 'Có lỗi xảy ra');
+              }
+            })
+            .catch(err => {
+              console.error('Error:', err);
+              alert('Lỗi: ' + err);
+            });
+          }
+        }
+      });
+
+      // Search subjects
+      const searchInput = document.getElementById('searchSubject');
+      if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+          const keyword = e.target.value.toLowerCase();
+          const items = document.querySelectorAll('.modal-subject-item');
+          
+          items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            item.style.display = text.includes(keyword) ? 'flex' : 'none';
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
