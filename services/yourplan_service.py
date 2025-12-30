@@ -153,10 +153,6 @@ def add_subject_to_plan(plan_id, user_id, subject_uid):
     
     for plan in plans:
         if plan['id'] == plan_id and plan['user_id'] == user_id:
-            # Kiểm tra đã bắt đầu chưa
-            if plan['is_started']:
-                return {'success': False, 'message': 'Không thể thay đổi lộ trình đã bắt đầu'}
-            
             # Kiểm tra môn đã có chưa
             if subject_uid in plan.get('subject_uids', []):
                 return {'success': False, 'message': 'Môn học đã có trong lộ trình'}
@@ -178,10 +174,6 @@ def remove_subject_from_plan(plan_id, user_id, subject_uid):
     
     for plan in plans:
         if plan['id'] == plan_id and plan['user_id'] == user_id:
-            # Kiểm tra đã bắt đầu chưa
-            if plan['is_started']:
-                return {'success': False, 'message': 'Không thể thay đổi lộ trình đã bắt đầu'}
-            
             # Xóa môn
             if subject_uid in plan.get('subject_uids', []):
                 plan['subject_uids'].remove(subject_uid)
