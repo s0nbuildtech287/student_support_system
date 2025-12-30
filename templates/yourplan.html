@@ -84,7 +84,7 @@
 
   <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
       <div class="container d-flex justify-content-between">
         <a class="navbar-brand fw-bold" href="/">Study With AI</a>
 
@@ -154,7 +154,8 @@
                 <div class="dropdown" onclick="event.stopPropagation();">
                   <button class="btn btn-sm btn-light" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
                   <ul class="dropdown-menu dropdown-menu-end">
-                    <li><button type="button" class="dropdown-item" data-action="edit" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">✏️ Sửa tên</button></li>
+                    <li><button type="button" class="dropdown-item" data-action="edit-plan" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="event.preventDefault()">📝 Chỉnh sửa lộ trình</button></li>
+                    <li><button type="button" class="dropdown-item" data-action="edit-name" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">✏️ Sửa tên</button></li>
                     <li><button type="button" class="dropdown-item text-danger" data-action="delete" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">🗑️ Xóa</button></li>
                   </ul>
                 </div>
@@ -279,6 +280,71 @@
       </div>
     </div>
 
+    <!-- Modal: Edit Plan (Add/Remove Subjects) -->
+    <div class="modal fade" id="editPlanModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">📝 Chỉnh sửa lộ trình: <span id="editPlanName"></span></h5>
+            <button aria-label="xs" type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Tab Navigation -->
+            <ul class="nav nav-tabs mb-3" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="tab-manage" data-bs-toggle="tab" data-bs-target="#manage-subjects" type="button" role="tab">
+                  📚 Quản lý môn học
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="tab-add" data-bs-toggle="tab" data-bs-target="#add-subjects" type="button" role="tab">
+                  ➕ Thêm môn học
+                </button>
+              </li>
+            </ul>
+
+            <div class="tab-content">
+              <!-- Tab 1: Manage Subjects -->
+              <div class="tab-pane fade show active" id="manage-subjects" role="tabpanel">
+                <div id="currentSubjectsList" style="max-height: 400px; overflow-y: auto;">
+                  <!-- Subjects will be populated by JavaScript -->
+                </div>
+              </div>
+
+              <!-- Tab 2: Add Subjects -->
+              <div class="tab-pane fade" id="add-subjects" role="tabpanel">
+                <!-- Search -->
+                <div class="mb-3">
+                  <input type="text" id="searchSubjectEdit" class="form-control" placeholder="🔍 Tìm kiếm môn học...">
+                </div>
+                
+                <!-- Subject List -->
+                <div id="availableSubjectsList" style="max-height: 400px; overflow-y: auto;">
+                  {% for subject in all_subjects %}
+                  <div class="modal-subject-item" 
+                       data-action="add-subject-edit" 
+                       data-subject-uid="{{ subject.uid }}">
+                    <img src="{{ url_for('static', filename='images/subject/' ~ (subject.image or 'placeholder.png')) }}" alt="{{ subject.subject_name }}">
+                    <div class="flex-grow-1">
+                      <strong>{{ subject.subject_name }}</strong>
+                      <br>
+                      <small class="text-muted">{{ subject.category }} • {{ subject.study_hours }}h</small>
+                      <span class="badge badge-level bg-primary ms-2">{{ subject.level }}</span>
+                    </div>
+                    <button class="btn btn-sm btn-primary btnCommon">➕ Thêm</button>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal: Add Subject -->
     <div class="modal fade" id="addSubjectModal" tabindex="-1">
       <div class="modal-dialog modal-lg">
@@ -353,14 +419,39 @@
         });
       });
 
-      // Direct event handlers cho edit & delete buttons
-      document.querySelectorAll('[data-action="edit"]').forEach(btn => {
+      // Event handler cho edit-plan (mở modal chỉnh sửa lộ trình)
+      document.querySelectorAll('[data-action="edit-plan"]').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
           e.stopPropagation();
           
           const planId = parseInt(this.getAttribute('data-plan-id'));
-          console.log('Edit plan ID:', planId);
+          const planName = this.getAttribute('data-plan-name');
+          
+          // Store current edit plan ID globally
+          window.EDIT_PLAN_ID = planId;
+          window.EDIT_PLAN_NAME = planName;
+          
+          // Update modal title
+          document.getElementById('editPlanName').textContent = planName;
+          
+          // Populate current subjects list
+          populateCurrentSubjects(planId);
+          
+          // Open modal
+          const modal = new bootstrap.Modal(document.getElementById('editPlanModal'));
+          modal.show();
+        });
+      });
+
+      // Event handler cho edit-name (sửa tên lộ trình)
+      document.querySelectorAll('[data-action="edit-name"]').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const planId = parseInt(this.getAttribute('data-plan-id'));
+          console.log('Edit plan name ID:', planId);
           
           const newName = prompt("Nhập tên mới cho lộ trình:");
           if (newName && newName.trim()) {
@@ -386,6 +477,7 @@
         });
       });
 
+      // Event handler cho delete
       document.querySelectorAll('[data-action="delete"]').forEach(btn => {
         btn.addEventListener('click', function(e) {
           e.preventDefault();
@@ -415,7 +507,33 @@
         });
       });
 
-      // Event delegation cho tất cả actions (chỉ cho start, add-subject, remove-subject)
+      // Function to populate current subjects in edit modal
+      function populateCurrentSubjects(planId) {
+        const container = document.getElementById('currentSubjectsList');
+        
+        // Get data from template - find plan with matching ID
+        const planCards = document.querySelectorAll('[data-plan-id]');
+        let foundPlan = null;
+        
+        // Try to find plan data from selected plan
+        if (SELECTED_PLAN_ID && SELECTED_PLAN_ID === planId) {
+          // Get subjects from the displayed selected plan
+          const subjectItems = document.querySelectorAll('.subject-item');
+          if (subjectItems.length > 0) {
+            container.innerHTML = '';
+            subjectItems.forEach((item, index) => {
+              const clone = item.cloneNode(true);
+              container.appendChild(clone);
+            });
+            return;
+          }
+        }
+        
+        // Otherwise show loading and fetch plan subjects
+        container.innerHTML = '<p class="text-muted text-center py-4">Đang tải...</p>';
+      }
+
+      // Event delegation cho tất cả actions (start, add-subject, add-subject-edit, remove-subject)
       document.addEventListener('click', function(e) {
         const target = e.target.closest('[data-action]');
         if (!target) return;
@@ -447,7 +565,7 @@
           }
         }
         
-        // ADD SUBJECT
+        // ADD SUBJECT (từ modal thêm môn chính)
         else if (action === 'add-subject') {
           if (!SELECTED_PLAN_ID) {
             alert("Vui lòng chọn lộ trình trước!");
@@ -480,10 +598,51 @@
           });
         }
         
-        // REMOVE SUBJECT
+        // ADD SUBJECT từ modal chỉnh sửa lộ trình
+        else if (action === 'add-subject-edit') {
+          if (!window.EDIT_PLAN_ID) {
+            alert("Vui lòng chọn lộ trình trước!");
+            return;
+          }
+          
+          const subjectUid = parseInt(target.getAttribute('data-subject-uid'));
+          console.log('Add subject UID:', subjectUid, 'to plan:', window.EDIT_PLAN_ID);
+          
+          fetch('/yourplan/add-subject', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+              plan_id: window.EDIT_PLAN_ID,
+              subject_id: subjectUid
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.success) {
+              alert('Đã thêm môn học!');
+              location.reload();
+            } else {
+              alert(data.message || 'Có lỗi xảy ra');
+            }
+          })
+          .catch(err => {
+            console.error('Error:', err);
+            alert('Lỗi: ' + err);
+          });
+        }
+        
+        // REMOVE SUBJECT (từ cả hai nơi: tab quản lý hoặc hiển thị chi tiết)
         else if (action === 'remove-subject') {
           e.preventDefault();
-          const planId = parseInt(target.getAttribute('data-plan-id'));
+          
+          // Nếu đang trong modal chỉnh sửa, lấy planId từ modal
+          let planId = parseInt(target.getAttribute('data-plan-id'));
+          
+          // Nếu không có planId và đang trong modal edit, dùng EDIT_PLAN_ID
+          if (!planId && window.EDIT_PLAN_ID) {
+            planId = window.EDIT_PLAN_ID;
+          }
+          
           const subjectUid = parseInt(target.getAttribute('data-subject-uid'));
           console.log('Remove subject UID:', subjectUid, 'from plan:', planId);
           
@@ -513,12 +672,26 @@
         }
       });
 
-      // Search subjects
+      // Search subjects - main add modal
       const searchInput = document.getElementById('searchSubject');
       if (searchInput) {
         searchInput.addEventListener('input', function(e) {
           const keyword = e.target.value.toLowerCase();
-          const items = document.querySelectorAll('.modal-subject-item');
+          const items = document.querySelectorAll('#subjectList .modal-subject-item');
+          
+          items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            item.style.display = text.includes(keyword) ? 'flex' : 'none';
+          });
+        });
+      }
+
+      // Search subjects - edit plan modal
+      const searchInputEdit = document.getElementById('searchSubjectEdit');
+      if (searchInputEdit) {
+        searchInputEdit.addEventListener('input', function(e) {
+          const keyword = e.target.value.toLowerCase();
+          const items = document.querySelectorAll('#availableSubjectsList .modal-subject-item');
           
           items.forEach(item => {
             const text = item.textContent.toLowerCase();
