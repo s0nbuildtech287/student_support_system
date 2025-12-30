@@ -147,12 +147,16 @@ def start_user_plan(plan_id, user_id):
     return {'success': False, 'message': 'Không tìm thấy lộ trình'}
 
 
-def add_subject_to_plan(plan_id, user_id, subject_uid):
+def add_subject_to_plan(plan_id, user_id, subject_uid, allow_edit=False):
     """Thêm môn học vào lộ trình"""
     plans = load_plans()
     
     for plan in plans:
         if plan['id'] == plan_id and plan['user_id'] == user_id:
+            # Kiểm tra nếu lộ trình đã bắt đầu và không phải từ edit modal
+            if plan['is_started'] and not allow_edit:
+                return {'success': False, 'message': 'Không thể thêm môn khi lộ trình đang học. Dùng nút Chỉnh sửa lộ trình'}
+            
             # Kiểm tra môn đã có chưa
             if subject_uid in plan.get('subject_uids', []):
                 return {'success': False, 'message': 'Môn học đã có trong lộ trình'}
@@ -168,12 +172,16 @@ def add_subject_to_plan(plan_id, user_id, subject_uid):
     return {'success': False, 'message': 'Không tìm thấy lộ trình'}
 
 
-def remove_subject_from_plan(plan_id, user_id, subject_uid):
+def remove_subject_from_plan(plan_id, user_id, subject_uid, allow_edit=False):
     """Xóa môn học khỏi lộ trình"""
     plans = load_plans()
     
     for plan in plans:
         if plan['id'] == plan_id and plan['user_id'] == user_id:
+            # Kiểm tra nếu lộ trình đã bắt đầu và không phải từ edit modal
+            if plan['is_started'] and not allow_edit:
+                return {'success': False, 'message': 'Không thể xóa môn khi lộ trình đang học. Dùng nút Chỉnh sửa lộ trình'}
+            
             # Xóa môn
             if subject_uid in plan.get('subject_uids', []):
                 plan['subject_uids'].remove(subject_uid)

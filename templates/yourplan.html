@@ -192,7 +192,10 @@
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
           <h5 class="mb-0">📋 {{ selected_plan.name }}</h5>
           <div>
-            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addSubjectModal">
+            <button class="btn btn-light btn-sm" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#addSubjectModal"
+                    {% if selected_plan.is_started %}disabled title="Không thể thêm môn khi lộ trình đang học. Dùng nút Chỉnh sửa"{% endif %}>
               ➕ Thêm môn học
             </button>
             {% if not selected_plan.is_started %}
@@ -224,7 +227,8 @@
                 <button class="btn btn-sm btn-outline-danger" 
                         data-action="remove-subject" 
                         data-plan-id="{{ selected_plan.id }}" 
-                        data-subject-uid="{{ subject.uid }}">
+                        data-subject-uid="{{ subject.uid }}"
+                        {% if selected_plan.is_started %}disabled title="Không thể xóa môn khi lộ trình đang học. Dùng nút Chỉnh sửa"{% endif %}>
                   🗑️ Xóa
                 </button>
               </div>
@@ -511,26 +515,51 @@
       function populateCurrentSubjects(planId) {
         const container = document.getElementById('currentSubjectsList');
         
-        // Get data from template - find plan with matching ID
-        const planCards = document.querySelectorAll('[data-plan-id]');
-        let foundPlan = null;
-        
-        // Try to find plan data from selected plan
+        // Get all subjects for this plan - build from scratch
         if (SELECTED_PLAN_ID && SELECTED_PLAN_ID === planId) {
-          // Get subjects from the displayed selected plan
           const subjectItems = document.querySelectorAll('.subject-item');
+          
           if (subjectItems.length > 0) {
-            container.innerHTML = '';
+            let html = '';
             subjectItems.forEach((item, index) => {
-              const clone = item.cloneNode(true);
-              container.appendChild(clone);
+              // Extract subject info from the DOM
+              const subjectName = item.querySelector('strong')?.textContent || '';
+              const level = item.querySelector('.badge-level')?.textContent || '';
+              const category = item.querySelector('small')?.textContent || '';
+              const subjectUid = item.querySelector('[data-subject-uid]')?.getAttribute('data-subject-uid') || '';
+              
+              html += `
+                <div class="subject-item">
+                  <div class="info">
+                    <div class="d-flex align-items-center gap-2">
+                      <strong>${subjectName}</strong>
+                      <span class="badge badge-level bg-primary">${level}</span>
+                    </div>
+                    <small class="text-muted">${category}</small>
+                  </div>
+                  <div class="actions">
+                    <a href="/subject/${subjectUid}" class="btn btn-sm btn-outline-info" target="_blank">
+                      👁️ Xem
+                    </a>
+                    <button class="btn btn-sm btn-outline-danger" 
+                            data-action="remove-subject" 
+                            data-plan-id="${planId}" 
+                            data-subject-uid="${subjectUid}"
+                            data-from-edit-modal="true">
+                      🗑️ Xóa
+                    </button>
+                  </div>
+                </div>
+              `;
             });
+            
+            container.innerHTML = html;
             return;
           }
         }
         
-        // Otherwise show loading and fetch plan subjects
-        container.innerHTML = '<p class="text-muted text-center py-4">Đang tải...</p>';
+        // Otherwise show empty state
+        container.innerHTML = '<p class="text-muted text-center py-4">Không có môn học</p>';
       }
 
       // Event delegation cho tất cả actions (start, add-subject, add-subject-edit, remove-subject)
@@ -613,7 +642,8 @@
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
               plan_id: window.EDIT_PLAN_ID,
-              subject_id: subjectUid
+              subject_id: subjectUid,
+              allow_edit: true
             })
           })
           .then(res => res.json())
@@ -635,16 +665,24 @@
         else if (action === 'remove-subject') {
           e.preventDefault();
           
-          // Nếu đang trong modal chỉnh sửa, lấy planId từ modal
+          // Kiểm tra nếu từ edit modal
+          const fromEditModal = target.getAttribute('data-from-edit-modal') === 'true';
+          console.log('Remove subject clicked:', {
+            fromEditModal: fromEditModal,
+            dataAttr: target.getAttribute('data-from-edit-modal'),
+            targetHTML: target.outerHTML
+          });
+          
+          // Lấy planId từ button
           let planId = parseInt(target.getAttribute('data-plan-id'));
           
-          // Nếu không có planId và đang trong modal edit, dùng EDIT_PLAN_ID
+          // Nếu đang ở edit modal, dùng EDIT_PLAN_ID nếu planId không hợp lệ
           if (!planId && window.EDIT_PLAN_ID) {
             planId = window.EDIT_PLAN_ID;
           }
           
           const subjectUid = parseInt(target.getAttribute('data-subject-uid'));
-          console.log('Remove subject UID:', subjectUid, 'from plan:', planId);
+          console.log('Remove subject UID:', subjectUid, 'from plan:', planId, 'allow_edit:', fromEditModal);
           
           if (confirm("Xóa môn học này khỏi lộ trình?")) {
             fetch('/yourplan/remove-subject', {
@@ -652,11 +690,13 @@
               headers: {'Content-Type': 'application/json'},
               body: JSON.stringify({
                 plan_id: planId,
-                subject_id: subjectUid
+                subject_id: subjectUid,
+                allow_edit: fromEditModal
               })
             })
             .then(res => res.json())
             .then(data => {
+              console.log('Response:', data);
               if (data.success) {
                 alert('Đã xóa môn học!');
                 location.reload();

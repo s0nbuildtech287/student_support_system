@@ -106,8 +106,9 @@ def add_subject():
     
     plan_id = data.get('plan_id')
     subject_uid = data.get('subject_id')  # Đây là uid từ CSV
+    allow_edit = data.get('allow_edit', False)  # Flag để cho phép sửa khi lộ trình đang học
     
-    result = add_subject_to_plan(plan_id, user_id, subject_uid)
+    result = add_subject_to_plan(plan_id, user_id, subject_uid, allow_edit)
     return jsonify(result)
 
 
@@ -120,6 +121,7 @@ def remove_subject():
     
     plan_id = data.get('plan_id')
     subject_uid = data.get('subject_id')
+    allow_edit = data.get('allow_edit', False)  # Flag để cho phép sửa khi lộ trình đang học
     
-    result = remove_subject_from_plan(plan_id, user_id, subject_uid)
+    result = remove_subject_from_plan(plan_id, user_id, subject_uid, allow_edit)
     return jsonify(result)
