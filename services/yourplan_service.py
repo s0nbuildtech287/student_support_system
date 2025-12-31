@@ -28,11 +28,12 @@ def get_user_plans(user_id):
     subjects_data = load_csv(SUBJECT_CSV)
     
     for plan in plans:
-        # Lấy subject_ids từ plan_subjects
+        # Lấy subject_ids và thông tin progress từ plan_subjects
         query_subjects = """
             SELECT subject_id, progress, status
             FROM plan_subjects
             WHERE plan_id = %s
+            ORDER BY id
         """
         plan_subjects_data = fetch_all(query_subjects, (plan['id'],))
         

@@ -72,113 +72,159 @@
       </div>
 
       <!-- Plans List -->
-      <div class="row g-3 mb-4">
-        {% for plan in plans %}
-        <div class="col-md-4">
-          <div class="card plan-card {% if plan.is_active %}active{% endif %}" data-plan-id="{{ plan.id }}">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start mb-2">
-                <h5 class="fw-bold mb-0">{{ plan.name }}</h5>
-                <div class="dropdown" onclick="event.stopPropagation();">
-                  <button class="btn btn-sm btn-light" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                    <li><button type="button" class="dropdown-item" data-action="edit-plan" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="event.preventDefault()">📝 Chỉnh sửa lộ trình</button></li>
-                    <li><button type="button" class="dropdown-item" data-action="edit-name" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">✏️ Sửa tên</button></li>
-                    <li><button type="button" class="dropdown-item text-danger" data-action="delete" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">🗑️ Xóa</button></li>
-                  </ul>
+      <!-- Chỉ hiển thị phần Plans List và Selected Plan Details, phần còn lại giữ nguyên -->
+
+        <!-- Plans List với Progress -->
+        <div class="row g-3 mb-4">
+          {% for plan in plans %}
+          <div class="col-md-4">
+            <div class="card plan-card {% if plan.is_active %}active{% endif %}" data-plan-id="{{ plan.id }}">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                  <h5 class="fw-bold mb-0">{{ plan.name }}</h5>
+                  <div class="dropdown" onclick="event.stopPropagation();">
+                    <button class="btn btn-sm btn-light" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><button type="button" class="dropdown-item" data-action="edit-plan" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="event.preventDefault()">📝 Chỉnh sửa lộ trình</button></li>
+                      <li><button type="button" class="dropdown-item" data-action="edit-name" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">✏️ Sửa tên</button></li>
+                      <li><button type="button" class="dropdown-item text-danger" data-action="delete" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">🗑️ Xóa</button></li>
+                    </ul>
+                  </div>
                 </div>
-              </div>
-              <p class="text-muted small mb-2">{{ plan.description }}</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <span class="badge bg-secondary">{{ plan.subjects|length }} môn học</span>
-                {% if plan.is_started %}
-                <span class="badge bg-success">Đang học</span>
-                {% else %}
-                <span class="badge bg-warning text-dark">Chưa bắt đầu</span>
+                <p class="text-muted small mb-2">{{ plan.description }}</p>
+                
+                <!-- Progress Info -->
+                {% if plan.progress_info and plan.progress_info.total_subjects > 0 %}
+                <div class="mb-2">
+                  <div class="d-flex justify-content-between mb-1">
+                    <small class="text-muted">Tiến độ</small>
+                    <small class="fw-bold">{{ plan.progress_info.overall_progress }}%</small>
+                  </div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-success" style="width: {{ plan.progress_info.overall_progress }}%"></div>
+                  </div>
+                  <small class="text-muted">
+                    ✅ {{ plan.progress_info.completed_subjects }}/{{ plan.progress_info.total_subjects }} môn
+                  </small>
+                </div>
                 {% endif %}
-              </div>
-            </div>
-          </div>
-        </div>
-        {% endfor %}
-
-        <!-- Empty state if no plans -->
-        {% if plans|length == 0 %}
-        <div class="col-12">
-          <div class="empty-state">
-            <p class="fs-1">📚</p>
-            <h5>Chưa có lộ trình nào</h5>
-            <p class="text-muted">Hãy tạo lộ trình học tập đầu tiên của bạn!</p>
-          </div>
-        </div>
-        {% endif %}
-      </div>
-
-      <!-- Selected Plan Details -->
-      {% if selected_plan %}
-      <div class="card shadow-sm">
-        <div class="card-header text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #b3b2c9 0%, #6366f1 50%, #b3b2c9 100%);">
-          <h5 class="mb-0">📋 {{ selected_plan.name }}</h5>
-          <div>
-            <button class="btn btn-light btn-sm" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#addSubjectModal"
-                    {% if selected_plan.is_started %}disabled title="Không thể thêm môn khi lộ trình đang học. Dùng nút Chỉnh sửa"{% endif %}>
-              ➕ Thêm môn học
-            </button>
-            {% if not selected_plan.is_started %}
-            <button class="btn btn-success btn-sm" 
-                    data-action="start" 
-                    data-plan-id="{{ selected_plan.id }}">
-              🚀 Bắt đầu lộ trình
-            </button>
-            {% endif %}
-          </div>
-        </div>
-        <div class="card-body">
-          {% if selected_plan.subjects|length > 0 %}
-            {% for subject in selected_plan.subjects %}
-            <div class="subject-item">
-              <div class="info">
-                <div class="d-flex align-items-center gap-2">
-                  <strong>{{ loop.index }}. {{ subject.subject_name }}</strong>
-                  <span class="badge badge-level bg-primary">{{ subject.level }}</span>
+                
+                <div class="d-flex justify-content-between align-items-center">
+                  <span class="badge bg-secondary">{{ plan.subjects|length }} môn học</span>
+                  {% if plan.is_started %}
+                  <span class="badge bg-success">Đang học</span>
+                  {% else %}
+                  <span class="badge bg-warning text-dark">Chưa bắt đầu</span>
+                  {% endif %}
                 </div>
-                <small class="text-muted">
-                  {{ subject.category }} • {{ subject.study_hours }} giờ
-                </small>
-              </div>
-              <div class="actions">
-                <a href="/subject/{{ subject.uid }}" class="btn btn-sm btn-outline-info" target="_blank">
-                  👁️ Xem
-                </a>
-                <button class="btn btn-sm btn-outline-danger" 
-                        data-action="remove-subject" 
-                        data-plan-id="{{ selected_plan.id }}" 
-                        data-subject-uid="{{ subject.uid }}"
-                        {% if selected_plan.is_started %}disabled title="Không thể xóa môn khi lộ trình đang học. Dùng nút Chỉnh sửa"{% endif %}>
-                  🗑️ Xóa
-                </button>
               </div>
             </div>
-            {% endfor %}
-            
-            <div class="mt-3 p-3 bg-light rounded">
-              <strong>Tổng kết:</strong>
-              <ul class="mb-0 mt-2">
-                <li>Tổng số môn: <strong>{{ selected_plan.subjects|length }}</strong></li>
-                <li>Tổng thời gian học: <strong>{{ selected_plan.total_hours }} giờ</strong></li>
-              </ul>
+          </div>
+          {% endfor %}
+
+          <!-- Empty state if no plans -->
+          {% if plans|length == 0 %}
+          <div class="col-12">
+            <div class="empty-state">
+              <p class="fs-1">📚</p>
+              <h5>Chưa có lộ trình nào</h5>
+              <p class="text-muted">Hãy tạo lộ trình học tập đầu tiên của bạn!</p>
             </div>
-          {% else %}
-          <div class="empty-state">
-            <p class="fs-2">📝</p>
-            <p class="text-muted">Lộ trình chưa có môn học nào. Hãy thêm môn học!</p>
           </div>
           {% endif %}
         </div>
-      </div>
-      {% endif %}
+
+        <!-- Selected Plan Details với trạng thái môn học -->
+        {% if selected_plan %}
+        <div class="card shadow-sm">
+          <div class="card-header text-white d-flex justify-content-between align-items-center" style="background: linear-gradient(90deg, #b3b2c9 0%, #6366f1 50%, #b3b2c9 100%);">
+            <div>
+              <h5 class="mb-0">📋 {{ selected_plan.name }}</h5>
+              {% if selected_plan.progress_info %}
+              <small>
+                Tiến độ: {{ selected_plan.progress_info.overall_progress }}% 
+                ({{ selected_plan.progress_info.completed_subjects }}/{{ selected_plan.progress_info.total_subjects }} môn hoàn thành)
+              </small>
+              {% endif %}
+            </div>
+            <div>
+              <button class="btn btn-light btn-sm" 
+                      data-bs-toggle="modal" 
+                      data-bs-target="#addSubjectModal"
+                      {% if selected_plan.is_started %}disabled title="Không thể thêm môn khi lộ trình đang học. Dùng nút Chỉnh sửa"{% endif %}>
+                ➕ Thêm môn học
+              </button>
+              {% if not selected_plan.is_started %}
+              <button class="btn btn-success btn-sm" 
+                      data-action="start" 
+                      data-plan-id="{{ selected_plan.id }}">
+                🚀 Bắt đầu lộ trình
+              </button>
+              {% endif %}
+            </div>
+          </div>
+          <div class="card-body">
+            {% if selected_plan.subjects|length > 0 %}
+              {% for subject in selected_plan.subjects %}
+              <div class="subject-item">
+                <div class="info">
+                  <div class="d-flex align-items-center gap-2">
+                    <!-- Icon trạng thái -->
+                    {% if subject.status == 'completed' %}
+                    <span class="badge bg-success" title="Đã hoàn thành">✅</span>
+                    {% elif subject.status == 'studying' %}
+                    <span class="badge bg-warning text-dark" title="Đang học">📚</span>
+                    {% else %}
+                    <span class="badge bg-secondary" title="Chưa bắt đầu">⏳</span>
+                    {% endif %}
+                    
+                    <strong>{{ loop.index }}. {{ subject.subject_name }}</strong>
+                    <span class="badge badge-level bg-primary">{{ subject.level }}</span>
+                    
+                    <!-- Progress Badge -->
+                    {% if subject.progress > 0 %}
+                    <span class="badge bg-info">{{ subject.progress }}%</span>
+                    {% endif %}
+                  </div>
+                  <small class="text-muted">
+                    {{ subject.category }} • {{ subject.study_hours }} giờ
+                  </small>
+                </div>
+                <div class="actions">
+                  <a href="/subject/{{ subject.uid }}" class="btn btn-sm btn-outline-info">
+                    👁️ Xem
+                  </a>
+                  <button class="btn btn-sm btn-outline-danger" 
+                          data-action="remove-subject" 
+                          data-plan-id="{{ selected_plan.id }}" 
+                          data-subject-uid="{{ subject.uid }}"
+                          {% if selected_plan.is_started %}disabled title="Không thể xóa môn khi lộ trình đang học. Dùng nút Chỉnh sửa"{% endif %}>
+                    🗑️ Xóa
+                  </button>
+                </div>
+              </div>
+              {% endfor %}
+              
+              <div class="mt-3 p-3 bg-light rounded">
+                <strong>Tổng kết:</strong>
+                <ul class="mb-0 mt-2">
+                  <li>Tổng số môn: <strong>{{ selected_plan.subjects|length }}</strong></li>
+                  <li>Tổng thời gian học: <strong>{{ selected_plan.total_hours }} giờ</strong></li>
+                  {% if selected_plan.progress_info %}
+                  <li>Tiến độ hoàn thành: <strong>{{ selected_plan.progress_info.overall_progress }}%</strong></li>
+                  <li>Môn đã hoàn thành: <strong>{{ selected_plan.progress_info.completed_subjects }}/{{ selected_plan.progress_info.total_subjects }}</strong></li>
+                  {% endif %}
+                </ul>
+              </div>
+            {% else %}
+            <div class="empty-state">
+              <p class="fs-2">📝</p>
+              <p class="text-muted">Lộ trình chưa có môn học nào. Hãy thêm môn học!</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
     </div>
 
     <!-- Modal: Create Plan -->

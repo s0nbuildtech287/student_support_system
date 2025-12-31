@@ -382,6 +382,12 @@
           document.getElementById('resultTitle').className = 'text-success';
           document.getElementById('resultMessage').textContent = 
             `Bạn đã đạt ${data.percentage}% - Giờ bạn có thể hoàn thành môn học này!`;
+          
+          // Auto reload sau 3 giây khi pass để cập nhật nút hoàn thành
+          setTimeout(() => {
+            if (quizModal) quizModal.hide();
+            location.reload();
+          }, 3000);
         } else {
           document.getElementById('resultIcon').textContent = '💪';
           document.getElementById('resultTitle').textContent = 'Cần cố gắng thêm!';
