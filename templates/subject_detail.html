@@ -6,19 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
 
     <style>
       .subject-img {
         max-height: 320px;
         object-fit: cover;
-      }
-
-      .resource-wrapper {
-        max-width: 720px;
-        margin: 0 auto;
       }
     </style>
   </head>
@@ -27,7 +20,10 @@
     <!-- Navbar -->
     <nav class="navbar navbar-dark bg-dark">
       <div class="container">
-        <a class="navbar-brand narvar" href="/subject">← Quay lại danh sách môn học</a>
+        <a class="navbar-brand" href="/subject">← Quay lại danh sách môn học</a>
+        {% if user %}
+        <a class="btn btn-outline-light btn-sm" href="/yourplan">📋 Lộ trình của tôi</a>
+        {% endif %}
       </div>
     </nav>
 
@@ -78,10 +74,45 @@
                   />
                 </div>
               </div>
+
+              <!-- BUTTONS (chỉ hiện nếu môn này nằm trong lộ trình đang học) -->
+              {% if learning_progress and learning_progress.status != 'completed' %}
+              <hr class="my-3">
+              <div class="row g-2">
+                <div class="col-6">
+                  <button class="btn btn-warning w-100" onclick="startQuiz()">
+                    📝 Làm bài test
+                  </button>
+                </div>
+                <div class="col-6">
+                  <button class="btn w-100 {% if quiz_passed %}btn-success{% else %}btn-secondary{% endif %}" 
+                          onclick="markAsCompleted()"
+                          {% if not quiz_passed %}disabled title="Cần đạt 80% bài test"{% endif %}>
+                    ✅ Hoàn thành
+                  </button>
+                </div>
+              </div>
+              {% if best_attempt %}
+              <small class="text-muted d-block mt-2 text-center">
+                🏆 Điểm cao nhất: {{ best_attempt.percentage }}%
+              </small>
+              {% endif %}
+              {% if not quiz_passed %}
+              <small class="text-muted d-block mt-1 text-center">
+                💡 Cần đạt ≥ 80% để mở khóa nút hoàn thành
+              </small>
+              {% endif %}
+              {% elif learning_progress and learning_progress.status == 'completed' %}
+              <hr class="my-3">
+              <div class="alert alert-success text-center mb-0">
+                <strong>🎉 Xuất sắc!</strong> Bạn đã hoàn thành môn học này
+              </div>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
+      
       <div class="row g-4">
         <!-- TÀI LIỆU -->
         <div class="col-lg-6">
@@ -109,12 +140,15 @@
                 {% for item in subject.outline %}
                 <div class="accordion-item">
                   <h2 class="accordion-header">
-                    <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index }}">
+                    <button class="accordion-button {% if not loop.first %}collapsed{% endif %}" 
+                            data-bs-toggle="collapse" 
+                            data-bs-target="#collapse{{ loop.index }}">
                       Phần {{ item.order }}: {{ item.title }}
                     </button>
                   </h2>
 
-                  <div id="collapse{{ loop.index }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}">
+                  <div id="collapse{{ loop.index }}" 
+                       class="accordion-collapse collapse {% if loop.first %}show{% endif %}">
                     <div class="accordion-body">
                       <p class="text-muted">{{ item.knowledge }}</p>
                       <p class="text-success">{{ item.expected_outcome }}</p>
@@ -128,5 +162,264 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal: Quiz Test -->
+    <div class="modal fade" id="quizModal" tabindex="-1" data-bs-backdrop="static">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header bg-warning">
+            <h5 class="modal-title">📝 Bài kiểm tra: {{ subject.subject_name }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Loading -->
+            <div id="quizLoading" class="text-center py-5">
+              <div class="spinner-border text-primary" role="status"></div>
+              <p class="mt-3">Đang tải câu hỏi...</p>
+            </div>
+            
+            <!-- Quiz Content -->
+            <div id="quizContent" class="d-none">
+              <div class="alert alert-info">
+                <strong>📋 Hướng dẫn:</strong>
+                <ul class="mb-0 mt-2">
+                  <li>Bài test gồm 10 câu hỏi trắc nghiệm</li>
+                  <li>Chọn đáp án đúng nhất cho mỗi câu</li>
+                  <li>Cần đạt ≥ 80% (8/10 câu) để hoàn thành môn học</li>
+                </ul>
+              </div>
+              
+              <div id="quizQuestions"></div>
+            </div>
+            
+            <!-- Results -->
+            <div id="quizResults" class="d-none text-center">
+              <div id="resultIcon" class="display-1 mb-3"></div>
+              <h4 id="resultTitle"></h4>
+              <p id="resultMessage" class="lead"></p>
+              
+              <div class="row mt-4">
+                <div class="col-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="text-success" id="correctCount">0</h5>
+                      <small>Đúng</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="text-danger" id="wrongCount">0</h5>
+                      <small>Sai</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <div class="card-body">
+                      <h5 class="text-primary" id="percentageDisplay">0%</h5>
+                      <small>Điểm</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closeQuizBtn">Đóng</button>
+            <button type="button" class="btn btn-primary d-none" id="submitQuizBtn" onclick="submitQuiz()">Nộp bài</button>
+            <button type="button" class="btn btn-success d-none" id="retryQuizBtn" onclick="retryQuiz()">Làm lại</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      let quizQuestions = [];
+      let userAnswers = {};
+      let quizModal;
+
+      // Initialize modal
+      document.addEventListener('DOMContentLoaded', function() {
+        const modalEl = document.getElementById('quizModal');
+        if (modalEl) {
+          quizModal = new bootstrap.Modal(modalEl);
+        }
+      });
+
+      // Start quiz
+      async function startQuiz() {
+        console.log('Starting quiz...');
+        
+        // Reset
+        userAnswers = {};
+        document.getElementById('quizLoading').classList.remove('d-none');
+        document.getElementById('quizContent').classList.add('d-none');
+        document.getElementById('quizResults').classList.add('d-none');
+        document.getElementById('submitQuizBtn').classList.add('d-none');
+        document.getElementById('retryQuizBtn').classList.add('d-none');
+        
+        // Open modal
+        if (quizModal) {
+          quizModal.show();
+        }
+        
+        // Load questions
+        try {
+          const response = await fetch('/subject/{{ subject.uid }}/quiz');
+          const data = await response.json();
+          
+          console.log('Quiz data:', data);
+          
+          if (data.success) {
+            quizQuestions = data.questions;
+            renderQuiz();
+            
+            document.getElementById('quizLoading').classList.add('d-none');
+            document.getElementById('quizContent').classList.remove('d-none');
+            document.getElementById('submitQuizBtn').classList.remove('d-none');
+          } else {
+            alert(data.message || 'Lỗi khi tải câu hỏi');
+            if (quizModal) quizModal.hide();
+          }
+        } catch (error) {
+          console.error('Error loading quiz:', error);
+          alert('Lỗi: ' + error.message);
+          if (quizModal) quizModal.hide();
+        }
+      }
+
+      // Render quiz questions
+      function renderQuiz() {
+        const container = document.getElementById('quizQuestions');
+        let html = '';
+        
+        quizQuestions.forEach((q, index) => {
+          html += `
+            <div class="card mb-3">
+              <div class="card-body">
+                <h6 class="fw-bold">Câu ${index + 1}: ${q.question}</h6>
+                <div class="mt-3">
+                  ${q.options.map(opt => `
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" 
+                             type="radio" 
+                             name="question_${q.id}" 
+                             id="q${q.id}_${opt.label.toLowerCase()}"
+                             value="${opt.label.toLowerCase()}"
+                             onchange="selectAnswer(${q.id}, '${opt.label.toLowerCase()}')">
+                      <label class="form-check-label" for="q${q.id}_${opt.label.toLowerCase()}">
+                        ${opt.label}. ${opt.text}
+                      </label>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        container.innerHTML = html;
+      }
+
+      // Select answer
+      function selectAnswer(questionId, answer) {
+        userAnswers[questionId] = answer;
+        console.log('Selected:', questionId, answer);
+      }
+
+      // Submit quiz
+      async function submitQuiz() {
+        if (Object.keys(userAnswers).length < quizQuestions.length) {
+          alert('Vui lòng trả lời tất cả các câu hỏi!');
+          return;
+        }
+        
+        document.getElementById('submitQuizBtn').disabled = true;
+        document.getElementById('submitQuizBtn').textContent = 'Đang chấm...';
+        
+        try {
+          const response = await fetch('/subject/{{ subject.uid }}/quiz/submit', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({answers: userAnswers})
+          });
+          
+          const data = await response.json();
+          console.log('Quiz result:', data);
+          
+          if (data.success) {
+            showResults(data);
+          } else {
+            alert(data.message || 'Có lỗi xảy ra');
+          }
+        } catch (error) {
+          console.error('Error submitting quiz:', error);
+          alert('Lỗi: ' + error.message);
+        } finally {
+          document.getElementById('submitQuizBtn').disabled = false;
+          document.getElementById('submitQuizBtn').textContent = 'Nộp bài';
+        }
+      }
+
+      // Show results
+      function showResults(data) {
+        document.getElementById('quizContent').classList.add('d-none');
+        document.getElementById('quizResults').classList.remove('d-none');
+        document.getElementById('submitQuizBtn').classList.add('d-none');
+        document.getElementById('retryQuizBtn').classList.remove('d-none');
+        
+        // Results
+        document.getElementById('correctCount').textContent = data.score;
+        document.getElementById('wrongCount').textContent = data.total - data.score;
+        document.getElementById('percentageDisplay').textContent = data.percentage + '%';
+        
+        if (data.passed) {
+          document.getElementById('resultIcon').textContent = '🎉';
+          document.getElementById('resultTitle').textContent = 'Xuất sắc!';
+          document.getElementById('resultTitle').className = 'text-success';
+          document.getElementById('resultMessage').textContent = 
+            `Bạn đã đạt ${data.percentage}% - Giờ bạn có thể hoàn thành môn học này!`;
+        } else {
+          document.getElementById('resultIcon').textContent = '💪';
+          document.getElementById('resultTitle').textContent = 'Cần cố gắng thêm!';
+          document.getElementById('resultTitle').className = 'text-warning';
+          document.getElementById('resultMessage').textContent = 
+            `Bạn đạt ${data.percentage}%. Cần ≥ 80% để hoàn thành. Hãy thử lại!`;
+        }
+      }
+
+      // Retry quiz
+      function retryQuiz() {
+        if (quizModal) quizModal.hide();
+        setTimeout(() => startQuiz(), 300);
+      }
+
+      // Mark as completed function
+      async function markAsCompleted() {
+        if (!confirm('Đánh dấu môn học này là đã hoàn thành?')) return;
+        
+        try {
+          const response = await fetch('/subject/{{ subject.uid }}/mark-completed', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+          });
+          
+          const data = await response.json();
+          
+          if (data.success) {
+            alert('🎉 Chúc mừng! Bạn đã hoàn thành môn học này!');
+            location.reload();
+          } else {
+            alert(data.message || 'Có lỗi xảy ra');
+          }
+        } catch (error) {
+          console.error('Error marking completed:', error);
+          alert('Lỗi: ' + error.message);
+        }
+      }
+    </script>
   </body>
 </html>
