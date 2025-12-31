@@ -1,5 +1,6 @@
 """
 Service xử lý quiz và bài kiểm tra
+CẬP NHẬT: Thêm tracking theo plan_id để cho phép làm lại ở các lộ trình khác
 """
 
 import random
@@ -33,12 +34,12 @@ def get_random_quiz_questions(subject_id, limit=10):
     return questions
 
 
-def submit_quiz(user_id, subject_id, answers):
+def submit_quiz(user_id, subject_id, answers, plan_id=None):
     """
     Chấm bài quiz
+    THÊM plan_id để track quiz theo từng lộ trình
     
     answers: dict {question_id: selected_answer}
-    Ví dụ: {1: 'a', 2: 'b', 3: 'c', ...}
     
     Returns: {
         'success': True,
@@ -78,14 +79,22 @@ def submit_quiz(user_id, subject_id, answers):
     percentage = (score / total * 100) if total > 0 else 0
     passed = percentage >= 80
     
-    # Lưu lịch sử làm bài
-    save_query = """
-        INSERT INTO quiz_attempts 
-        (user_id, subject_id, score, total_questions, percentage, passed, created_at)
-        VALUES (%s, %s, %s, %s, %s, %s, NOW())
-    """
-    
-    execute_query(save_query, (user_id, subject_id, score, total, percentage, 1 if passed else 0))
+    # Lưu lịch sử làm bài - THÊM plan_id nếu có
+    # Cần thêm cột plan_id vào bảng quiz_attempts
+    if plan_id:
+        save_query = """
+            INSERT INTO quiz_attempts 
+            (user_id, subject_id, plan_id, score, total_questions, percentage, passed, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
+        """
+        execute_query(save_query, (user_id, subject_id, plan_id, score, total, percentage, 1 if passed else 0))
+    else:
+        save_query = """
+            INSERT INTO quiz_attempts 
+            (user_id, subject_id, score, total_questions, percentage, passed, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, NOW())
+        """
+        execute_query(save_query, (user_id, subject_id, score, total, percentage, 1 if passed else 0))
     
     return {
         'success': True,
@@ -97,23 +106,33 @@ def submit_quiz(user_id, subject_id, answers):
     }
 
 
-def get_user_quiz_history(user_id, subject_id):
+def get_user_quiz_history(user_id, subject_id, plan_id=None):
     """
     Lấy lịch sử làm bài của user cho một môn
+    Nếu có plan_id thì chỉ lấy của plan đó
     """
-    query = """
-        SELECT score, total_questions, percentage, passed, created_at
-        FROM quiz_attempts
-        WHERE user_id = %s AND subject_id = %s
-        ORDER BY created_at DESC
-    """
-    
-    return fetch_all(query, (user_id, subject_id))
+    if plan_id:
+        query = """
+            SELECT score, total_questions, percentage, passed, created_at
+            FROM quiz_attempts
+            WHERE user_id = %s AND subject_id = %s AND plan_id = %s
+            ORDER BY created_at DESC
+        """
+        return fetch_all(query, (user_id, subject_id, plan_id))
+    else:
+        query = """
+            SELECT score, total_questions, percentage, passed, created_at
+            FROM quiz_attempts
+            WHERE user_id = %s AND subject_id = %s
+            ORDER BY created_at DESC
+        """
+        return fetch_all(query, (user_id, subject_id))
 
 
 def has_passed_quiz(user_id, subject_id):
     """
     Kiểm tra user đã pass quiz của môn này chưa (>= 80%)
+    Không phân biệt lộ trình
     """
     query = """
         SELECT id
@@ -126,16 +145,51 @@ def has_passed_quiz(user_id, subject_id):
     return result is not None
 
 
-def get_best_attempt(user_id, subject_id):
+def has_passed_quiz_in_plan(user_id, subject_id, plan_id=None):
+    """
+    Kiểm tra user đã pass quiz của môn này trong lộ trình cụ thể chưa
+    Nếu không có plan_id thì kiểm tra chung
+    """
+    if plan_id:
+        query = """
+            SELECT id
+            FROM quiz_attempts
+            WHERE user_id = %s AND subject_id = %s AND plan_id = %s AND passed = 1
+            LIMIT 1
+        """
+        result = fetch_one(query, (user_id, subject_id, plan_id))
+    else:
+        query = """
+            SELECT id
+            FROM quiz_attempts
+            WHERE user_id = %s AND subject_id = %s AND passed = 1
+            LIMIT 1
+        """
+        result = fetch_one(query, (user_id, subject_id))
+    
+    return result is not None
+
+
+def get_best_attempt(user_id, subject_id, plan_id=None):
     """
     Lấy lần làm bài tốt nhất
+    Nếu có plan_id thì chỉ lấy của plan đó
     """
-    query = """
-        SELECT score, total_questions, percentage, passed, created_at
-        FROM quiz_attempts
-        WHERE user_id = %s AND subject_id = %s
-        ORDER BY percentage DESC, created_at DESC
-        LIMIT 1
-    """
-    
-    return fetch_one(query, (user_id, subject_id))
+    if plan_id:
+        query = """
+            SELECT score, total_questions, percentage, passed, created_at
+            FROM quiz_attempts
+            WHERE user_id = %s AND subject_id = %s AND plan_id = %s
+            ORDER BY percentage DESC, created_at DESC
+            LIMIT 1
+        """
+        return fetch_one(query, (user_id, subject_id, plan_id))
+    else:
+        query = """
+            SELECT score, total_questions, percentage, passed, created_at
+            FROM quiz_attempts
+            WHERE user_id = %s AND subject_id = %s
+            ORDER BY percentage DESC, created_at DESC
+            LIMIT 1
+        """
+        return fetch_one(query, (user_id, subject_id))

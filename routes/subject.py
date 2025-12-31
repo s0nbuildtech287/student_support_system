@@ -5,12 +5,13 @@ from services.subject_service import (
 )
 from services.progress_service import (
     get_subject_learning_progress,
-    mark_subject_completed
+    mark_subject_completed,
+    get_subject_progress_in_plan
 )
 from services.quiz_service import (
     get_random_quiz_questions,
     submit_quiz,
-    has_passed_quiz,
+    has_passed_quiz_in_plan,
     get_best_attempt
 )
 from routes.user import get_current_user, login_required
@@ -60,12 +61,28 @@ def subject_detail(uid):
     learning_progress = None
     quiz_passed = False
     best_attempt = None
+    plan_id = None
     
     if user:
         user_id = session.get('user_id')
-        learning_progress = get_subject_learning_progress(user_id, uid)
-        quiz_passed = has_passed_quiz(user_id, uid)
-        best_attempt = get_best_attempt(user_id, uid)
+        
+        # LẤY plan_id từ URL nếu có (khi click từ yourplan)
+        plan_id = request.args.get('plan_id', type=int)
+        
+        if plan_id:
+            # Kiểm tra môn này có trong plan không
+            learning_progress = get_subject_progress_in_plan(plan_id, uid)
+            if learning_progress:
+                learning_progress['plan_id'] = plan_id
+                quiz_passed = has_passed_quiz_in_plan(user_id, uid, plan_id)
+                best_attempt = get_best_attempt(user_id, uid, plan_id)
+        else:
+            # Nếu không có plan_id, lấy từ plan đang học đầu tiên
+            learning_progress = get_subject_learning_progress(user_id, uid)
+            if learning_progress:
+                plan_id = learning_progress.get('plan_id')
+                quiz_passed = has_passed_quiz_in_plan(user_id, uid, plan_id)
+                best_attempt = get_best_attempt(user_id, uid, plan_id)
 
     return render_template(
         "subject_detail.html",
@@ -73,7 +90,8 @@ def subject_detail(uid):
         user=user,
         learning_progress=learning_progress,
         quiz_passed=quiz_passed,
-        best_attempt=best_attempt
+        best_attempt=best_attempt,
+        plan_id=plan_id
     )
 
 
@@ -109,11 +127,12 @@ def submit_quiz_route(uid):
     data = request.get_json()
     
     answers = data.get('answers', {})
+    plan_id = data.get('plan_id')  # THÊM plan_id từ client
     
     # Convert string keys to int
     answers = {int(k): v for k, v in answers.items()}
     
-    result = submit_quiz(user_id, uid, answers)
+    result = submit_quiz(user_id, uid, answers, plan_id)
     
     return jsonify(result)
 
@@ -123,6 +142,8 @@ def submit_quiz_route(uid):
 @login_required
 def mark_completed(uid):
     user_id = session.get('user_id')
+    data = request.get_json()
+    plan_id = data.get('plan_id')  # THÊM plan_id từ client
     
-    result = mark_subject_completed(user_id, uid)
+    result = mark_subject_completed(user_id, uid, plan_id)
     return jsonify(result)

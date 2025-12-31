@@ -237,195 +237,202 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      let quizQuestions = [];
-      let userAnswers = {};
-      let quizModal;
+        let quizQuestions = [];
+        let userAnswers = {};
+        let quizModal;
+        const PLAN_ID = {{ plan_id if plan_id else 'null' }};  // THÊM biến này
 
-      // Initialize modal
-      document.addEventListener('DOMContentLoaded', function() {
-        const modalEl = document.getElementById('quizModal');
-        if (modalEl) {
-          quizModal = new bootstrap.Modal(modalEl);
-        }
-      });
+        // Initialize modal
+        document.addEventListener('DOMContentLoaded', function() {
+          const modalEl = document.getElementById('quizModal');
+          if (modalEl) {
+            quizModal = new bootstrap.Modal(modalEl);
+          }
+        });
 
-      // Start quiz
-      async function startQuiz() {
-        console.log('Starting quiz...');
-        
-        // Reset
-        userAnswers = {};
-        document.getElementById('quizLoading').classList.remove('d-none');
-        document.getElementById('quizContent').classList.add('d-none');
-        document.getElementById('quizResults').classList.add('d-none');
-        document.getElementById('submitQuizBtn').classList.add('d-none');
-        document.getElementById('retryQuizBtn').classList.add('d-none');
-        
-        // Open modal
-        if (quizModal) {
-          quizModal.show();
-        }
-        
-        // Load questions
-        try {
-          const response = await fetch('/subject/{{ subject.uid }}/quiz');
-          const data = await response.json();
+        // Start quiz
+        async function startQuiz() {
+          console.log('Starting quiz for plan:', PLAN_ID);
           
-          console.log('Quiz data:', data);
+          // Reset
+          userAnswers = {};
+          document.getElementById('quizLoading').classList.remove('d-none');
+          document.getElementById('quizContent').classList.add('d-none');
+          document.getElementById('quizResults').classList.add('d-none');
+          document.getElementById('submitQuizBtn').classList.add('d-none');
+          document.getElementById('retryQuizBtn').classList.add('d-none');
           
-          if (data.success) {
-            quizQuestions = data.questions;
-            renderQuiz();
+          // Open modal
+          if (quizModal) {
+            quizModal.show();
+          }
+          
+          // Load questions
+          try {
+            const response = await fetch('/subject/{{ subject.uid }}/quiz');
+            const data = await response.json();
             
-            document.getElementById('quizLoading').classList.add('d-none');
-            document.getElementById('quizContent').classList.remove('d-none');
-            document.getElementById('submitQuizBtn').classList.remove('d-none');
-          } else {
-            alert(data.message || 'Lỗi khi tải câu hỏi');
+            console.log('Quiz data:', data);
+            
+            if (data.success) {
+              quizQuestions = data.questions;
+              renderQuiz();
+              
+              document.getElementById('quizLoading').classList.add('d-none');
+              document.getElementById('quizContent').classList.remove('d-none');
+              document.getElementById('submitQuizBtn').classList.remove('d-none');
+            } else {
+              alert(data.message || 'Lỗi khi tải câu hỏi');
+              if (quizModal) quizModal.hide();
+            }
+          } catch (error) {
+            console.error('Error loading quiz:', error);
+            alert('Lỗi: ' + error.message);
             if (quizModal) quizModal.hide();
           }
-        } catch (error) {
-          console.error('Error loading quiz:', error);
-          alert('Lỗi: ' + error.message);
-          if (quizModal) quizModal.hide();
         }
-      }
 
-      // Render quiz questions
-      function renderQuiz() {
-        const container = document.getElementById('quizQuestions');
-        let html = '';
-        
-        quizQuestions.forEach((q, index) => {
-          html += `
-            <div class="card mb-3">
-              <div class="card-body">
-                <h6 class="fw-bold">Câu ${index + 1}: ${q.question}</h6>
-                <div class="mt-3">
-                  ${q.options.map(opt => `
-                    <div class="form-check mb-2">
-                      <input class="form-check-input" 
-                             type="radio" 
-                             name="question_${q.id}" 
-                             id="q${q.id}_${opt.label.toLowerCase()}"
-                             value="${opt.label.toLowerCase()}"
-                             onchange="selectAnswer(${q.id}, '${opt.label.toLowerCase()}')">
-                      <label class="form-check-label" for="q${q.id}_${opt.label.toLowerCase()}">
-                        ${opt.label}. ${opt.text}
-                      </label>
-                    </div>
-                  `).join('')}
+        // Render quiz questions
+        function renderQuiz() {
+          const container = document.getElementById('quizQuestions');
+          let html = '';
+          
+          quizQuestions.forEach((q, index) => {
+            html += `
+              <div class="card mb-3">
+                <div class="card-body">
+                  <h6 class="fw-bold">Câu ${index + 1}: ${q.question}</h6>
+                  <div class="mt-3">
+                    ${q.options.map(opt => `
+                      <div class="form-check mb-2">
+                        <input class="form-check-input" 
+                              type="radio" 
+                              name="question_${q.id}" 
+                              id="q${q.id}_${opt.label.toLowerCase()}"
+                              value="${opt.label.toLowerCase()}"
+                              onchange="selectAnswer(${q.id}, '${opt.label.toLowerCase()}')">
+                        <label class="form-check-label" for="q${q.id}_${opt.label.toLowerCase()}">
+                          ${opt.label}. ${opt.text}
+                        </label>
+                      </div>
+                    `).join('')}
+                  </div>
                 </div>
               </div>
-            </div>
-          `;
-        });
-        
-        container.innerHTML = html;
-      }
-
-      // Select answer
-      function selectAnswer(questionId, answer) {
-        userAnswers[questionId] = answer;
-        console.log('Selected:', questionId, answer);
-      }
-
-      // Submit quiz
-      async function submitQuiz() {
-        if (Object.keys(userAnswers).length < quizQuestions.length) {
-          alert('Vui lòng trả lời tất cả các câu hỏi!');
-          return;
-        }
-        
-        document.getElementById('submitQuizBtn').disabled = true;
-        document.getElementById('submitQuizBtn').textContent = 'Đang chấm...';
-        
-        try {
-          const response = await fetch('/subject/{{ subject.uid }}/quiz/submit', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({answers: userAnswers})
+            `;
           });
           
-          const data = await response.json();
-          console.log('Quiz result:', data);
-          
-          if (data.success) {
-            showResults(data);
-          } else {
-            alert(data.message || 'Có lỗi xảy ra');
+          container.innerHTML = html;
+        }
+
+        // Select answer
+        function selectAnswer(questionId, answer) {
+          userAnswers[questionId] = answer;
+          console.log('Selected:', questionId, answer);
+        }
+
+        // Submit quiz - CẬP NHẬT THÊM plan_id
+        async function submitQuiz() {
+          if (Object.keys(userAnswers).length < quizQuestions.length) {
+            alert('Vui lòng trả lời tất cả các câu hỏi!');
+            return;
           }
-        } catch (error) {
-          console.error('Error submitting quiz:', error);
-          alert('Lỗi: ' + error.message);
-        } finally {
-          document.getElementById('submitQuizBtn').disabled = false;
-          document.getElementById('submitQuizBtn').textContent = 'Nộp bài';
-        }
-      }
-
-      // Show results
-      function showResults(data) {
-        document.getElementById('quizContent').classList.add('d-none');
-        document.getElementById('quizResults').classList.remove('d-none');
-        document.getElementById('submitQuizBtn').classList.add('d-none');
-        document.getElementById('retryQuizBtn').classList.remove('d-none');
-        
-        // Results
-        document.getElementById('correctCount').textContent = data.score;
-        document.getElementById('wrongCount').textContent = data.total - data.score;
-        document.getElementById('percentageDisplay').textContent = data.percentage + '%';
-        
-        if (data.passed) {
-          document.getElementById('resultIcon').textContent = '🎉';
-          document.getElementById('resultTitle').textContent = 'Xuất sắc!';
-          document.getElementById('resultTitle').className = 'text-success';
-          document.getElementById('resultMessage').textContent = 
-            `Bạn đã đạt ${data.percentage}% - Giờ bạn có thể hoàn thành môn học này!`;
           
-          // Auto reload sau 3 giây khi pass để cập nhật nút hoàn thành
-          setTimeout(() => {
-            if (quizModal) quizModal.hide();
-            location.reload();
-          }, 3000);
-        } else {
-          document.getElementById('resultIcon').textContent = '💪';
-          document.getElementById('resultTitle').textContent = 'Cần cố gắng thêm!';
-          document.getElementById('resultTitle').className = 'text-warning';
-          document.getElementById('resultMessage').textContent = 
-            `Bạn đạt ${data.percentage}%. Cần ≥ 80% để hoàn thành. Hãy thử lại!`;
-        }
-      }
-
-      // Retry quiz
-      function retryQuiz() {
-        if (quizModal) quizModal.hide();
-        setTimeout(() => startQuiz(), 300);
-      }
-
-      // Mark as completed function
-      async function markAsCompleted() {
-        if (!confirm('Đánh dấu môn học này là đã hoàn thành?')) return;
-        
-        try {
-          const response = await fetch('/subject/{{ subject.uid }}/mark-completed', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-          });
+          document.getElementById('submitQuizBtn').disabled = true;
+          document.getElementById('submitQuizBtn').textContent = 'Đang chấm...';
           
-          const data = await response.json();
-          
-          if (data.success) {
-            alert('🎉 Chúc mừng! Bạn đã hoàn thành môn học này!');
-            location.reload();
-          } else {
-            alert(data.message || 'Có lỗi xảy ra');
+          try {
+            const response = await fetch('/subject/{{ subject.uid }}/quiz/submit', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                answers: userAnswers,
+                plan_id: PLAN_ID  // THÊM plan_id
+              })
+            });
+            
+            const data = await response.json();
+            console.log('Quiz result:', data);
+            
+            if (data.success) {
+              showResults(data);
+            } else {
+              alert(data.message || 'Có lỗi xảy ra');
+            }
+          } catch (error) {
+            console.error('Error submitting quiz:', error);
+            alert('Lỗi: ' + error.message);
+          } finally {
+            document.getElementById('submitQuizBtn').disabled = false;
+            document.getElementById('submitQuizBtn').textContent = 'Nộp bài';
           }
-        } catch (error) {
-          console.error('Error marking completed:', error);
-          alert('Lỗi: ' + error.message);
         }
-      }
-    </script>
+
+        // Show results
+        function showResults(data) {
+          document.getElementById('quizContent').classList.add('d-none');
+          document.getElementById('quizResults').classList.remove('d-none');
+          document.getElementById('submitQuizBtn').classList.add('d-none');
+          document.getElementById('retryQuizBtn').classList.remove('d-none');
+          
+          // Results
+          document.getElementById('correctCount').textContent = data.score;
+          document.getElementById('wrongCount').textContent = data.total - data.score;
+          document.getElementById('percentageDisplay').textContent = data.percentage + '%';
+          
+          if (data.passed) {
+            document.getElementById('resultIcon').textContent = '🎉';
+            document.getElementById('resultTitle').textContent = 'Xuất sắc!';
+            document.getElementById('resultTitle').className = 'text-success';
+            document.getElementById('resultMessage').textContent = 
+              `Bạn đã đạt ${data.percentage}% - Giờ bạn có thể hoàn thành môn học này!`;
+            
+            // Auto reload sau 3 giây khi pass để cập nhật nút hoàn thành
+            setTimeout(() => {
+              if (quizModal) quizModal.hide();
+              location.reload();
+            }, 3000);
+          } else {
+            document.getElementById('resultIcon').textContent = '💪';
+            document.getElementById('resultTitle').textContent = 'Cần cố gắng thêm!';
+            document.getElementById('resultTitle').className = 'text-warning';
+            document.getElementById('resultMessage').textContent = 
+              `Bạn đạt ${data.percentage}%. Cần ≥ 80% để hoàn thành. Hãy thử lại!`;
+          }
+        }
+
+        // Retry quiz
+        function retryQuiz() {
+          if (quizModal) quizModal.hide();
+          setTimeout(() => startQuiz(), 300);
+        }
+
+        // Mark as completed function - CẬP NHẬT THÊM plan_id
+        async function markAsCompleted() {
+          if (!confirm('Đánh dấu môn học này là đã hoàn thành?')) return;
+          
+          try {
+            const response = await fetch('/subject/{{ subject.uid }}/mark-completed', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({
+                plan_id: PLAN_ID  // THÊM plan_id
+              })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+              alert('🎉 Chúc mừng! Bạn đã hoàn thành môn học này!');
+              location.reload();
+            } else {
+              alert(data.message || 'Có lỗi xảy ra');
+            }
+          } catch (error) {
+            console.error('Error marking completed:', error);
+            alert('Lỗi: ' + error.message);
+          }
+        }
+      </script>
   </body>
 </html>

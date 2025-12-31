@@ -52,6 +52,10 @@ def get_user_plans(user_id):
         
         plan['subjects'] = plan_subjects
         plan['total_hours'] = sum(int(s.get('study_hours', 0)) for s in plan_subjects)
+        
+        # Tính progress info
+        from services.progress_service import get_plan_overall_progress
+        plan['progress_info'] = get_plan_overall_progress(plan['id'], user_id)
     
     return plans
 

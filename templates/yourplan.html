@@ -78,16 +78,21 @@
         <div class="row g-3 mb-4">
           {% for plan in plans %}
           <div class="col-md-4">
-            <div class="card plan-card {% if plan.is_active %}active{% endif %}" data-plan-id="{{ plan.id }}">
+            <div class="card plan-card {% if selected_plan and plan.id == selected_plan.id %}active{% endif %}" 
+                data-plan-id="{{ plan.id }}">
               <div class="card-body">
                 <div class="d-flex justify-content-between align-items-start mb-2">
                   <h5 class="fw-bold mb-0">{{ plan.name }}</h5>
                   <div class="dropdown" onclick="event.stopPropagation();">
-                    <button class="btn btn-sm btn-light" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
+                    <button class="btn btn-sm btn-light" data-bs-toggle="dropdown">⋮</button>
                     <ul class="dropdown-menu dropdown-menu-end">
-                      <li><button type="button" class="dropdown-item" data-action="edit-plan" data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}" onclick="event.preventDefault()">📝 Chỉnh sửa lộ trình</button></li>
-                      <li><button type="button" class="dropdown-item" data-action="edit-name" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">✏️ Sửa tên</button></li>
-                      <li><button type="button" class="dropdown-item text-danger" data-action="delete" data-plan-id="{{ plan.id }}" onclick="event.preventDefault()">🗑️ Xóa</button></li>
+                      <li><button type="button" class="dropdown-item" data-action="edit-plan" 
+                                  data-plan-id="{{ plan.id }}" data-plan-name="{{ plan.name }}">
+                        📝 Chỉnh sửa lộ trình</button></li>
+                      <li><button type="button" class="dropdown-item" data-action="edit-name" 
+                                  data-plan-id="{{ plan.id }}">✏️ Sửa tên</button></li>
+                      <li><button type="button" class="dropdown-item text-danger" data-action="delete" 
+                                  data-plan-id="{{ plan.id }}">🗑️ Xóa</button></li>
                     </ul>
                   </div>
                 </div>
@@ -101,7 +106,8 @@
                     <small class="fw-bold">{{ plan.progress_info.overall_progress }}%</small>
                   </div>
                   <div class="progress" style="height: 8px;">
-                    <div class="progress-bar bg-success" style="width: {{ plan.progress_info.overall_progress }}%"></div>
+                    <div class="progress-bar bg-success" 
+                        style="width: {{ plan.progress_info.overall_progress }}%"></div>
                   </div>
                   <small class="text-muted">
                     ✅ {{ plan.progress_info.completed_subjects }}/{{ plan.progress_info.total_subjects }} môn
@@ -121,17 +127,6 @@
             </div>
           </div>
           {% endfor %}
-
-          <!-- Empty state if no plans -->
-          {% if plans|length == 0 %}
-          <div class="col-12">
-            <div class="empty-state">
-              <p class="fs-1">📚</p>
-              <h5>Chưa có lộ trình nào</h5>
-              <p class="text-muted">Hãy tạo lộ trình học tập đầu tiên của bạn!</p>
-            </div>
-          </div>
-          {% endif %}
         </div>
 
         <!-- Selected Plan Details với trạng thái môn học -->
@@ -191,7 +186,7 @@
                   </small>
                 </div>
                 <div class="actions">
-                  <a href="/subject/{{ subject.uid }}" class="btn btn-sm btn-outline-info">
+                  <a href="/subject/{{ subject.uid }}?plan_id={{ selected_plan.id }}" class="btn btn-sm btn-outline-info">
                     👁️ Xem
                   </a>
                   <button class="btn btn-sm btn-outline-danger" 
