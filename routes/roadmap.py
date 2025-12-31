@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, abort
-from services.roadmap_service import get_all_roadmaps, get_roadmap_by_id, get_roadmap_steps
+from flask import Blueprint, render_template, abort, jsonify, session, redirect
+from services.roadmap_service import get_all_roadmaps, get_roadmap_by_id, get_roadmap_steps, apply_roadmap_to_user_plan
 from routes.user import get_current_user, login_required
 
 roadmap_bp = Blueprint("roadmap", __name__)
@@ -18,3 +18,34 @@ def roadmap_detail_page(roadmap_id):
     steps = get_roadmap_steps(roadmap_id)
     user = get_current_user()
     return render_template("roadmap_detail.html", roadmap=roadmap, steps=steps, user=user)
+
+
+@roadmap_bp.route("/roadmap/<int:roadmap_id>/apply", methods=["POST"])
+@login_required
+def apply_roadmap(roadmap_id):
+    """
+    Áp dụng lộ trình có sẵn từ Roadmap vào YourPlan của user
+    """
+    user_id = session.get('user_id')
+    
+    # Kiểm tra roadmap có tồn tại không
+    roadmap = get_roadmap_by_id(roadmap_id)
+    if not roadmap:
+        return jsonify({
+            'success': False,
+            'message': 'Lộ trình không tồn tại'
+        }), 404
+    
+    # Áp dụng lộ trình
+    result = apply_roadmap_to_user_plan(user_id, roadmap_id)
+    
+    if result['success']:
+        # Redirect về YourPlan với plan vừa tạo
+        return jsonify({
+            'success': True,
+            'message': result['message'],
+            'plan_id': result.get('plan_id'),
+            'redirect_url': f"/yourplan?plan_id={result.get('plan_id')}"
+        })
+    else:
+        return jsonify(result), 400
