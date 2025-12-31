@@ -1,4 +1,4 @@
-# services/roadmap_service.py
+# services/roadmap_service.py - FULL FIXED VERSION
 import os
 import csv
 from datetime import datetime
@@ -25,7 +25,6 @@ def _safe_read_csv(filename: str):
         n = len(header)
         for line in reader:
             if len(line) != n:
-                # bỏ dòng lỗi (tránh app crash)
                 continue
             rows.append(dict(zip(header, line)))
     return rows
@@ -54,12 +53,11 @@ def _get_subject_map():
     subject_map = {}
     
     for i, s in enumerate(subjects, start=1):
-        # Lấy id từ CSV (có thể là cột 'id' hoặc 'subject_id')
         subject_id = s.get("id") or s.get("subject_id")
         
         if subject_id:
             subject_id = str(subject_id).strip()
-            s['uid'] = i  # uid = index + 1 (để dùng trong YourPlan)
+            s['uid'] = i
             subject_map[subject_id] = s
     
     return subject_map
@@ -82,7 +80,7 @@ def get_roadmap_steps(roadmap_id: int):
             "subject_id": sid,
             "step_order": int(row["step_order"]),
             "note": row.get("note", ""),
-            "subject": subject_info,  # dict hoặc None
+            "subject": subject_info,
         })
 
     steps.sort(key=lambda x: x["step_order"])
@@ -93,11 +91,7 @@ def apply_roadmap_to_user_plan(user_id: int, roadmap_id: int):
     """
     Áp dụng lộ trình có sẵn từ Roadmap vào YourPlan
     
-    Logic:
-    1. Kiểm tra user có đủ slot (max 3 plans)
-    2. Tạo plan mới với tên từ roadmap
-    3. Thêm các subject theo đúng thứ tự từ roadmap_subject.csv
-    4. Trả về plan_id để redirect
+    FINAL FIX: Sử dụng connection trực tiếp để lấy LAST_INSERT_ID
     """
     
     # Kiểm tra giới hạn 3 lộ trình
@@ -121,86 +115,138 @@ def apply_roadmap_to_user_plan(user_id: int, roadmap_id: int):
     if not steps:
         return {'success': False, 'message': 'Lộ trình này chưa có môn học nào'}
     
-    # DEBUG: In ra để kiểm tra
     print(f"[DEBUG] Roadmap {roadmap_id} has {len(steps)} steps")
-    for step in steps:
-        print(f"[DEBUG] Step {step['step_order']}: subject_id={step['subject_id']}, subject={step['subject']}")
     
     # Tạo plan mới
     plan_name = f"🎯 {roadmap.get('roadmap_name', 'Lộ trình')}"
     plan_description = roadmap.get('description', 'Lộ trình được áp dụng từ Roadmap gợi ý')
     
-    query_create = """
-        INSERT INTO study_plans (user_id, name, description, is_started, created_at)
-        VALUES (%s, %s, %s, 0, %s)
-    """
-    
-    if not execute_query(query_create, (user_id, plan_name, plan_description, datetime.now())):
-        return {'success': False, 'message': 'Lỗi khi tạo lộ trình'}
-    
-    # Lấy plan_id vừa tạo
+    # FIX: Dùng connection trực tiếp để insert và lấy LAST_INSERT_ID
     connection = get_db_connection()
     cursor = connection.cursor()
-    cursor.execute("SELECT LAST_INSERT_ID() as id")
-    plan_result = cursor.fetchone()
-    cursor.close()
-    connection.close()
     
-    if not plan_result:
-        return {'success': False, 'message': 'Không thể lấy ID lộ trình vừa tạo'}
-    
-    plan_id = plan_result[0]
+    try:
+        query_create = """
+            INSERT INTO study_plans (user_id, name, description, is_started, created_at)
+            VALUES (%s, %s, %s, 0, %s)
+        """
+        
+        cursor.execute(query_create, (user_id, plan_name, plan_description, datetime.now()))
+        connection.commit()
+        
+        # Lấy plan_id vừa insert
+        plan_id = cursor.lastrowid
+        
+        print(f"[DEBUG] Created plan with ID: {plan_id}")
+        
+        if not plan_id or plan_id == 0:
+            cursor.close()
+            connection.close()
+            return {'success': False, 'message': 'Không thể lấy ID lộ trình vừa tạo'}
+        
+        # Verify plan exists
+        cursor.execute("SELECT id FROM study_plans WHERE id = %s", (plan_id,))
+        verify = cursor.fetchone()
+        
+        if not verify:
+            cursor.close()
+            connection.close()
+            return {'success': False, 'message': f'Plan {plan_id} không tồn tại sau khi tạo'}
+        
+        print(f"[DEBUG] ✓ Verified plan {plan_id} exists")
+        
+    except Exception as e:
+        print(f"[DEBUG] Error creating plan: {e}")
+        connection.rollback()
+        cursor.close()
+        connection.close()
+        return {'success': False, 'message': f'Lỗi khi tạo lộ trình: {str(e)}'}
     
     # Thêm các môn học vào plan theo thứ tự
     added_count = 0
     failed_subjects = []
     
     for step in steps:
-        subject_info = step.get('subject')
+        subject_id_from_csv = step.get('subject_id')
         
-        if not subject_info:
-            failed_subjects.append(f"Subject ID {step['subject_id']} (không tìm thấy)")
+        if not subject_id_from_csv:
+            failed_subjects.append(f"Step {step.get('step_order')} - Không có subject_id")
             continue
-        
-        # Lấy uid của subject
-        subject_uid = subject_info.get('uid')
-        
-        if not subject_uid:
-            failed_subjects.append(f"{subject_info.get('subject_name', 'Unknown')} (không có UID)")
-            continue
-        
-        print(f"[DEBUG] Adding subject UID {subject_uid} to plan {plan_id}")
-        
-        # Thêm vào plan_subjects
-        query_add = """
-            INSERT INTO plan_subjects (plan_id, subject_id, progress, status)
-            VALUES (%s, %s, 0, 'not_started')
-        """
         
         try:
-            if execute_query(query_add, (plan_id, subject_uid)):
+            subject_id = int(subject_id_from_csv)
+        except (ValueError, TypeError):
+            failed_subjects.append(f"Subject ID {subject_id_from_csv} không hợp lệ")
+            continue
+        
+        subject_info = step.get('subject', {})
+        subject_name = subject_info.get('subject_name', f'ID {subject_id}')
+        
+        print(f"[DEBUG] Processing: {subject_name} (ID={subject_id})")
+        
+        # Kiểm tra subject tồn tại trong DB
+        try:
+            cursor.execute("SELECT id FROM subjects WHERE id = %s", (subject_id,))
+            subject_exists = cursor.fetchone()
+            
+            if not subject_exists:
+                failed_subjects.append(f"{subject_name} (không tồn tại trong DB)")
+                print(f"[DEBUG] ❌ Subject {subject_id} not found")
+                continue
+            
+            print(f"[DEBUG] ✓ Subject {subject_id} exists")
+            
+            # Kiểm tra duplicate
+            cursor.execute(
+                "SELECT id FROM plan_subjects WHERE plan_id = %s AND subject_id = %s",
+                (plan_id, subject_id)
+            )
+            duplicate = cursor.fetchone()
+            
+            if duplicate:
+                print(f"[DEBUG] ⚠ Subject {subject_id} already in plan")
+                continue
+            
+            # Insert vào plan_subjects
+            cursor.execute(
+                """INSERT INTO plan_subjects (plan_id, subject_id, progress, status)
+                   VALUES (%s, %s, 0, 'not_started')""",
+                (plan_id, subject_id)
+            )
+            connection.commit()
+            
+            if cursor.rowcount > 0:
                 added_count += 1
-                print(f"[DEBUG] Successfully added subject {subject_uid}")
+                print(f"[DEBUG] ✓ Added subject {subject_id}")
             else:
-                failed_subjects.append(f"{subject_info.get('subject_name', 'Unknown')} (lỗi DB)")
+                failed_subjects.append(f"{subject_name} (no rows affected)")
+                
         except Exception as e:
-            print(f"[DEBUG] Error adding subject {subject_uid}: {e}")
-            failed_subjects.append(f"{subject_info.get('subject_name', 'Unknown')} ({str(e)})")
+            error_msg = str(e)[:100]
+            failed_subjects.append(f"{subject_name} ({error_msg})")
+            print(f"[DEBUG] ❌ Error: {error_msg}")
+            connection.rollback()
+    
+    cursor.close()
+    connection.close()
     
     # Log kết quả
-    print(f"[DEBUG] Added {added_count}/{len(steps)} subjects")
+    print(f"\n[DEBUG] ========== SUMMARY ==========")
+    print(f"[DEBUG] Added {added_count}/{len(steps)} subjects to plan {plan_id}")
+    
     if failed_subjects:
-        print(f"[DEBUG] Failed subjects: {failed_subjects}")
+        print(f"[DEBUG] Failed: {len(failed_subjects)} subjects")
+        for fs in failed_subjects[:5]:
+            print(f"  - {fs}")
     
     if added_count == 0:
-        # Nếu không thêm được môn nào thì xóa plan
         execute_query("DELETE FROM study_plans WHERE id = %s", (plan_id,))
-        error_msg = f'Không thể thêm môn học vào lộ trình.'
+        error_msg = 'Không thể thêm môn học vào lộ trình.'
         if failed_subjects:
-            error_msg += f' Lỗi: {", ".join(failed_subjects[:3])}'
+            error_msg += f' Lỗi: {failed_subjects[0]}'
         return {'success': False, 'message': error_msg}
     
-    success_msg = f'Đã áp dụng lộ trình thành công với {added_count} môn học!'
+    success_msg = f'✅ Đã áp dụng lộ trình thành công với {added_count} môn học!'
     if failed_subjects:
         success_msg += f' ({len(failed_subjects)} môn bị bỏ qua)'
     
