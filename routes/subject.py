@@ -62,6 +62,7 @@ def subject_detail(uid):
     quiz_passed = False
     best_attempt = None
     plan_id = None
+    can_do_quiz = False  # THÊM flag này
     
     if user:
         user_id = session.get('user_id')
@@ -70,19 +71,19 @@ def subject_detail(uid):
         plan_id = request.args.get('plan_id', type=int)
         
         if plan_id:
+            # CHỈ KHI CÓ plan_id thì mới cho làm bài
+            can_do_quiz = True
+            
             # Kiểm tra môn này có trong plan không
             learning_progress = get_subject_progress_in_plan(plan_id, uid)
             if learning_progress:
                 learning_progress['plan_id'] = plan_id
                 quiz_passed = has_passed_quiz_in_plan(user_id, uid, plan_id)
                 best_attempt = get_best_attempt(user_id, uid, plan_id)
-        else:
-            # Nếu không có plan_id, lấy từ plan đang học đầu tiên
-            learning_progress = get_subject_learning_progress(user_id, uid)
-            if learning_progress:
-                plan_id = learning_progress.get('plan_id')
-                quiz_passed = has_passed_quiz_in_plan(user_id, uid, plan_id)
-                best_attempt = get_best_attempt(user_id, uid, plan_id)
+            else:
+                # Môn không có trong plan này
+                can_do_quiz = False
+        # Nếu không có plan_id (vào từ trang subject) -> CHỈ XEM
 
     return render_template(
         "subject_detail.html",
@@ -91,7 +92,8 @@ def subject_detail(uid):
         learning_progress=learning_progress,
         quiz_passed=quiz_passed,
         best_attempt=best_attempt,
-        plan_id=plan_id
+        plan_id=plan_id,
+        can_do_quiz=can_do_quiz  # THÊM biến này
     )
 
 
@@ -100,6 +102,26 @@ def subject_detail(uid):
 @login_required
 def get_quiz(uid):
     """Lấy 10 câu hỏi ngẫu nhiên cho bài test"""
+    # KIỂM TRA plan_id - BẮT BUỘC phải có
+    plan_id = request.args.get('plan_id', type=int)
+    
+    if not plan_id:
+        return jsonify({
+            'success': False,
+            'message': 'Vui lòng làm bài từ lộ trình của bạn'
+        }), 403
+    
+    # Kiểm tra môn này có trong plan của user không
+    user_id = session.get('user_id')
+    from services.progress_service import get_subject_progress_in_plan
+    
+    progress = get_subject_progress_in_plan(plan_id, uid)
+    if not progress:
+        return jsonify({
+            'success': False,
+            'message': 'Môn học này không có trong lộ trình của bạn'
+        }), 403
+    
     questions = get_random_quiz_questions(uid, limit=10)
     
     if not questions:
@@ -127,7 +149,36 @@ def submit_quiz_route(uid):
     data = request.get_json()
     
     answers = data.get('answers', {})
-    plan_id = data.get('plan_id')  # THÊM plan_id từ client
+    plan_id = data.get('plan_id')
+    
+    # KIỂM TRA plan_id - BẮT BUỘC
+    if not plan_id:
+        return jsonify({
+            'success': False,
+            'message': 'Vui lòng làm bài từ lộ trình của bạn'
+        }), 403
+    
+    # Kiểm tra môn này có trong plan của user không
+    from services.progress_service import get_subject_progress_in_plan
+    from database import fetch_one
+    
+    # Verify plan thuộc về user
+    query_check = """
+        SELECT id FROM study_plans 
+        WHERE id = %s AND user_id = %s
+    """
+    if not fetch_one(query_check, (plan_id, user_id)):
+        return jsonify({
+            'success': False,
+            'message': 'Lộ trình không hợp lệ'
+        }), 403
+    
+    progress = get_subject_progress_in_plan(plan_id, uid)
+    if not progress:
+        return jsonify({
+            'success': False,
+            'message': 'Môn học này không có trong lộ trình của bạn'
+        }), 403
     
     # Convert string keys to int
     answers = {int(k): v for k, v in answers.items()}
@@ -143,7 +194,35 @@ def submit_quiz_route(uid):
 def mark_completed(uid):
     user_id = session.get('user_id')
     data = request.get_json()
-    plan_id = data.get('plan_id')  # THÊM plan_id từ client
+    plan_id = data.get('plan_id')
+    
+    # KIỂM TRA plan_id - BẮT BUỘC
+    if not plan_id:
+        return jsonify({
+            'success': False,
+            'message': 'Vui lòng hoàn thành môn học từ lộ trình của bạn'
+        }), 403
+    
+    # Verify plan thuộc về user
+    from database import fetch_one
+    query_check = """
+        SELECT id FROM study_plans 
+        WHERE id = %s AND user_id = %s
+    """
+    if not fetch_one(query_check, (plan_id, user_id)):
+        return jsonify({
+            'success': False,
+            'message': 'Lộ trình không hợp lệ'
+        }), 403
+    
+    # Kiểm tra môn này có trong plan không
+    from services.progress_service import get_subject_progress_in_plan
+    progress = get_subject_progress_in_plan(plan_id, uid)
+    if not progress:
+        return jsonify({
+            'success': False,
+            'message': 'Môn học này không có trong lộ trình của bạn'
+        }), 403
     
     result = mark_subject_completed(user_id, uid, plan_id)
     return jsonify(result)

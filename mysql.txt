@@ -77,3 +77,10 @@ CREATE TABLE quiz_attempts (
     FOREIGN KEY (subject_id) REFERENCES subjects(id),
     INDEX idx_user_subject (user_id, subject_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Tạo liên kết bảng
+ALTER TABLE quiz_attempts 
+ADD COLUMN plan_id INT NULL AFTER subject_id,
+ADD FOREIGN KEY (plan_id) REFERENCES study_plans(id) ON DELETE SET NULL;
+
+CREATE INDEX idx_user_subject_plan ON quiz_attempts(user_id, subject_id, plan_id)
