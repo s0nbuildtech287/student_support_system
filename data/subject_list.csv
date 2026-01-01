@@ -1,51 +1,51 @@
 id,subject_name,category,career_group,level,prerequisite,study_hours,description,resource_type,resource_link,image
 1,Nhập môn lập trình,IT,IT software,beginner,None,40,Tổng quan CNTT và ứng dụng,video,https://www.youtube.com/watch?v=Mkif3AqLBCQ,nhap_mon_lap_trinh.png
-2,Lập trình Python cơ bản,IT,IT software,beginner,None,50,Học cú pháp và tư duy lập trình Python,video,https://example.com/python_basic,lap_trinh_python.png
-3,Cấu trúc dữ liệu & Giải thuật,IT,IT software,intermediate,Lập trình cơ bản,60,Nắm vững cấu trúc dữ liệu phổ biến,practice,https://example.com/dsa,cau_truc_du_lieu_va_giai_thuat.png
-4,Cơ sở dữ liệu,IT,IT software,intermediate,Python cơ bản,45,Thiết kế và truy vấn CSDL,video,https://example.com/database,sql.png
-5,Lập trình Web cơ bản,IT,IT software,beginner,None,50,HTML CSS JS nền tảng,video,https://example.com/web_basic,lap_trinh_web.png
-6,Lập trình Backend,IT,IT software,intermediate,Web cơ bản,60,Xây dựng API và server,practice,https://example.com/backend,lap_trinh_backend.png
-7,Lập trình Frontend,IT,IT software,intermediate,Web cơ bản,55,React và UI hiện đại,practice,https://example.com/frontend,lap_trinh_fontend.png
-8,Mạng máy tính,IT,IT software,intermediate,None,45,Nguyên lý mạng và Internet,video,https://example.com/network,mang_may_tinh.png
-9,Hệ điều hành,IT,IT software,intermediate,None,50,Quản lý tiến trình và bộ nhớ,video,https://example.com/os,he_dieu_hanh.png
-10,Phát triển phần mềm,IT,IT software,advanced,Backend,60,Quy trình và mô hình phát triển,practice,https://example.com/software_eng,phat_trien_phan_mem.png
-11,Phân tích dữ liệu cơ bản,IT,IT data,beginner,None,40,Xử lý dữ liệu với Excel & Python,video,https://example.com/data_basic,phan_tich_du_lieu_co_ban.png
-12,Thống kê ứng dụng,IT,IT data,beginner,None,45,Thống kê cho phân tích dữ liệu,video,https://example.com/statistics,thong_ke_ung_dung.png
-13,Machine Learning cơ bản,IT,IT data,intermediate,Phân tích dữ liệu,60,Thuật toán ML nền tảng,video,https://example.com/ml_basic,machine_learning_co_ban.png
-14,Deep Learning,IT,IT data,advanced,Machine Learning,70,Mạng nơ-ron sâu,practice,https://example.com/deep_learning,deeplearning.png
-15,Trí tuệ nhân tạo,IT,IT data,advanced,Machine Learning,65,Ứng dụng AI thực tế,practice,https://example.com/ai,tri_tue_nhan_tao.png
-16,An toàn thông tin,IT,cyber,intermediate,Mạng máy tính,50,Bảo mật hệ thống và dữ liệu,video,https://example.com/security,an_toan_thong_tin.png
-17,Kiểm thử phần mềm,IT,IT software,intermediate,Lập trình cơ bản,40,Test và đảm bảo chất lượng,practice,https://example.com/testing,kiem_thu_phan_mem.png
-18,DevOps cơ bản,IT,IT software,intermediate,Backend,50,Tích hợp CI/CD,practice,https://example.com/devops,devpos-co_ban.png
-19,Điện toán đám mây,IT,IT software,intermediate,None,45,AWS, Cloud Computing,video,https://example.com/cloud,dien_toan_dam_may.png
-20,Phân tích hệ thống,IT,IT software,intermediate,None,45,Thu thập và phân tích yêu cầu,video,https://example.com/system_analysis,phan_tich_he_thong.png
-21,Nguyên lý Marketing,Business,marketing,beginner,None,40,Các khái niệm marketing cơ bản,video,https://example.com/marketing,nguyen_ly_marketing.png
-22,Digital Marketing,Business,marketing,intermediate,Nguyên lý Marketing,50,SEO, Ads, Social Media,practice,https://example.com/digital_marketing,digital_marketing.png
-23,Quản trị kinh doanh,Business,business,beginner,None,45,Nền tảng quản trị doanh nghiệp,video,https://example.com/business,quan_tri_kinh_doanh.png
-24,Khởi nghiệp,Business,business,intermediate,Quản trị kinh doanh,40,Xây dựng mô hình startup,practice,https://example.com/startup,khoi_nghiep.png
-25,Phân tích tài chính,Business,finance,intermediate,Kế toán,50,Đọc báo cáo tài chính,video,https://example.com/finance,phan_tich_tai_chinh.png
-26,Kế toán căn bản,Business,finance,beginner,None,45,Nguyên lý kế toán,video,https://example.com/accounting,ke_toan_tai_chinh.png
-27,Quản trị nhân sự,Business,business,beginner,None,40,Quản lý nguồn nhân lực,video,https://example.com/hr,quan_tri_nhan_su.png
-28,Logistics & Chuỗi cung ứng,Business,logistics,intermediate,Quản trị kinh doanh,50,Quản lý vận hành,video,https://example.com/logistics,logistic_&_chuoi_cung_cung.png
-29,Thương mại điện tử,Business,business,intermediate,Marketing,45,Mô hình kinh doanh online,video,https://example.com/ecommerce,thuong_mai_dien_tu.png
-30,Quản trị dự án,Business,business,intermediate,None,45,Lập kế hoạch và kiểm soát dự án,practice,https://example.com/project,quan_tri_du_an.png
-31,Luật đại cương,Law,law,beginner,None,40,Khái niệm pháp luật cơ bản,video,https://example.com/law,luat_dai_cuong.png
-32,Luật kinh tế,Law,law,intermediate,Luật đại cương,45,Pháp luật trong kinh doanh,video,https://example.com/economic_law,luat_kinh_te.png
-33,Luật lao động,Law,law,intermediate,Luật đại cương,40,Quy định lao động,video,https://example.com/labor_law,luat_lao_dong.png
-34,Giáo dục học,Education,education,beginner,None,40,Nền tảng khoa học giáo dục,video,https://example.com/education,giao_duc_hoc.png
-35,Phương pháp giảng dạy,Education,education,intermediate,Giáo dục học,45,Kỹ năng sư phạm,practice,https://example.com/teaching,phuong_phap_giang_day.png
-36,Tâm lý học giáo dục,Education,education,intermediate,Giáo dục học,40,Hiểu tâm lý người học,video,https://example.com/edu_psy,tam_ly_hoc_giao_duc.png
-37,Sinh học đại cương,Health,health,beginner,None,40,Kiến thức sinh học cơ bản,video,https://example.com/biology,sinh_hoc_dai_cuong.png
-38,Y học cơ sở,Health,health,intermediate,Sinh học,60,Nền tảng y khoa,video,https://example.com/medicine,y_hoc_co_so.png
-39,Dinh dưỡng học,Health,health,beginner,None,35,Nguyên lý dinh dưỡng,video,https://example.com/nutrition,dinh_duong_hoc.png
-40,Sức khỏe cộng đồng,Health,health,intermediate,None,45,Quản lý y tế cộng đồng,video,https://example.com/public_health,suc_khoe_cong_dong.png
-41,Khoa học xã hội,Xã hội,social,beginner,None,40,Nghiên cứu xã hội và hành vi,video,https://example.com/social,khoa_hoc_xa_hoi.png
-42,Tâm lý học,Xã hội,social,intermediate,Khoa học xã hội,45,Phân tích hành vi con người,video,https://example.com/psychology,tam_ly_hoc.png
-43,Xã hội học,Xã hội,social,intermediate,None,40,Nghiên cứu xã hội hiện đại,video,https://example.com/sociology,xa_hoi_hoc.png
-44,Thiết kế đồ họa,Creative,design,beginner,None,50,Photoshop và tư duy thiết kế,practice,https://example.com/design,thiet_ke_do_hoa.png
-45,UI UX Design,Creative,design,intermediate,Thiết kế đồ họa,55,Thiết kế trải nghiệm người dùng,practice,https://example.com/uiux,UI_UXd_design.png
-46,Thiết kế đa phương tiện,Creative,design,intermediate,None,50,Video và multimedia,practice,https://example.com/multimedia,thiet_ke_da_phuong_tien.png
-47,Thiết kế kiến trúc,Engineering,architecture,beginner,None,60,Nguyên lý kiến trúc,video,https://example.com/architecture,thiet_ke_cau_truc.png
-48,Kỹ thuật xây dựng,Engineering,engineering,intermediate,Toán kỹ thuật,65,Thiết kế công trình,video,https://example.com/civil,ky_thuat_xay_dung.png
-49,Kỹ thuật điện,Engineering,engineering,beginner,None,55,Hệ thống điện cơ bản,video,https://example.com/electrical,ky_thuat_dien.png
-50,Kỹ thuật cơ khí,Engineering,engineering,intermediate,None,60,Thiết kế và chế tạo cơ khí,video,https://example.com/mechanical,ky_thuat_co_khi.png
+2,Lập trình Python cơ bản,IT,IT software,beginner,None,50,Học cú pháp và tư duy lập trình Python,video,https://www.youtube.com/embed/cZQ6m3W4OU4,lap_trinh_python.png
+3,Cấu trúc dữ liệu & Giải thuật,IT,IT software,intermediate,Lập trình cơ bản,60,Nắm vững cấu trúc dữ liệu phổ biến,practice,https://www.youtube.com/embed/Qa4ouM0IQSI,cau_truc_du_lieu_va_giai_thuat.png
+4,Cơ sở dữ liệu,IT,IT software,intermediate,Python cơ bản,45,Thiết kế và truy vấn CSDL,video,https://www.youtube.com/embed/TslBGnENTFw,sql.png
+5,Lập trình Web cơ bản,IT,IT software,beginner,None,50,HTML CSS JS nền tảng,video,https://www.youtube.com/embed/ufx2lt9ssto,lap_trinh_web.png
+6,Lập trình Backend,IT,IT software,intermediate,Web cơ bản,60,Xây dựng API và server,practice,https://www.youtube.com/embed/ftKiHCDVwfA,lap_trinh_backend.png
+7,Lập trình Frontend,IT,IT software,intermediate,Web cơ bản,55,React và UI hiện đại,practice,https://www.youtube.com/embed/QK7t5Aodgik,lap_trinh_fontend.png
+8,Mạng máy tính,IT,IT software,intermediate,None,45,Nguyên lý mạng và Internet,video,https://www.youtube.com/embed/VYY2Jj9ppeI,mang_may_tinh.png
+9,Hệ điều hành,IT,IT software,intermediate,None,50,Quản lý tiến trình và bộ nhớ,video,https://www.youtube.com/embed/AtdMTz7yxL0,he_dieu_hanh.png
+10,Phát triển phần mềm,IT,IT software,advanced,Backend,60,Quy trình và mô hình phát triển,practice,https://www.youtube.com/embed/7e9UyoSGIys,phat_trien_phan_mem.png
+11,Phân tích dữ liệu cơ bản,IT,IT data,beginner,None,40,Xử lý dữ liệu với Excel & Python,video,https://www.youtube.com/embed/tm1jSQ41qbM,phan_tich_du_lieu_co_ban.png
+12,Thống kê ứng dụng,IT,IT data,beginner,None,45,Thống kê cho phân tích dữ liệu,video,https://www.youtube.com/embed/65HpYPD1hvU,thong_ke_ung_dung.png
+13,Machine Learning cơ bản,IT,IT data,intermediate,Phân tích dữ liệu,60,Thuật toán ML nền tảng,video,https://www.youtube.com/embed/_ZjIv2D6T40,machine_learning_co_ban.png
+14,Deep Learning,IT,IT data,advanced,Machine Learning,70,Mạng nơ-ron sâu,practice,https://www.youtube.com/embed/pusntJk4tsw,deeplearning.png
+15,Trí tuệ nhân tạo,IT,IT data,advanced,Machine Learning,65,Ứng dụng AI thực tế,practice,https://www.youtube.com/embed/WBB_lJgb4-0,tri_tue_nhan_tao.png
+16,An toàn thông tin,IT,cyber,intermediate,Mạng máy tính,50,Bảo mật hệ thống và dữ liệu,video,https://www.youtube.com/embed/M0DcZuSuRhk,an_toan_thong_tin.png
+17,Kiểm thử phần mềm,IT,IT software,intermediate,Lập trình cơ bản,40,Test và đảm bảo chất lượng,practice,https://www.youtube.com/embed/PuJfjVxH_3A,kiem_thu_phan_mem.png
+18,DevOps cơ bản,IT,IT software,intermediate,Backend,50,Tích hợp CI/CD,practice,https://www.youtube.com/embed/lpk7VpGqkKw,devpos-co_ban.png
+19,Điện toán đám mây,IT,IT software,intermediate,None,45,AWS, Cloud Computing,video,https://www.youtube.com/embed/zDTqYWQ5idM,dien_toan_dam_may.png
+20,Phân tích hệ thống,IT,IT software,intermediate,None,45,Thu thập và phân tích yêu cầu,video,https://www.youtube.com/embed/IlSyslSKLCc,phan_tich_he_thong.png
+21,Nguyên lý Marketing,Business,marketing,beginner,None,40,Các khái niệm marketing cơ bản,video,https://www.youtube.com/embed/SKp8_IiTHS0,nguyen_ly_marketing.png
+22,Digital Marketing,Business,marketing,intermediate,Nguyên lý Marketing,50,SEO, Ads, Social Media,practice,https://www.youtube.com/embed/7xkGkSFGonk,digital_marketing.png
+23,Quản trị kinh doanh,Business,business,beginner,None,45,Nền tảng quản trị doanh nghiệp,video,https://www.youtube.com/embed/RD-w8cu84yc,quan_tri_kinh_doanh.png
+24,Khởi nghiệp,Business,business,intermediate,Quản trị kinh doanh,40,Xây dựng mô hình startup,practice,https://www.youtube.com/embed/mcDhXhtViaE,khoi_nghiep.png
+25,Phân tích tài chính,Business,finance,intermediate,Kế toán,50,Đọc báo cáo tài chính,video,https://www.youtube.com/embed/FrXVSEVjrs8,phan_tich_tai_chinh.png
+26,Kế toán căn bản,Business,finance,beginner,None,45,Nguyên lý kế toán,video,https://www.youtube.com/embed/J0gtYi8r4lA,ke_toan_tai_chinh.png
+27,Quản trị nhân sự,Business,business,beginner,None,40,Quản lý nguồn nhân lực,video,https://www.youtube.com/embed/NpxbCm5td1s,quan_tri_nhan_su.png
+28,Logistics & Chuỗi cung ứng,Business,logistics,intermediate,Quản trị kinh doanh,50,Quản lý vận hành,video,https://www.youtube.com/embed/5HqCAuN3dHQ,logistic_&_chuoi_cung_cung.png
+29,Thương mại điện tử,Business,business,intermediate,Marketing,45,Mô hình kinh doanh online,video,https://www.youtube.com/embed/-PkN7yMv2Ug,thuong_mai_dien_tu.png
+30,Quản trị dự án,Business,business,intermediate,None,45,Lập kế hoạch và kiểm soát dự án,practice,https://www.youtube.com/embed/VY8UZvQcXmA,quan_tri_du_an.png
+31,Luật đại cương,Law,law,beginner,None,40,Khái niệm pháp luật cơ bản,video,https://www.youtube.com/embed/Y8XNvGWtivs,luat_dai_cuong.png
+32,Luật kinh tế,Law,law,intermediate,Luật đại cương,45,Pháp luật trong kinh doanh,video,https://www.youtube.com/embed/pEGyo_8JbKo,luat_kinh_te.png
+33,Luật lao động,Law,law,intermediate,Luật đại cương,40,Quy định lao động,video,https://www.youtube.com/embed/LGKwgRAadxI,luat_lao_dong.png
+34,Giáo dục học,Education,education,beginner,None,40,Nền tảng khoa học giáo dục,video,https://www.youtube.com/embed/fMRoNIewsMk,giao_duc_hoc.png
+35,Phương pháp giảng dạy,Education,education,intermediate,Giáo dục học,45,Kỹ năng sư phạm,practice,https://www.youtube.com/embed/-0BN9H0_LwM,phuong_phap_giang_day.png
+36,Tâm lý học giáo dục,Education,education,intermediate,Giáo dục học,40,Hiểu tâm lý người học,video,https://www.youtube.com/embed/v4FH-wmqp1Y,tam_ly_hoc_giao_duc.png
+37,Sinh học đại cương,Health,health,beginner,None,40,Kiến thức sinh học cơ bản,video,https://www.youtube.com/embed/LP9kzGK3KX8,sinh_hoc_dai_cuong.png
+38,Y học cơ sở,Health,health,intermediate,Sinh học,60,Nền tảng y khoa,video,https://www.youtube.com/embed/xRTS2qNjZII,y_hoc_co_so.png
+39,Dinh dưỡng học,Health,health,beginner,None,35,Nguyên lý dinh dưỡng,video,https://www.youtube.com/embed/ebpDgpQq5RI,dinh_duong_hoc.png
+40,Sức khỏe cộng đồng,Health,health,intermediate,None,45,Quản lý y tế cộng đồng,video,https://www.youtube.com/embed/watch?v=WRUNZf3y_Rw,,suc_khoe_cong_dong.png
+41,Khoa học xã hội,Xã hội,social,beginner,None,40,Nghiên cứu xã hội và hành vi,video,https://www.youtube.com/embed/17fd5kx-4sk,khoa_hoc_xa_hoi.png
+42,Tâm lý học,Xã hội,social,intermediate,Khoa học xã hội,45,Phân tích hành vi con người,video,https://www.youtube.com/embed/pkIdlUDxFV8,tam_ly_hoc.png
+43,Xã hội học,Xã hội,social,intermediate,None,40,Nghiên cứu xã hội hiện đại,video,https://www.youtube.com/embed/cw4hfTF_ES4,xa_hoi_hoc.png
+44,Thiết kế đồ họa,Creative,design,beginner,None,50,Photoshop và tư duy thiết kế,practice,https://www.youtube.com/embed/7zrCkZRW_aI,thiet_ke_do_hoa.png
+45,UI UX Design,Creative,design,intermediate,Thiết kế đồ họa,55,Thiết kế trải nghiệm người dùng,practice,https://www.youtube.com/embed/RCpP1H9OUes,UI_UXd_design.png
+46,Thiết kế đa phương tiện,Creative,design,intermediate,None,50,Video và multimedia,practice,https://www.youtube.com/embed/dr1PJLzBXds,thiet_ke_da_phuong_tien.png
+47,Thiết kế kiến trúc,Engineering,architecture,beginner,None,60,Nguyên lý kiến trúc,video,https://www.youtube.com/embed/W40AYVglDwI,thiet_ke_cau_truc.png
+48,Kỹ thuật xây dựng,Engineering,engineering,intermediate,Toán kỹ thuật,65,Thiết kế công trình,video,https://www.youtube.com/embed/SYyAji_fa-g,ky_thuat_xay_dung.png
+49,Kỹ thuật điện,Engineering,engineering,beginner,None,55,Hệ thống điện cơ bản,video,https://www.youtube.com/embed/CA6fs-_i01k,ky_thuat_dien.png
+50,Kỹ thuật cơ khí,Engineering,engineering,intermediate,None,60,Thiết kế và chế tạo cơ khí,video,https://www.youtube.com/embed/V_RjnZK12VA,ky_thuat_co_khi.png

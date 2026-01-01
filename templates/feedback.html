@@ -119,17 +119,13 @@
         <!-- User Avatar -->
         <div class="user-avatar-wrapper" id="userAvatarBtn">
           <span class="user-name">{{ user.name if user else 'Guest' }}</span>
-          <img src="{{ url_for('static', filename='images/avatar.jpg') }}" 
-              alt="User Avatar" 
-              class="user-avatar">
-          
+          <img src="{{ url_for('static', filename='images/avatar.jpg') }}" alt="User Avatar" class="user-avatar" />
+
           <!-- User Dropdown -->
           <div class="user-dropdown" id="userDropdown">
             <div class="user-dropdown-header">
               <div class="user-info">
-                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" 
-                    alt="User" 
-                    class="user-info-avatar">
+                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" alt="User" class="user-info-avatar" />
                 <div class="user-info-text">
                   <h6>{{ user.name if user else 'Guest' }}</h6>
                   <small>{{ user.email if user else '' }}</small>
@@ -159,41 +155,18 @@
 
         <!-- FEEDBACK LIST -->
         <div class="feedback-box" id="feedbackList">
-          <!-- HARDCORE DATA -->
-          <div class="feedback-item">
-            <img alt="xs" class="avatar" src="https://i.pravatar.cc/100?img=50" />
+          {%- if feedbacks and feedbacks|length > 0 -%} {%- for fb in feedbacks -%}
+          <div class="feedback-item {% if user and fb.user_id == user.id %}me{% endif %}">
+            <img alt="avatar" class="avatar" src="{{ fb.avatar or url_for('static', filename='images/avatar.jpg') }}" />
             <div class="bubble">
-              <div class="name">Bùi Xuân Sơn</div>
-              <div class="stars">★★★★★</div>
-              <div class="comment">Sau khi học lộ trình fullstack ở đây, tôi đã có thể đi làm</div>
+              <div class="name">{{ fb.name or 'Guest' }}</div>
+              <div class="stars">{{ '★' * (fb.stars or 5) }}</div>
+              <div class="comment">{{ fb.comment }}</div>
             </div>
           </div>
-          <div class="feedback-item">
-            <img alt="xs" class="avatar" src="https://i.pravatar.cc/100?img=11" />
-            <div class="bubble">
-              <div class="name">Nguyễn Minh Anh</div>
-              <div class="stars">★★★★★</div>
-              <div class="comment">Lộ trình rõ ràng, học xong là áp dụng được ngay 👍</div>
-            </div>
-          </div>
-
-          <div class="feedback-item">
-            <img alt="xs" class="avatar" src="https://i.pravatar.cc/100?img=32" />
-            <div class="bubble">
-              <div class="name">Trần Quốc Huy</div>
-              <div class="stars">★★★★★</div>
-              <div class="comment">Giao diện dễ dùng, nội dung rất sát thực tế.</div>
-            </div>
-          </div>
-
-          <div class="feedback-item">
-            <img alt="xs" class="avatar" src="https://i.pravatar.cc/100?img=45" />
-            <div class="bubble">
-              <div class="name">Lê Thu Trang</div>
-              <div class="stars">★★★★★</div>
-              <div class="comment">Mình thích nhất phần roadmap, học không bị lan man.</div>
-            </div>
-          </div>
+          {%- endfor -%} {%- else -%}
+          <div class="text-muted small">Chưa có đánh giá nào. Hãy là người đầu tiên để lại phản hồi!</div>
+          {%- endif -%}
         </div>
 
         <!-- INPUT -->
@@ -233,30 +206,49 @@
       // default 5 star
       stars.forEach((s) => s.classList.add("active"));
 
-      function sendFeedback() {
+      async function sendFeedback() {
         const comment = document.getElementById("commentInput").value.trim();
         if (!comment) return;
 
-        const list = document.getElementById("feedbackList");
+        try {
+          const res = await fetch("/feedback", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ comment: comment, stars: selectedStar }),
+          });
 
-        const item = document.createElement("div");
-        item.className = "feedback-item me";
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            alert(err.message || "Lỗi khi gửi đánh giá");
+            return;
+          }
 
-        item.innerHTML = `
-      <img class="avatar" src="./static/images/avatar.jpg" alt="Bạn" />
-      <div class="bubble">
-        <div class="name">Bạn</div>
-        <div class="stars">${"★".repeat(selectedStar)}</div>
-        <div class="comment">${comment}</div>
-      </div>
-    `;
+          const list = document.getElementById("feedbackList");
+          const item = document.createElement("div");
+          item.className = "feedback-item me";
 
-        list.appendChild(item);
-        list.scrollTop = list.scrollHeight;
+          item.innerHTML = `
+            <img class="avatar" src="{{ user.avatar if user else url_for('static', filename='images/avatar.jpg') }}" alt="Bạn" />
+            <div class="bubble">
+              <div class="name">Bạn</div>
+              <div class="stars">${"★".repeat(selectedStar)}</div>
+              <div class="comment"></div>
+            </div>
+          `;
 
-        document.getElementById("commentInput").value = "";
+          // set text safely
+          item.querySelector(".comment").textContent = comment;
+
+          list.appendChild(item);
+          list.scrollTop = list.scrollHeight;
+
+          document.getElementById("commentInput").value = "";
+        } catch (e) {
+          console.error(e);
+          alert("Lỗi khi gửi đánh giá");
+        }
       }
-           // User dropdown
+      // User dropdown
       const userAvatarBtn = document.getElementById("userAvatarBtn");
       const userDropdown = document.getElementById("userDropdown");
 

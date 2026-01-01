@@ -84,3 +84,16 @@ ADD COLUMN plan_id INT NULL AFTER subject_id,
 ADD FOREIGN KEY (plan_id) REFERENCES study_plans(id) ON DELETE SET NULL;
 
 CREATE INDEX idx_user_subject_plan ON quiz_attempts(user_id, subject_id, plan_id)
+
+-- Bảng lưu feedback của người dùng
+CREATE TABLE feedbacks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    name VARCHAR(150) DEFAULT 'Guest',
+    avatar VARCHAR(255) DEFAULT '/static/images/avatar.jpg',
+    comment TEXT NOT NULL,
+    stars TINYINT DEFAULT 5,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_feedback_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
