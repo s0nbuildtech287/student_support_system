@@ -1,0 +1,5 @@
+SECRET_KEY = "Jx8kF2!9vQmP@eR7#WzYB4A6Hn0sD$C"
+
+FEATURE_FLAGS = {
+    "ALERT_REPORTS": True
+}
