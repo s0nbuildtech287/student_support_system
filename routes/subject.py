@@ -15,22 +15,43 @@ from services.quiz_service import (
     get_best_attempt
 )
 from routes.user import get_current_user, login_required
+# SỬ DỤNG N8N
+from n8n.n8n_subject_service import load_subjects_from_n8n
 
 subject_bp = Blueprint("subject", __name__)
 
-# Danh sách môn học
 @subject_bp.route("/subject")
-def subject_list():
+def subject():
     page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 9, type=int)
     category = request.args.get("category", "").strip()
     level = request.args.get("level", "").strip()
+    keyword = request.args.get("keyword", "").strip()
 
-    data = load_all_subject_paginated(
-        page=page,
-        per_page=9,
-        category=category,
-        level=level
-    )
+    print("DEBUG:", page, per_page, category, level)
+
+    # ===== SWITCH NGUỒN DỮ LIỆU =====
+    try:
+        data = load_subjects_from_n8n(
+            page=page,
+            per_page=per_page,
+            category=category,
+            level=level
+        )
+        source = "n8n"
+    except Exception as e:
+        print("⚠️ N8N DOWN → FALLBACK CSV:", e)
+        data = load_all_subject_paginated(
+            page=page,
+            per_page=per_page,
+            category=category,
+            level=level
+        )
+        source = "csv"
+
+    # ===== VALIDATE DATA =====
+    if not data or "subjects" not in data:
+        return "DATA ERROR", 500
 
     user = get_current_user()
 
@@ -42,9 +63,12 @@ def subject_list():
         categories=data["categories"],
         selected_category=category,
         selected_level=level,
-        keyword="",
-        user=user
+        keyword=keyword,
+        per_page=per_page,
+        user=user,
+        source=source
     )
+
 
 
 # Chi tiết môn học

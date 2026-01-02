@@ -11,7 +11,7 @@ from config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Đăng ký route (Blueprint)
+# Đăng ký route (Blueprint) 
 app.register_blueprint(user_bp)       
 app.register_blueprint(home_bp)
 app.register_blueprint(subject_bp)
