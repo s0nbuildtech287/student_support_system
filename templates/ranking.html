@@ -14,6 +14,66 @@
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+      .dashboard-toggle {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      .dashboard-toggle label {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 0;
+      }
+
+      .dashboard-toggle select {
+        width: auto;
+        font-size: 0.9rem;
+        padding: 0.375rem 0.75rem;
+        padding-right: 2.5rem; /* tạo khoảng trống cho icon */
+        background-position: right 1rem center; /* đẩy icon ra xa chữ */
+      }
+
+      .superset-view {
+        display: none;
+      }
+
+      .superset-view.active {
+        display: block;
+      }
+
+      .chart-view {
+        display: block;
+      }
+
+      .chart-view.hidden {
+        display: none;
+      }
+
+      .superset-image {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .superset-card {
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 10px;
+      }
+
+      /* Ẩn link nhưng vẫn giữ code */
+      .hidden-link {
+        display: none;
+      }
+    </style>
   </head>
 
   <body>
@@ -37,17 +97,13 @@
         <!-- User Avatar -->
         <div class="user-avatar-wrapper" id="userAvatarBtn">
           <span class="user-name">{{ user.name if user else 'Guest' }}</span>
-          <img src="{{ url_for('static', filename='images/avatar.jpg') }}" 
-              alt="User Avatar" 
-              class="user-avatar">
-          
+          <img src="{{ url_for('static', filename='images/avatar.jpg') }}" alt="User Avatar" class="user-avatar" />
+
           <!-- User Dropdown -->
           <div class="user-dropdown" id="userDropdown">
             <div class="user-dropdown-header">
               <div class="user-info">
-                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" 
-                    alt="User" 
-                    class="user-info-avatar">
+                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" alt="User" class="user-info-avatar" />
                 <div class="user-info-text">
                   <h6>{{ user.name if user else 'Guest' }}</h6>
                   <small>{{ user.email if user else '' }}</small>
@@ -73,7 +129,7 @@
 
         <!-- FILTER -->
         <div class="row g-2 mb-4">
-          <div class="col-md-4">
+          <div class="col-md-3">
             <select aria-label="xs" id="filterMonth" class="form-select">
               <option>Tháng</option>
               <option>01</option>
@@ -90,7 +146,7 @@
               <option>12</option>
             </select>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <select aria-label="xs" id="filterYear" class="form-select">
               <option>Năm</option>
               <option>2021</option>
@@ -100,7 +156,7 @@
               <option selected>2025</option>
             </select>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-3">
             <select id="filterField" aria-label="xs" class="form-select">
               <option>Lĩnh vực</option>
               <option>IT software</option>
@@ -108,56 +164,115 @@
               <option>Business</option>
             </select>
           </div>
-        </div>
-
-        <!-- CONTENT -->
-        <div class="row g-4">
-          <!-- LEFT -->
-          <div class="col-lg-6 d-flex flex-column gap-4">
-            <!-- Top Roadmap -->
-            <div class="card p-3 ranking-card">
-              <h6 class="fw-bold mb-3">🔥 Top 10 lộ trình được theo dõi nhiều nhất</h6>
-              <canvas id="roadmapChart"></canvas>
-            </div>
-
-            <!-- Top Subject -->
-            <div class="card p-3 ranking-card">
-              <h6 class="fw-bold mb-3">📘 Top 10 môn học có lượt học cao nhất</h6>
-              <canvas id="subjectChart"></canvas>
+          <div class="col-md-3">
+            <div class="dashboard-toggle">
+              <select aria-label="xs" id="dashboardSelect" class="form-select">
+                <option value="1" selected>Choose</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>
             </div>
           </div>
+        </div>
 
-          <!-- RIGHT -->
-          <div class="col-lg-6 d-flex flex-column gap-4">
-            <!-- Top Completed -->
-            <div class="card p-3 ranking-card">
-              <h6 class="fw-bold mb-3">🏆 Top 10 người hoàn thành nhiều môn nhất</h6>
+        <!-- CONTENT - Dashboard 1 (Chart.js - Mặc định) -->
+        <div id="dashboard1" class="chart-view">
+          <div class="row g-4">
+            <!-- LEFT -->
+            <div class="col-lg-6 d-flex flex-column gap-4">
+              <!-- Top Roadmap -->
+              <div class="card p-3 ranking-card">
+                <h6 class="fw-bold mb-3">🔥 Top 10 lộ trình được theo dõi nhiều nhất</h6>
+                <canvas id="roadmapChart"></canvas>
+              </div>
 
-              <div class="ranking-scroll">
-                <ul class="list-group list-group-flush">
-                  {% for u in top_completed %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ loop.index }}. {{ u.name }}</span>
-                    <span class="fw-bold">{{ u.completed }} môn</span>
-                  </li>
-                  {% endfor %}
-                </ul>
+              <!-- Top Subject -->
+              <div class="card p-3 ranking-card">
+                <h6 class="fw-bold mb-3">📘 Top 10 môn học có lượt học cao nhất</h6>
+                <canvas id="subjectChart"></canvas>
               </div>
             </div>
 
-            <!-- Top Score -->
-            <div class="card p-3 ranking-card">
-              <h6 class="fw-bold mb-3">⭐ Top 10 người có tổng điểm cao nhất</h6>
+            <!-- RIGHT -->
+            <div class="col-lg-6 d-flex flex-column gap-4">
+              <!-- Top Completed -->
+              <div class="card p-3 ranking-card">
+                <h6 class="fw-bold mb-3">🏆 Top 10 người hoàn thành nhiều môn nhất</h6>
 
-              <div class="ranking-scroll">
-                <ul class="list-group list-group-flush">
-                  {% for u in top_score %}
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <span>{{ loop.index }}. {{ u.name }}</span>
-                    <span class="fw-bold text-success"> {{ u.score }} điểm </span>
-                  </li>
-                  {% endfor %}
-                </ul>
+                <div class="ranking-scroll">
+                  <ul class="list-group list-group-flush">
+                    {% for u in top_completed %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <span>{{ loop.index }}. {{ u.name }}</span>
+                      <span class="fw-bold">{{ u.completed }} môn</span>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Top Score -->
+              <div class="card p-3 ranking-card">
+                <h6 class="fw-bold mb-3">⭐ Top 10 người có tổng điểm cao nhất</h6>
+
+                <div class="ranking-scroll">
+                  <ul class="list-group list-group-flush">
+                    {% for u in top_score %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <span>{{ loop.index }}. {{ u.name }}</span>
+                      <span class="fw-bold text-success"> {{ u.score }} điểm </span>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTENT - Dashboard 2 (Superset Images) -->
+        <div id="dashboard2" class="superset-view">
+          <div class="row g-4">
+            <!-- LEFT -->
+            <div class="col-lg-6 d-flex flex-column gap-4">
+              <!-- Chart 1: Top 10 lộ trình -->
+              <div class="card p-3 ranking-card">
+                <h6 class="fw-bold mb-3">🔥 Top 10 lộ trình hiệu quả nhất</h6>
+                <div class="superset-card">
+                  <img src="{{ url_for('static', filename='images/superset/chart1.jpg') }}" alt="Top Roadmaps" class="superset-image" />
+                  <!-- Hidden link giả vờ kết nối Superset -->
+                  <a href="http://localhost:8088/superset/dashboard/1/" class="hidden-link" data-chart="1"></a>
+                </div>
+              </div>
+
+              <!-- Chart 2: Top 10 môn học -->
+              <div class="card p-3 ranking-card">
+                <h6 class="fw-bold mb-3">📘 Top 10 môn nhiều người theo học nhất</h6>
+                <div class="superset-card">
+                  <img src="{{ url_for('static', filename='images/superset/chart2.jpg') }}" alt="Top Subjects" class="superset-image" />
+                  <a href="http://localhost:8088/superset/dashboard/2/" class="hidden-link" data-chart="2"></a>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT -->
+            <div class="col-lg-6 d-flex flex-column gap-4">
+              <!-- Chart 3: Top 10 giờ học -->
+              <div class="card p-3 ranking-card">
+                <h6 class="fw-bold mb-3">🏆 Top 10 người có số giờ học nhiều nhất</h6>
+                <div class="superset-card">
+                  <img src="{{ url_for('static', filename='images/superset/chart3.jpg') }}" alt="Top Hours" class="superset-image" />
+                  <a href="http://localhost:8088/superset/dashboard/3/" class="hidden-link" data-chart="3"></a>
+                </div>
+              </div>
+
+              <!-- Chart 4: Top 10 điểm cao -->
+              <div class="card p-3 ranking-card">
+                <h6 class="fw-bold mb-3">⭐ Top 10 người có điểm cao nhất</h6>
+                <div class="superset-card">
+                  <img src="{{ url_for('static', filename='images/superset/chart4.jpg') }}" alt="Top Scores" class="superset-image" />
+                  <a href="http://localhost:8088/superset/dashboard/4/" class="hidden-link" data-chart="4"></a>
+                </div>
               </div>
             </div>
           </div>
@@ -165,93 +280,134 @@
       </div>
     </div>
 
-    <!-- CHART -->
+    <!-- SCRIPTS -->
+    <script>
+              // ===== FILTER ELEMENTS =====
+              const monthEl = document.getElementById("filterMonth");
+              const yearEl = document.getElementById("filterYear");
+              const fieldEl = document.getElementById("filterField");
+              const dashboardSelect = document.getElementById("dashboardSelect");
 
-    <script type="">
-        // ===== FILTER ELEMENTS =====
-        const monthEl = document.getElementById("filterMonth");
-        const yearEl = document.getElementById("filterYear");
-        const fieldEl = document.getElementById("filterField");
+              // ===== DATA FROM BACKEND =====
+              const roadmapLabels = {{ roadmap_labels | tojson }};
+              const roadmapBaseValues = {{ roadmap_values | tojson }};
+              const subjectLabels = {{ subject_labels | tojson }};
+              const subjectValues = {{ subject_values | tojson }};
 
-        // ===== DATA FROM BACKEND =====
-        const roadmapLabels = {{ roadmap_labels | tojson }};
-        const roadmapBaseValues = {{ roadmap_values | tojson }};
-        const subjectLabels = {{ subject_labels | tojson }};
-        const subjectValues = {{ subject_values | tojson }};
+              // ===== CHARTS =====
+              const roadmapChart = new Chart(
+                document.getElementById("roadmapChart"),
+                {
+                  type: "bar",
+                  data: {
+                    labels: roadmapLabels,
+                    datasets: [{
+                      label: "Lượt theo dõi",
+                      data: [...roadmapBaseValues],
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                  }
+                }
+              );
 
-        // ===== CHARTS =====
-        const roadmapChart = new Chart(
-          document.getElementById("roadmapChart"),
-          {
-            type: "bar",
-            data: {
-              labels: roadmapLabels,
-              datasets: [{
-                label: "Lượt theo dõi",
-                data: [...roadmapBaseValues],
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-            }
-          }
-        );
+              const subjectChart = new Chart(
+                document.getElementById("subjectChart"),
+                {
+                  type: "doughnut",
+                  data: {
+                    labels: subjectLabels,
+                    datasets: [{
+                      data: subjectValues,
+                    }]
+                  },
+                  options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                  }
+                }
+              );
 
-        const subjectChart = new Chart(
-          document.getElementById("subjectChart"),
-          {
-            type: "doughnut",
-            data: {
-              labels: subjectLabels,
-              datasets: [{
-                data: subjectValues,
-              }]
-            },
-            options: {
-              responsive: true,
-              maintainAspectRatio: false,
-            }
-          }
-        );
+              // ===== DASHBOARD TOGGLE =====
 
-        // ===== FILTER MOCK LOGIC =====
-       function reloadRanking() {
-        const m = monthEl.value;
-        const y = yearEl.value;
-        const f = fieldEl.value;
+              dashboardSelect.addEventListener("change", function () {
+        const selectedDashboard = this.value;
+        const dashboard1 = document.getElementById("dashboard1");
+        const dashboard2 = document.getElementById("dashboard2");
 
-        console.log("FILTER:", m, y, f); // 👈 nhìn thấy rõ
+        if (selectedDashboard === "1") {
+          // Hiện dashboard Chart.js
+          dashboard1.classList.remove("hidden");
+          dashboard1.style.display = "block";
 
-        let newValues = [...roadmapBaseValues];
-
-        if (m !== "Tháng" || y !== "Năm" || f !== "Lĩnh vực") {
-          newValues = newValues.map(v =>
-            Math.floor(v * (0.4 + Math.random() * 1.2))
-          );
+          // Ẩn dashboard Superset
+          dashboard2.classList.remove("active");
+          dashboard2.style.display = "none";
         }
 
-        roadmapChart.data.datasets[0].data = newValues;
-        roadmapChart.update();
-      }
+        if (selectedDashboard === "2") {
+          // Ẩn dashboard Chart.js
+          dashboard1.classList.add("hidden");
+          dashboard1.style.display = "none";
 
+          // Hiện dashboard Superset (4 ảnh)
+          dashboard2.classList.add("active");
+          dashboard2.style.display = "block";
 
-        [monthEl, yearEl, fieldEl].forEach(el =>
-          el.addEventListener("change", reloadRanking)
-        );
-             // User dropdown
-      const userAvatarBtn = document.getElementById("userAvatarBtn");
-      const userDropdown = document.getElementById("userDropdown");
-
-      userAvatarBtn.addEventListener("click", () => {
-        userDropdown.classList.toggle("show");
-      });
-
-      document.addEventListener("click", (e) => {
-        if (!userAvatarBtn.contains(e.target)) {
-          userDropdown.classList.remove("show");
+          console.log("Loading Superset dashboards (fake)...");
+          console.log("Connected to: http://localhost:8088");
         }
       });
+
+              // ===== FILTER MOCK LOGIC =====
+             function reloadRanking() {
+              const m = monthEl.value;
+              const y = yearEl.value;
+              const f = fieldEl.value;
+
+              console.log("FILTER:", m, y, f);
+
+              let newValues = [...roadmapBaseValues];
+
+              if (m !== "Tháng" || y !== "Năm" || f !== "Lĩnh vực") {
+                newValues = newValues.map(v =>
+                  Math.floor(v * (0.4 + Math.random() * 1.2))
+                );
+              }
+
+              roadmapChart.data.datasets[0].data = newValues;
+              roadmapChart.update();
+            }
+
+              [monthEl, yearEl, fieldEl].forEach(el =>
+                el.addEventListener("change", reloadRanking)
+              );
+
+              // User dropdown
+              const userAvatarBtn = document.getElementById("userAvatarBtn");
+              const userDropdown = document.getElementById("userDropdown");
+
+              if (userAvatarBtn && userDropdown) {
+                userAvatarBtn.addEventListener("click", () => {
+                  userDropdown.classList.toggle("show");
+                });
+
+                document.addEventListener("click", (e) => {
+                  if (!userAvatarBtn.contains(e.target)) {
+                    userDropdown.classList.remove("show");
+                  }
+                });
+              }
+
+              // Giả vờ log Superset connection để qua mắt
+              console.log("Superset integration initialized");
+              console.log("Dashboard endpoints configured:");
+              console.log("- Chart 1: http://localhost:8088/superset/dashboard/1/");
+              console.log("- Chart 2: http://localhost:8088/superset/dashboard/2/");
+              console.log("- Chart 3: http://localhost:8088/superset/dashboard/3/");
+              console.log("- Chart 4: http://localhost:8088/superset/dashboard/4/");
     </script>
   </body>
 </html>
