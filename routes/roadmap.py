@@ -1,14 +1,29 @@
 from flask import Blueprint, render_template, abort, jsonify, session, redirect
 from services.roadmap_service import get_all_roadmaps, get_roadmap_by_id, get_roadmap_steps, apply_roadmap_to_user_plan
 from routes.user import get_current_user, login_required
+# Import hàm load_roadmaps_from_n8n từ n8n_roadmap_service.py
+from n8n.n8n_roadmap_service import load_roadmaps_from_n8n
 
 roadmap_bp = Blueprint("roadmap", __name__)
 
 @roadmap_bp.route("/roadmap")
 def roadmap_page():
-    roadmaps = get_all_roadmaps()
     user = get_current_user()
-    return render_template("roadmap.html", roadmaps=roadmaps, user=user)
+
+    try:
+        roadmaps = load_roadmaps_from_n8n()
+        source = "n8n"
+    except Exception as e:
+        print("⚠️ N8N DOWN → FALLBACK CSV:", e)
+        roadmaps = get_all_roadmaps()
+        source = "csv"
+
+    return render_template(
+        "roadmap.html",
+        roadmaps=roadmaps,
+        user=user,
+        source=source
+    )
 
 @roadmap_bp.route("/roadmap/<int:roadmap_id>")
 def roadmap_detail_page(roadmap_id):
