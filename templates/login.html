@@ -1,99 +1,119 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <title>Đăng nhập | Learn Support AI</title>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <style>
-      body {
-        min-height: 100vh;
-        background: url("/static/images/learn.jpg") no-repeat center center/cover;
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0;
-      }
-      .card {
-        border: none;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      }
-      body::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.315);
-        z-index: 1;
-      }
-      .login-card {
-        position: relative;
-        z-index: 2;
-        width: 100%;
-        max-width: 380px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.596);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-      }
-      .brand {
-        font-size: 26px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        color: #212529;
-      }
-      .btn-login {
-        background-color: #343a40;
-        border: none;
-        color: #fff;
-      }
-      .btn-login:hover {
-        background-color: #212529;
-      }
-      .register-link {
-        color: #212529;
-        text-decoration: none;
-      }
-      .register-link:hover {
-        color: #797979;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="card login-card p-4">
-      <div class="text-center mb-3">
-        <div class="brand">Learn Support AI</div>
-        <small class="text-muted">Learning step by step with AI</small>
-      </div>
 
-      <!-- Flash messages -->
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          {% for category, message in messages %}
-            <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show" role="alert">
-              {{ message }}
-              <button aria-label="xs" type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-          {% endfor %}
-        {% endif %}
-      {% endwith %}
+<head>
+  <title>Đăng nhập | Learn Support AI</title>
+  <meta charset="utf-8" />
+  <script src="/static/js/main.js" defer type="module"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      min-height: 100vh;
+      background: url("/static/images/learn.jpg") no-repeat center center/cover;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
 
-      <form method="POST">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" id="email" name="email" class="form-control mb-3" placeholder="example@gmail.com" required />
+    .card {
+      border: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
 
-        <label for="password" class="form-label">Password</label>
-        <input type="password" id="password" name="password" class="form-control mb-3" placeholder="••••••••" required />
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.315);
+      z-index: 1;
+    }
 
-        <button type="submit" class="btn btn-login text-white w-100 mb-2">Login</button>
+    .login-card {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 380px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.596);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
 
-        <div class="text-center">
-          <small>
-            You don't have account?
-            <a href="{{ url_for('user.register') }}" class="register-link fw-semibold">Register</a>
-          </small>
-        </div>
-      </form>
+    .brand {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #212529;
+    }
+
+    .btn-login {
+      background-color: #343a40;
+      border: none;
+      color: #fff;
+    }
+
+    .btn-login:hover {
+      background-color: #212529;
+    }
+
+    .register-link {
+      color: #212529;
+      text-decoration: none;
+    }
+
+    .register-link:hover {
+      color: #797979;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card login-card p-4">
+    <div class="text-center mb-3">
+      <div class="brand">Learn Support AI</div>
+      <small class="text-muted">Learning step by step with AI</small>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div
+      class="alert alert-{{ 'danger' if category == 'danger' else 'success' if category == 'success' else 'info' }} alert-dismissible fade show"
+      role="alert">
+      {{ message }}
+      <button aria-label="xs" type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" id="email" name="email" class="form-control mb-3" placeholder="example@gmail.com" required />
+
+      <label for="password" class="form-label">Password</label>
+      <input type="password" id="password" name="password" class="form-control mb-3" placeholder="••••••••" required />
+
+      <button type="submit" class="btn btn-login text-white w-100 mb-2">Login</button>
+
+      <button type="button" id="google-login-btn"
+        class="btn btn-light w-100 mb-2 border d-flex align-items-center justify-content-center">
+        <img src="/static/images/logo-google.png" alt="Google" style="width: 20px; height: 20px; margin-right: 10px;">
+        Sign in with Google
+      </button>
+
+      <div class="text-center">
+        <small>
+          You don't have account?
+          <a href="{{ url_for('user.register') }}" class="register-link fw-semibold">Register</a>
+        </small>
+      </div>
+    </form>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
 </html>
