@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, jsonify
+import logging
 from routes.user import get_current_user, login_required
 from services.feedback_service import FeedbackService
+from n8n.n8n_feedback_service import add_feedback_via_n8n, get_feedbacks_via_n8n
 
 feedback_bp = Blueprint("feedback", __name__)
 
@@ -8,10 +10,12 @@ feedback_bp = Blueprint("feedback", __name__)
 @feedback_bp.route("/feedback", methods=["GET", "POST"])
 def feedback():
     user = get_current_user()
-    # Save new feedback
+    
+    # POST: Save new feedback
     if request.method == "POST":
         data = request.get_json() or request.form
         comment = (data.get("comment") or "").strip()
+        
         try:
             stars = int(data.get("stars", 5))
         except Exception:
@@ -24,9 +28,23 @@ def feedback():
         name = user['name'] if user else "Guest"
         avatar = user.get('avatar') if user and user.get('avatar') else '/static/images/avatar.jpg'
 
-        FeedbackService.add_feedback(user_id, name, avatar, comment, stars)
+        # Thử thêm feedback qua n8n trước
+        success = add_feedback_via_n8n(user_id, name, avatar, comment, stars)
+        
+        if not success:
+            # Fallback: Dùng FeedbackService
+            logging.warning("⚠️ N8N failed, using FeedbackService fallback")
+            FeedbackService.add_feedback(user_id, name, avatar, comment, stars)
+        
         return jsonify({"success": True})
 
-    # GET -> render page with existing feedbacks
-    feedbacks = FeedbackService.get_feedbacks()
+    # GET: Render page with feedbacks
+    # Thử lấy feedbacks từ n8n trước
+    feedbacks = get_feedbacks_via_n8n()
+    
+    if feedbacks is None:
+        # Fallback: Dùng FeedbackService
+        logging.warning("⚠️ N8N failed, using FeedbackService fallback")
+        feedbacks = FeedbackService.get_feedbacks()
+    
     return render_template("feedback.html", user=user, feedbacks=feedbacks)
