@@ -1,7 +1,7 @@
 import requests
 import logging
 
-N8N_USER_INFO_URL = "http://localhost:5678/webhook-test/user-info"
+N8N_USER_INFO_URL = "http://localhost:5678/webhook/user-info"
 
 def load_user_from_n8n(user_id):
     """

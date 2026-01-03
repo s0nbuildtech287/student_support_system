@@ -1,7 +1,7 @@
 import requests
 import logging
 
-N8N_ROADMAP_URL = "http://localhost:5678/webhook-test/roadmap-list"
+N8N_ROADMAP_URL = "http://localhost:5678/webhook/roadmap-list"
 
 def load_roadmaps_from_n8n():
     try:
