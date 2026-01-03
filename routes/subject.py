@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, abort, jsonify, session
+import logging
 from services.subject_service import (
     load_all_subject_paginated,
     get_subject_by_uid
@@ -28,19 +29,17 @@ def subject():
     level = request.args.get("level", "").strip()
     keyword = request.args.get("keyword", "").strip()
 
-    print("DEBUG:", page, per_page, category, level)
-
-    # ===== SWITCH NGUỒN DỮ LIỆU =====
-    try:
-        data = load_subjects_from_n8n(
-            page=page,
-            per_page=per_page,
-            category=category,
-            level=level
-        )
-        source = "n8n"
-    except Exception as e:
-        print("⚠️ N8N DOWN → FALLBACK CSV:", e)
+    # Thử n8n trước (có fast-fail)
+    data = load_subjects_from_n8n(
+        page=page,
+        per_page=per_page,
+        category=category,
+        level=level
+    )
+    
+    # Nếu n8n trả về None (down hoặc error), dùng CSV
+    if data is None:
+        logging.info("⚡ Using CSV fallback for subjects")
         data = load_all_subject_paginated(
             page=page,
             per_page=per_page,
@@ -48,8 +47,10 @@ def subject():
             level=level
         )
         source = "csv"
+    else:
+        source = "n8n"
 
-    # ===== VALIDATE DATA =====
+    # Validate data
     if not data or "subjects" not in data:
         return "DATA ERROR", 500
 
@@ -70,7 +71,6 @@ def subject():
     )
 
 
-
 # Chi tiết môn học
 @subject_bp.route("/subject/<int:uid>")
 def subject_detail(uid):
@@ -86,28 +86,23 @@ def subject_detail(uid):
     quiz_passed = False
     best_attempt = None
     plan_id = None
-    can_do_quiz = False  # THÊM flag này
+    can_do_quiz = False 
     
     if user:
         user_id = session.get('user_id')
-        
-        # LẤY plan_id từ URL nếu có (khi click từ yourplan)
         plan_id = request.args.get('plan_id', type=int)
         
         if plan_id:
-            # CHỈ KHI CÓ plan_id thì mới cho làm bài
             can_do_quiz = True
-            
-            # Kiểm tra môn này có trong plan không
+        
             learning_progress = get_subject_progress_in_plan(plan_id, uid)
             if learning_progress:
                 learning_progress['plan_id'] = plan_id
                 quiz_passed = has_passed_quiz_in_plan(user_id, uid, plan_id)
                 best_attempt = get_best_attempt(user_id, uid, plan_id)
             else:
-                # Môn không có trong plan này
                 can_do_quiz = False
-        # Nếu không có plan_id (vào từ trang subject) -> CHỈ XEM
+
 
     return render_template(
         "subject_detail.html",
