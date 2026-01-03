@@ -1,7 +1,7 @@
 import requests
 import logging
 
-N8N_FEEDBACK_URL = "http://localhost:5678/webhook-test/feedback"
+N8N_FEEDBACK_URL = "http://localhost:5678/webhook/feedback"
 
 def add_feedback_via_n8n(user_id, name, avatar, comment, stars=5):
     """
