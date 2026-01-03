@@ -1,8 +1,9 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash, session
 import os
+import logging
 from datetime import datetime
 from services.user_service import UserService
-
+from n8n.n8n_infouser_service import load_user_from_n8n
 user_bp = Blueprint("user", __name__)
 
 # Configuration
@@ -13,10 +14,33 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_current_user():
-    """Lấy thông tin user từ session"""
+    """
+    Lấy thông tin user từ session
+    Ưu tiên: n8n (MySQL) -> fallback UserService (MySQL trực tiếp)
+    """
     if 'user_id' not in session:
         return None
-    return UserService.get_user_by_id(session['user_id'])
+    
+    user_id = session['user_id']
+    
+    # Thử lấy từ n8n trước
+    user = load_user_from_n8n(user_id)
+    if user:
+        logging.info(f"✅ Loaded user {user_id} from n8n->MySQL")
+        # Convert created_at string to datetime object if needed
+        if isinstance(user.get('created_at'), str):
+            try:
+                user['created_at'] = datetime.fromisoformat(user['created_at'].replace('Z', '+00:00'))
+            except:
+                user['created_at'] = datetime.now()
+        return user
+    
+    # Fallback: query MySQL trực tiếp qua UserService
+    logging.warning(f"⚠️ N8N failed, using direct MySQL fallback")
+    user = UserService.get_user_by_id(user_id)
+    if user:
+        logging.info(f"✅ Loaded user {user_id} from direct MySQL (fallback)")
+    return user
 
 def login_required(f):
     """Decorator để yêu cầu đăng nhập"""
