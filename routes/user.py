@@ -118,6 +118,56 @@ def register():
     
     return render_template("register.html")
 
+@user_bp.route("/google_login", methods=["POST"])
+def google_login():
+    """Xử lý đăng nhập bằng Google"""
+    try:
+        email = request.form.get("email")
+        name = request.form.get("name")
+        avatar = request.form.get("avatar")
+        
+        if not email:
+            return jsonify({"success": False, "message": "Email is required"}), 400
+            
+        # Kiểm tra user đã tồn tại chưa
+        user = UserService.get_user_by_email(email)
+        
+        if not user:
+            # Nếu chưa tồn tại thì tạo mới với password ngẫu nhiên
+            import string
+            import random
+            
+            # Tạo password ngẫu nhiên 12 ký tự
+            chars = string.ascii_letters + string.digits + "!@#$%"
+            password = ''.join(random.choice(chars) for _ in range(12))
+            
+            # Tạo user
+            result = UserService.create_user(name, email, password)
+            
+            if not result['success']:
+                return jsonify(result), 400
+                
+            # Lấy user vừa tạo
+            user = UserService.get_user_by_email(email)
+            
+            # Cập nhật avatar nếu có
+            if avatar and user:
+                UserService.update_avatar(user['id'], avatar)
+                # Cập nhật lại user info sau khi update avatar
+                user = UserService.get_user_by_email(email)
+        
+        # Đăng nhập (lưu session)
+        if user:
+            session['user_id'] = user['id']
+            session['user_name'] = user['name']
+            return jsonify({"success": True, "message": "Login successful"})
+        else:
+            return jsonify({"success": False, "message": "Login failed"}), 401
+            
+    except Exception as e:
+        print(f"Google login error: {e}")
+        return jsonify({"success": False, "message": "Server error"}), 500
+
 @user_bp.route("/logout")
 def logout():
     """Đăng xuất"""
