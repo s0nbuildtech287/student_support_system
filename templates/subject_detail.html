@@ -34,7 +34,7 @@
         <strong>ℹ️ Chế độ xem trước</strong><br />
         Bạn đang xem thông tin môn học. Để làm bài test và hoàn thành môn học, vui lòng thêm môn này vào
         <a href="/yourplan" class="alert-link">Lộ trình của tôi</a> và học từ đó.
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <button aria-label="xs" type="button" class="btn-close" data-bs-dismiss="alert"></button>
       </div>
       {% endif %}
 
@@ -183,7 +183,7 @@
         <div class="modal-content">
           <div class="modal-header bg-warning">
             <h5 class="modal-title">📝 Bài kiểm tra: {{ subject.subject_name }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <button aria-label="xs" type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
             <!-- Loading -->
