@@ -128,3 +128,9 @@ CREATE TABLE admin_users (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE(user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+
+supertset / admin / admin / 8088
+umami / admmi / umami / 3000
