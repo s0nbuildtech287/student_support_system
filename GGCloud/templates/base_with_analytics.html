@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script defer src="http://localhost:3000/script.js" data-website-id="91d08d66-491e-4dc0-bf82-78d9db867f88"></script>
+    <title>{% block title %}Study With AI{% endblock %}</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Umami Analytics -->
+    <script
+      async
+      src="{{ config.UMAMI_URL }}/script.js"
+      data-website-id="{{ config.UMAMI_WEBSITE_ID }}"
+      data-auto-track="true"
+      data-do-not-track="false"
+      data-domains="localhost,yourdomain.com"
+    ></script>
+
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    {% block content %}{% endblock %}
+
+    <!-- Umami Custom Events Helper -->
+    <script>
+      // Helper function để track custom events
+      function trackUmamiEvent(eventName, eventData = {}) {
+          if (window.umami) {
+              umami.track(eventName, eventData);
+          }
+      }
+
+      // Track user info (nếu đã login)
+      {% if user %}
+      if (window.umami) {
+          umami.track(props => ({
+              ...props,
+              user_id: '{{ user.id }}',
+              user_email: '{{ user.email }}',
+              user_name: '{{ user.name }}'
+          }));
+      }
+      {% endif %}
+    </script>
+
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

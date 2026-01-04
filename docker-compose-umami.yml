@@ -1,0 +1,29 @@
+version: "3"
+services:
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: umami_analytics
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://umami:umami_password@umami-db:5432/umami
+      DATABASE_TYPE: postgresql
+      APP_SECRET: change-this-to-random-string-abc123xyz789qwerty
+      DISABLE_TELEMETRY: 1
+    depends_on:
+      - umami-db
+    restart: always
+
+  umami-db:
+    image: postgres:15-alpine
+    container_name: umami_postgres
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: umami_password
+    volumes:
+      - umami-db-data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  umami-db-data:

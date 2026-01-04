@@ -9,6 +9,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from GGCloud.services.analytics_service import AnalyticsService
 from GGCloud.services.auth_service import AdminAuthService
+from GGCloud.services.umami_service import UmamiService  # ← Thêm
+from config import Config
 
 admin_bp = Blueprint('admin', __name__, 
                      template_folder='../templates',
@@ -35,23 +37,26 @@ def admin_required(f):
 def dashboard():
     """Trang dashboard admin"""
     
-    # Lấy thống kê tổng quan
+    # Data từ database tracking (analytics_service)
     overview = AnalyticsService.get_overview_stats()
-    
-    # Môn học được xem nhiều nhất
     top_subjects = AnalyticsService.get_most_viewed_subjects(days=30, limit=10)
-    
-    # Lộ trình được xem nhiều nhất
     top_roadmaps = AnalyticsService.get_most_viewed_roadmaps(days=30, limit=10)
-    
-    # Người dùng hoạt động theo ngày
     daily_users = AnalyticsService.get_daily_active_users(days=30)
+    
+    # Data từ Umami Analytics
+    umami_stats = UmamiService.get_website_stats(days=30)
+    umami_page_views = UmamiService.get_page_views(days=30, limit=10)
+    umami_events = UmamiService.get_events(days=30)
     
     return render_template('admin_dashboard.html',
                           overview=overview,
                           top_subjects=top_subjects,
                           top_roadmaps=top_roadmaps,
-                          daily_users=daily_users)
+                          daily_users=daily_users,
+                          umami_stats=umami_stats,
+                          umami_page_views=umami_page_views,
+                          umami_events=umami_events,
+                          config=Config)
 
 @admin_bp.route('/api/subjects')
 @admin_required

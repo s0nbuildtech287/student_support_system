@@ -12,3 +12,8 @@ class Config:
     
     # Flask Configuration - đơn giản thôi
     SECRET_KEY = 'my-secret-key-123456'  # Hardcode luôn cho đơn giản
+
+
+    # Umami Analytics
+    UMAMI_WEBSITE_ID = os.getenv('UMAMI_WEBSITE_ID', '91d08d66-491e-4dc0-bf82-78d9db867f88')
+    UMAMI_URL = os.getenv('UMAMI_URL', 'http://localhost:3000')
