@@ -3,6 +3,7 @@ from services.roadmap_service import get_all_roadmaps, get_roadmap_by_id, get_ro
 from routes.user import get_current_user, login_required
 # Import hàm load_roadmaps_from_n8n từ n8n_roadmap_service.py
 from n8n.n8n_roadmap_service import load_roadmaps_from_n8n
+from GGCloud.services.analytics_service import AnalyticsService
 
 roadmap_bp = Blueprint("roadmap", __name__)
 
@@ -14,7 +15,7 @@ def roadmap_page():
         roadmaps = load_roadmaps_from_n8n()
         source = "n8n"
     except Exception as e:
-        print("⚠️ N8N DOWN → FALLBACK CSV:", e)
+        print("⚠️ N8N DOWN → FALLBACK CSV:", e) 
         roadmaps = get_all_roadmaps()
         source = "csv"
 
@@ -32,6 +33,14 @@ def roadmap_detail_page(roadmap_id):
         abort(404)
     steps = get_roadmap_steps(roadmap_id)
     user = get_current_user()
+        # Track activity
+    user_id = session.get('user_id')
+    AnalyticsService.track_activity(
+        user_id=user_id,
+        activity_type='view_roadmap',
+        target_name=roadmap.get('roadmap_name', 'Unknown'),
+        target_id=roadmap_id
+    )
     return render_template("roadmap_detail.html", roadmap=roadmap, steps=steps, user=user)
 
 

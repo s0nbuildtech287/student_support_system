@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, abort, jsonify, session
+from GGCloud.services.analytics_service import AnalyticsService
 import logging
 from services.subject_service import (
     load_all_subject_paginated,
@@ -102,7 +103,15 @@ def subject_detail(uid):
                 best_attempt = get_best_attempt(user_id, uid, plan_id)
             else:
                 can_do_quiz = False
-
+        # Track activity
+    user_id = session.get('user_id')
+    subject_name = subject.get('subject_name', 'Unknown')
+    AnalyticsService.track_activity(
+        user_id=user_id,
+        activity_type='view_subject',
+        target_id=uid,
+        target_name=subject_name
+    )
 
     return render_template(
         "subject_detail.html",

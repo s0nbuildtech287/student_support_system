@@ -6,6 +6,7 @@ from routes.user import user_bp
 from routes.roadmap import roadmap_bp
 from routes.feedback import feedback_bp
 from routes.yourplan import yourplan_bp
+from GGCloud.routers.admin import admin_bp 
 from config import Config
 
 app = Flask(__name__)
@@ -19,6 +20,7 @@ app.register_blueprint(ranking_bp)
 app.register_blueprint(roadmap_bp)
 app.register_blueprint(feedback_bp)
 app.register_blueprint(yourplan_bp)
+app.register_blueprint(admin_bp)  # Đăng ký admin blueprint
 
 # Route mặc định
 @app.route("/")
