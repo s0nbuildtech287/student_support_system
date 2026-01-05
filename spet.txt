@@ -1,0 +1,6 @@
+export FLASK_APP=superset && export SUPERSET_CONFIG_PATH=/home/khang/Documents/prj4/student_support_sys
+tem/superset_config.py && /home/khang/Documents/prj4/student_support_system/venv/bin/superset fab create-ad
+min --username admin --firstname Admin --lastname User --email admin@admin.com --password admin
+
+
+export FLASK_APP=superset && export SUPERSET_CONFIG_PATH=/home/khang/Documents/prj4/student_support_system/superset_config.py && /home/khang/Documents/prj4/student_support_system/venv/bin/superset run -p 8088 --with-threads --reload

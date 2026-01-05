@@ -186,11 +186,242 @@
           <div class="card p-4">
             <h4 class="fw-bold mb-3 text-center">🤖 Lộ trình học tập được AI đề xuất</h4>
 
-            <div class="roadmap-content">{{ roadmap | safe }}</div>
+            <!-- AI Response Container -->
+            <div id="chat-container">
+              <div id="chat-messages" class="chat-messages">
+                {% if roadmap %}
+                <div class="ai-message">
+                  <div class="message-avatar">🤖</div>
+                  <div class="message-content">{{ roadmap | safe }}</div>
+                </div>
+                {% else %}
+                <div class="empty-state text-center text-muted py-5">
+                  <div style="font-size: 4rem;">🎓</div>
+                  <h5>Chào mừng bạn đến với Study With AI!</h5>
+                  <p>Điền thông tin học tập ở form bên trái và nhấn "Gợi ý lộ trình học tập" để nhận tư vấn từ AI.</p>
+                </div>
+                {% endif %}
+              </div>
+
+              <!-- Follow-up Chat Input -->
+              {% if roadmap %}
+              <div class="chat-input-container mt-3">
+                <div class="input-group">
+                  <input type="text" id="chat-input" class="form-control" 
+                         placeholder="Hỏi thêm về lộ trình học tập... (VD: Chi tiết hơn về môn Python, Thời gian học mỗi môn?)" 
+                         onkeypress="if(event.key==='Enter') sendMessage()">
+                  <button class="btn btn-primary" onclick="sendMessage()" id="send-btn">
+                    <span id="send-text">Gửi</span>
+                    <span id="send-loading" style="display:none;">
+                      <span class="spinner-border spinner-border-sm"></span>
+                    </span>
+                  </button>
+                </div>
+                <small class="text-muted mt-1 d-block">💡 Bạn có thể hỏi thêm về lộ trình, môn học cụ thể, tips học tập...</small>
+              </div>
+              {% endif %}
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Chat Styles -->
+    <style>
+      .chat-messages {
+        max-height: 600px;
+        overflow-y: auto;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+      }
+      
+      .ai-message, .user-message {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 1rem;
+        animation: fadeIn 0.3s ease;
+      }
+      
+      .user-message {
+        flex-direction: row-reverse;
+      }
+      
+      .message-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+      }
+      
+      .ai-message .message-avatar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      
+      .user-message .message-avatar {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      }
+      
+      .message-content {
+        background: white;
+        padding: 1rem 1.25rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        max-width: 85%;
+        line-height: 1.6;
+      }
+      
+      .user-message .message-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      .message-content h1, .message-content h2, .message-content h3, 
+      .message-content h4, .message-content h5, .message-content h6 {
+        color: #333;
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+      }
+      
+      .message-content h1:first-child, .message-content h2:first-child {
+        margin-top: 0;
+      }
+      
+      .message-content ul, .message-content ol {
+        padding-left: 1.5rem;
+        margin: 0.5rem 0;
+      }
+      
+      .message-content li {
+        margin-bottom: 0.3rem;
+      }
+      
+      .message-content code {
+        background: #e9ecef;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-size: 0.9em;
+      }
+      
+      .message-content pre {
+        background: #2d2d2d;
+        color: #f8f8f2;
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+      }
+      
+      .message-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+      }
+      
+      .message-content th, .message-content td {
+        border: 1px solid #dee2e6;
+        padding: 0.5rem;
+        text-align: left;
+      }
+      
+      .message-content th {
+        background: #f8f9fa;
+      }
+      
+      .message-content strong {
+        color: #495057;
+      }
+      
+      .message-content em {
+        color: #6c757d;
+      }
+      
+      .chat-input-container {
+        border-top: 1px solid #dee2e6;
+        padding-top: 1rem;
+      }
+      
+      .chat-input-container .form-control {
+        border-radius: 25px 0 0 25px;
+        padding: 0.75rem 1.25rem;
+        border: 2px solid #dee2e6;
+        border-right: none;
+      }
+      
+      .chat-input-container .form-control:focus {
+        border-color: #667eea;
+        box-shadow: none;
+      }
+      
+      .chat-input-container .btn {
+        border-radius: 0 25px 25px 0;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+      }
+      
+      .chat-input-container .btn:hover {
+        transform: scale(1.02);
+      }
+      
+      .empty-state {
+        padding: 3rem 1rem;
+      }
+      
+      .typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 1rem;
+      }
+      
+      .typing-indicator span {
+        width: 8px;
+        height: 8px;
+        background: #667eea;
+        border-radius: 50%;
+        animation: typing 1s infinite;
+      }
+      
+      .typing-indicator span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      
+      .typing-indicator span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      
+      @keyframes typing {
+        0%, 100% { opacity: 0.3; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1); }
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      /* Scrollbar styling */
+      .chat-messages::-webkit-scrollbar {
+        width: 6px;
+      }
+      
+      .chat-messages::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+      }
+      
+      .chat-messages::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+      }
+      
+      .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+      }
+    </style>
 
     <!-- Footer -->
     <footer class="text-center">
@@ -199,6 +430,489 @@
         <small>Hệ thống gợi ý lộ trình học tập thông minh cho sinh viên</small>
       </div>
     </footer>
+
+    <!-- Dify Chat Bubble -->
+    <div id="dify-chat-bubble" class="chat-bubble" onclick="toggleDifyChat()">
+      <span class="chat-bubble-icon">💬</span>
+      <span class="chat-bubble-text">Chat AI</span>
+    </div>
+
+    <!-- Dify Chat Container -->
+    <div id="dify-chat-container" class="dify-container">
+      <div class="dify-header">
+        <div class="dify-header-info">
+          <span class="dify-avatar">🤖</span>
+          <div>
+            <h6 class="mb-0">Study Assistant</h6>
+            <small class="text-success">● Online</small>
+          </div>
+        </div>
+        <button class="dify-close-btn" onclick="toggleDifyChat()">✕</button>
+      </div>
+      
+      <!-- Chat Messages -->
+      <div class="dify-body" id="dify-messages">
+        <div class="dify-welcome">
+          <div class="welcome-icon">🎓</div>
+          <h5>Xin chào!</h5>
+          <p>Tôi là trợ lý học tập AI. Hãy hỏi tôi bất cứ điều gì về học tập, lộ trình, môn học...</p>
+        </div>
+      </div>
+      
+      <!-- Chat Input -->
+      <div class="dify-input-container">
+        <input type="text" id="dify-input" class="dify-input" 
+               placeholder="Nhập tin nhắn..." 
+               onkeypress="if(event.key==='Enter') sendDifyMessage()">
+        <button class="dify-send-btn" onclick="sendDifyMessage()" id="dify-send-btn">
+          <span id="dify-send-icon">➤</span>
+          <span id="dify-send-loading" style="display:none;">
+            <span class="spinner-border spinner-border-sm"></span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Dify Chat Styles -->
+    <style>
+      .chat-bubble {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        border-radius: 50px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        z-index: 9999;
+        transition: all 0.3s ease;
+        animation: pulse 2s infinite;
+      }
+      
+      .chat-bubble:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 25px rgba(102, 126, 234, 0.5);
+      }
+      
+      .chat-bubble-icon {
+        font-size: 1.5rem;
+      }
+      
+      .chat-bubble-text {
+        font-weight: 600;
+        font-size: 0.95rem;
+      }
+      
+      @keyframes pulse {
+        0%, 100% {
+          box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+        50% {
+          box-shadow: 0 4px 30px rgba(102, 126, 234, 0.6);
+        }
+      }
+      
+      .dify-container {
+        position: fixed;
+        bottom: 100px;
+        right: 30px;
+        width: 380px;
+        height: 550px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        z-index: 9998;
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        animation: slideUp 0.3s ease;
+      }
+      
+      .dify-container.show {
+        display: flex;
+      }
+      
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      .dify-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .dify-header-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .dify-avatar {
+        font-size: 2rem;
+        background: rgba(255,255,255,0.2);
+        padding: 8px;
+        border-radius: 50%;
+      }
+      
+      .dify-header h6 {
+        font-weight: 600;
+      }
+      
+      .dify-close-btn {
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+      }
+      
+      .dify-close-btn:hover {
+        background: rgba(255,255,255,0.3);
+        transform: scale(1.1);
+      }
+      
+      .dify-body {
+        flex: 1;
+        background: #f8f9fa;
+        overflow-y: auto;
+        padding: 15px;
+      }
+      
+      .dify-welcome {
+        text-align: center;
+        padding: 40px 20px;
+        color: #6c757d;
+      }
+      
+      .dify-welcome .welcome-icon {
+        font-size: 3rem;
+        margin-bottom: 15px;
+      }
+      
+      .dify-welcome h5 {
+        color: #333;
+        margin-bottom: 10px;
+      }
+      
+      .dify-welcome p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+      
+      .dify-message {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        animation: fadeIn 0.3s ease;
+      }
+      
+      .dify-message.user {
+        flex-direction: row-reverse;
+      }
+      
+      .dify-message .msg-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+      }
+      
+      .dify-message.bot .msg-avatar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      
+      .dify-message.user .msg-avatar {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+      }
+      
+      .dify-message .msg-content {
+        max-width: 75%;
+        padding: 10px 14px;
+        border-radius: 15px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+      
+      .dify-message.bot .msg-content {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 15px 15px 15px 5px;
+      }
+      
+      .dify-message.user .msg-content {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 5px 15px;
+      }
+      
+      .dify-typing {
+        display: flex;
+        gap: 4px;
+        padding: 5px 0;
+      }
+      
+      .dify-typing span {
+        width: 6px;
+        height: 6px;
+        background: #667eea;
+        border-radius: 50%;
+        animation: typing 1s infinite;
+      }
+      
+      .dify-typing span:nth-child(2) { animation-delay: 0.2s; }
+      .dify-typing span:nth-child(3) { animation-delay: 0.4s; }
+      
+      @keyframes typing {
+        0%, 100% { opacity: 0.3; transform: scale(0.8); }
+        50% { opacity: 1; transform: scale(1); }
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .dify-input-container {
+        padding: 15px;
+        background: white;
+        border-top: 1px solid #e9ecef;
+        display: flex;
+        gap: 10px;
+      }
+      
+      .dify-input {
+        flex: 1;
+        border: 2px solid #e9ecef;
+        border-radius: 25px;
+        padding: 10px 18px;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      
+      .dify-input:focus {
+        border-color: #667eea;
+      }
+      
+      .dify-send-btn {
+        width: 44px;
+        height: 44px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        transition: all 0.2s;
+      }
+      
+      .dify-send-btn:hover {
+        transform: scale(1.05);
+      }
+      
+      .dify-send-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      
+      /* Scrollbar */
+      .dify-body::-webkit-scrollbar {
+        width: 5px;
+      }
+      
+      .dify-body::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      
+      .dify-body::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+      }
+      
+      /* Responsive */
+      @media (max-width: 480px) {
+        .dify-container {
+          width: calc(100% - 20px);
+          height: calc(100% - 120px);
+          right: 10px;
+          bottom: 90px;
+          border-radius: 12px;
+        }
+        
+        .chat-bubble {
+          right: 15px;
+          bottom: 20px;
+          padding: 12px 16px;
+        }
+        
+        .chat-bubble-text {
+          display: none;
+        }
+      }
+    </style>
+
+    <script>
+      // Dify Chat Configuration
+      const DIFY_API_KEY = "{{ config.get('DIFY_API_KEY', '') }}";
+      const DIFY_API_URL = "{{ config.get('DIFY_API_URL', 'https://api.dify.ai/v1') }}";
+      let difyConversationId = null;
+      
+      function toggleDifyChat() {
+        const container = document.getElementById('dify-chat-container');
+        const bubble = document.getElementById('dify-chat-bubble');
+        
+        container.classList.toggle('show');
+        
+        // Change bubble appearance when chat is open
+        if (container.classList.contains('show')) {
+          bubble.innerHTML = '<span class="chat-bubble-icon">✕</span>';
+          bubble.style.borderRadius = '50%';
+          bubble.style.padding = '15px';
+          document.getElementById('dify-input').focus();
+        } else {
+          bubble.innerHTML = '<span class="chat-bubble-icon">💬</span><span class="chat-bubble-text">Chat AI</span>';
+          bubble.style.borderRadius = '50px';
+          bubble.style.padding = '15px 20px';
+        }
+      }
+      
+      function addDifyMessage(content, isUser = false) {
+        const messagesContainer = document.getElementById('dify-messages');
+        
+        // Remove welcome message if exists
+        const welcome = messagesContainer.querySelector('.dify-welcome');
+        if (welcome) welcome.remove();
+        
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `dify-message ${isUser ? 'user' : 'bot'}`;
+        messageDiv.innerHTML = `
+          <div class="msg-avatar">${isUser ? '👤' : '🤖'}</div>
+          <div class="msg-content">${content}</div>
+        `;
+        
+        messagesContainer.appendChild(messageDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        return messageDiv;
+      }
+      
+      function addTypingIndicator() {
+        const messagesContainer = document.getElementById('dify-messages');
+        const typingDiv = document.createElement('div');
+        typingDiv.className = 'dify-message bot';
+        typingDiv.id = 'dify-typing';
+        typingDiv.innerHTML = `
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-content">
+            <div class="dify-typing">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        `;
+        messagesContainer.appendChild(typingDiv);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+      
+      function removeTypingIndicator() {
+        const typing = document.getElementById('dify-typing');
+        if (typing) typing.remove();
+      }
+      
+      async function sendDifyMessage() {
+        const input = document.getElementById('dify-input');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        const sendBtn = document.getElementById('dify-send-btn');
+        const sendIcon = document.getElementById('dify-send-icon');
+        const sendLoading = document.getElementById('dify-send-loading');
+        
+        // Add user message
+        addDifyMessage(message, true);
+        input.value = '';
+        
+        // Disable input
+        input.disabled = true;
+        sendBtn.disabled = true;
+        sendIcon.style.display = 'none';
+        sendLoading.style.display = 'inline-block';
+        
+        // Add typing indicator
+        addTypingIndicator();
+        
+        try {
+          // Call backend Dify chat endpoint
+          const response = await fetch('/dify-chat', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ message: message })
+          });
+          
+          const data = await response.json();
+          removeTypingIndicator();
+          
+          if (data.response) {
+            addDifyMessage(data.response);
+          } else if (data.error) {
+            addDifyMessage('❌ ' + data.error);
+          } else {
+            addDifyMessage('❌ Có lỗi xảy ra. Vui lòng thử lại.');
+          }
+        } catch (error) {
+          removeTypingIndicator();
+          addDifyMessage('❌ Không thể kết nối. Vui lòng thử lại sau.');
+        } finally {
+          // Re-enable input
+          input.disabled = false;
+          sendBtn.disabled = false;
+          sendIcon.style.display = 'inline';
+          sendLoading.style.display = 'none';
+          input.focus();
+        }
+      }
+      
+      // Close chat when clicking outside
+      document.addEventListener('click', function(e) {
+        const container = document.getElementById('dify-chat-container');
+        const bubble = document.getElementById('dify-chat-bubble');
+        
+        if (!container.contains(e.target) && !bubble.contains(e.target) && container.classList.contains('show')) {
+          toggleDifyChat();
+        }
+      });
+    </script>
 
     <!-- Charts -->
     <script>
@@ -262,6 +976,100 @@
           userDropdown.classList.remove("show");
         }
       });
+
+      // Chat function
+      function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        const chatMessages = document.getElementById('chat-messages');
+        const sendBtn = document.getElementById('send-btn');
+        const sendText = document.getElementById('send-text');
+        const sendLoading = document.getElementById('send-loading');
+        
+        // Add user message
+        chatMessages.innerHTML += `
+          <div class="user-message">
+            <div class="message-avatar">👤</div>
+            <div class="message-content">${escapeHtml(message)}</div>
+          </div>
+        `;
+        
+        // Clear input
+        input.value = '';
+        
+        // Add typing indicator
+        const typingId = 'typing-' + Date.now();
+        chatMessages.innerHTML += `
+          <div class="ai-message" id="${typingId}">
+            <div class="message-avatar">🤖</div>
+            <div class="message-content">
+              <div class="typing-indicator">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Scroll to bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        
+        // Disable input
+        input.disabled = true;
+        sendBtn.disabled = true;
+        sendText.style.display = 'none';
+        sendLoading.style.display = 'inline-block';
+        
+        // Send request
+        fetch('/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+          // Remove typing indicator
+          document.getElementById(typingId).remove();
+          
+          // Add AI response
+          chatMessages.innerHTML += `
+            <div class="ai-message">
+              <div class="message-avatar">🤖</div>
+              <div class="message-content">${data.response}</div>
+            </div>
+          `;
+          
+          // Scroll to bottom
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        })
+        .catch(error => {
+          document.getElementById(typingId).remove();
+          chatMessages.innerHTML += `
+            <div class="ai-message">
+              <div class="message-avatar">🤖</div>
+              <div class="message-content text-danger">❌ Có lỗi xảy ra. Vui lòng thử lại.</div>
+            </div>
+          `;
+        })
+        .finally(() => {
+          // Re-enable input
+          input.disabled = false;
+          sendBtn.disabled = false;
+          sendText.style.display = 'inline';
+          sendLoading.style.display = 'none';
+          input.focus();
+        });
+      }
+      
+      function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
     </script>
 
     <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>

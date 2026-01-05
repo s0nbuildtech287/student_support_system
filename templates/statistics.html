@@ -9,6 +9,57 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" />
     <link href="{{ url_for('static', filename='css/statistics.css') }}" rel="stylesheet" />
+    <style>
+      .achievement-locked {
+        opacity: 0.5;
+        filter: grayscale(100%);
+      }
+      .achievement-unlocked {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      .quiz-stats-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .quiz-stat-item {
+        text-align: center;
+        padding: 10px;
+      }
+      .quiz-stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #667eea;
+      }
+      .study-plan-progress {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 10px;
+      }
+      .progress-bar-custom {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .recent-activity-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+      }
+      .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        margin-right: 15px;
+      }
+    </style>
   </head>
 
   <body>
@@ -41,13 +92,13 @@
         <!-- User Avatar -->
         <div class="user-avatar-wrapper" id="userAvatarBtn">
           <span class="user-name">{{ user.name if user else 'Guest' }}</span>
-          <img src="{{ url_for('static', filename='images/avatar.jpg') }}" alt="User Avatar" class="user-avatar" />
+          <img src="{{ user.avatar if user and user.avatar else url_for('static', filename='images/avatar.jpg') }}" alt="User Avatar" class="user-avatar" />
 
           <!-- User Dropdown -->
           <div class="user-dropdown" id="userDropdown">
             <div class="user-dropdown-header">
               <div class="user-info">
-                <img src="{{ url_for('static', filename='images/avatar.jpg') }}" alt="User" class="user-info-avatar" />
+                <img src="{{ user.avatar if user and user.avatar else url_for('static', filename='images/avatar.jpg') }}" alt="User" class="user-info-avatar" />
                 <div class="user-info-text">
                   <h6>{{ user.name if user else 'Guest' }}</h6>
                   <small>{{ user.email if user else '' }}</small>
@@ -81,8 +132,8 @@
         <div class="col-md-3">
           <div class="stat-card">
             <div class="stat-icon">📚</div>
-            <h5>Khóa học đã học</h5>
-            <p class="stat-value">{{ user.enrollments|length }}</p>
+            <h5>Khóa học đang học</h5>
+            <p class="stat-value">{{ stats.overview.total_courses }}</p>
             <small>môn học</small>
           </div>
         </div>
@@ -90,7 +141,7 @@
           <div class="stat-card">
             <div class="stat-icon">✓</div>
             <h5>Bài học hoàn thành</h5>
-            <p class="stat-value">{{ user.progress|length }}</p>
+            <p class="stat-value">{{ stats.overview.completed_lessons }}</p>
             <small>bài học</small>
           </div>
         </div>
@@ -98,7 +149,7 @@
           <div class="stat-card">
             <div class="stat-icon">⏱️</div>
             <h5>Thời gian học</h5>
-            <p class="stat-value">{{ (user.progress|length * 1.5)|int }}</p>
+            <p class="stat-value">{{ stats.overview.total_study_hours }}</p>
             <small>giờ tổng</small>
           </div>
         </div>
@@ -106,8 +157,41 @@
           <div class="stat-card">
             <div class="stat-icon">★</div>
             <h5>Điểm trung bình</h5>
-            <p class="stat-value">{{ (user.gpa or 3.5)|round(1) }}</p>
+            <p class="stat-value">{{ stats.overview.average_score }}</p>
             <small>trên 4.0</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Statistics -->
+      <div class="row mb-5">
+        <div class="col-lg-12">
+          <div class="chart-card">
+            <h5>📝 Thống kê Quiz</h5>
+            <div class="quiz-stats-card">
+              <div class="row">
+                <div class="col-md-2 quiz-stat-item">
+                  <div class="quiz-stat-value">{{ stats.quiz_stats.total_attempts }}</div>
+                  <small>Tổng lượt làm</small>
+                </div>
+                <div class="col-md-2 quiz-stat-item">
+                  <div class="quiz-stat-value" style="color: #28a745;">{{ stats.quiz_stats.passed_count }}</div>
+                  <small>Đã vượt qua</small>
+                </div>
+                <div class="col-md-3 quiz-stat-item">
+                  <div class="quiz-stat-value">{{ stats.quiz_stats.avg_percentage }}%</div>
+                  <small>Điểm trung bình</small>
+                </div>
+                <div class="col-md-2 quiz-stat-item">
+                  <div class="quiz-stat-value" style="color: #667eea;">{{ stats.quiz_stats.best_score }}%</div>
+                  <small>Điểm cao nhất</small>
+                </div>
+                <div class="col-md-3 quiz-stat-item">
+                  <div class="quiz-stat-value" style="color: #dc3545;">{{ stats.quiz_stats.worst_score }}%</div>
+                  <small>Điểm thấp nhất</small>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -117,7 +201,7 @@
         <!-- Weekly Progress -->
         <div class="col-lg-6">
           <div class="chart-card">
-            <h5>Tiến độ theo tháng</h5>
+            <h5>📊 Tiến độ theo tuần</h5>
             <div class="chart-container">
               <canvas id="weeklyChart"></canvas>
             </div>
@@ -127,7 +211,7 @@
         <!-- Subject Focus -->
         <div class="col-lg-6">
           <div class="chart-card">
-            <h5>Môn học yêu thích</h5>
+            <h5>💡 Môn học yêu thích</h5>
             <div class="chart-container">
               <canvas id="bodyPartChart"></canvas>
             </div>
@@ -139,7 +223,7 @@
       <div class="row mb-5">
         <div class="col-lg-12">
           <div class="chart-card">
-            <h5>Xu hướng học tập hàng tháng</h5>
+            <h5>📈 Xu hướng học tập hàng tháng</h5>
             <div class="chart-container" style="height: 300px">
               <canvas id="monthlyChart"></canvas>
             </div>
@@ -147,43 +231,122 @@
         </div>
       </div>
 
-      <!-- Achievements -->
-      <div class="row">
+      <!-- Study Plans Progress -->
+      <div class="row mb-5">
         <div class="col-lg-12">
           <div class="chart-card">
-            <h5>Thành tích</h5>
+            <h5>🎯 Tiến độ lộ trình học tập</h5>
+            {% if stats.study_plans %}
+              {% for plan in stats.study_plans %}
+              <div class="study-plan-progress">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                  <div>
+                    <strong>{{ plan.name }}</strong>
+                    {% if plan.is_started %}
+                      <span class="badge bg-success ms-2">Đang học</span>
+                    {% else %}
+                      <span class="badge bg-secondary ms-2">Chưa bắt đầu</span>
+                    {% endif %}
+                  </div>
+                  <span>{{ plan.completed_subjects }}/{{ plan.total_subjects }} môn</span>
+                </div>
+                <div class="progress" style="height: 10px;">
+                  <div class="progress-bar progress-bar-custom" role="progressbar" 
+                       style="width: {{ plan.progress }}%" 
+                       aria-valuenow="{{ plan.progress }}" aria-valuemin="0" aria-valuemax="100">
+                  </div>
+                </div>
+                <small class="text-muted">Tiến độ: {{ plan.progress }}%</small>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center py-4">
+                <p class="text-muted">Bạn chưa có lộ trình học tập nào</p>
+                <a href="/yourplan" class="btn btn-primary">Tạo lộ trình ngay</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activities -->
+      <div class="row mb-5">
+        <div class="col-lg-6">
+          <div class="chart-card">
+            <h5>🕐 Hoạt động gần đây</h5>
+            {% if stats.recent_activities %}
+              {% for activity in stats.recent_activities %}
+              <div class="recent-activity-item">
+                <div class="activity-icon">
+                  {% if activity.type == 'view_subject' %}📖
+                  {% elif activity.type == 'view_roadmap' %}🗺️
+                  {% elif activity.type == 'quiz_attempt' %}📝
+                  {% else %}👁️{% endif %}
+                </div>
+                <div>
+                  <strong>{{ activity.target or 'Hoạt động' }}</strong>
+                  <br>
+                  <small class="text-muted">{{ activity.type }} - {{ activity.time }}</small>
+                </div>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div class="text-center py-4">
+                <p class="text-muted">Chưa có hoạt động nào được ghi nhận</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="col-lg-6">
+          <div class="chart-card">
+            <h5>🏆 Thành tích</h5>
             <div class="achievements-grid">
-              <div class="achievement-item">
-                <div class="achievement-icon">★</div>
-                <h6>Người học chăm chỉ</h6>
-                <small>Đã hoàn thành 5 khóa học</small>
+              {% for achievement in stats.achievements %}
+              <div class="achievement-item {% if achievement.unlocked %}achievement-unlocked{% else %}achievement-locked{% endif %}">
+                <div class="achievement-icon">{{ achievement.icon }}</div>
+                <h6>{{ achievement.title }}</h6>
+                <small>{{ achievement.description }}</small>
               </div>
-              <div class="achievement-item">
-                <div class="achievement-icon">★</div>
-                <h6>Chuỗi ngày học</h6>
-                <small>Học 7 ngày liên tiếp</small>
-              </div>
-              <div class="achievement-item">
-                <div class="achievement-icon">★</div>
-                <h6>Bác sĩ học</h6>
-                <small>Đã học tất cả các lĩnh vực</small>
-              </div>
-              <div class="achievement-item">
-                <div class="achievement-icon">★</div>
-                <h6>Tốc độ</h6>
-                <small>Hoàn thành bài tập nhanh nhất</small>
-              </div>
-              <div class="achievement-item">
-                <div class="achievement-icon">★</div>
-                <h6>Hoàn thành mục tiêu</h6>
-                <small>Đạt mục tiêu hàng tháng</small>
-              </div>
-              <div class="achievement-item">
-                <div class="achievement-icon">★</div>
-                <h6>Sao mười</h6>
-                <small>Nhận 5 sao từ cộng đồng</small>
-              </div>
+              {% endfor %}
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Superset Connection Status -->
+      <div class="row mb-5">
+        <div class="col-lg-12">
+          <div class="chart-card">
+            <h5>🔌 Kết nối Superset</h5>
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+              <span id="supersetStatus" class="badge bg-secondary">Đang kiểm tra...</span>
+              <button id="btnTestSuperset" class="btn btn-sm btn-outline-primary" onclick="testSupersetConnection()">
+                Test kết nối Superset
+              </button>
+              <button id="btnRefreshFromSuperset" class="btn btn-sm btn-primary" onclick="loadSupersetCharts()">
+                📊 Load Charts từ Superset
+              </button>
+            </div>
+            <div id="supersetInfo" class="mt-3" style="display:none;">
+              <small class="text-muted">
+                <strong>Databases:</strong> <span id="dbCount">0</span> | 
+                <strong>Datasets:</strong> <span id="dsCount">0</span> | 
+                <strong>Charts:</strong> <span id="chartCount">0</span> |
+                <strong>Dashboards:</strong> <span id="dashCount">0</span>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Superset Charts Display -->
+      <div id="supersetChartsSection" class="row mb-5" style="display:none;">
+        <div class="col-lg-12">
+          <div class="chart-card">
+            <h5>📈 Charts từ Superset</h5>
+            <div id="supersetChartsGrid" class="row g-4"></div>
           </div>
         </div>
       </div>
@@ -196,6 +359,247 @@
         <small>Hệ thống gợi ý khóa học thông minh cho sinh viên</small>
       </div>
     </footer>
+
+    <!-- Truyền dữ liệu từ server xuống JavaScript -->
+    <script>
+      const statsData = {
+        weekly: {{ stats.weekly_progress | tojson | safe }},
+        favorite: {{ stats.favorite_subjects | tojson | safe }},
+        monthly: {{ stats.monthly_trend | tojson | safe }}
+      };
+
+      // Store chart instances
+      const supersetChartInstances = {};
+
+      // Test Superset Connection
+      async function testSupersetConnection() {
+        const statusEl = document.getElementById('supersetStatus');
+        const infoEl = document.getElementById('supersetInfo');
+        statusEl.className = 'badge bg-warning';
+        statusEl.textContent = 'Đang kết nối...';
+        
+        try {
+          const loginRes = await fetch('/api/superset/login');
+          const loginData = await loginRes.json();
+          
+          if (loginData.success) {
+            statusEl.className = 'badge bg-success';
+            statusEl.textContent = '✅ Đã kết nối Superset';
+            
+            const [dbRes, dsRes, chartRes, dashRes] = await Promise.all([
+              fetch('/api/superset/databases'),
+              fetch('/api/superset/datasets'),
+              fetch('/api/superset/charts'),
+              fetch('/api/superset/dashboards')
+            ]);
+            
+            const dbData = await dbRes.json();
+            const dsData = await dsRes.json();
+            const chartData = await chartRes.json();
+            const dashData = await dashRes.json();
+            
+            document.getElementById('dbCount').textContent = dbData.databases?.length || 0;
+            document.getElementById('dsCount').textContent = dsData.datasets?.length || 0;
+            document.getElementById('chartCount').textContent = chartData.charts?.length || 0;
+            document.getElementById('dashCount').textContent = dashData.dashboards?.length || 0;
+            infoEl.style.display = 'block';
+            
+            window.supersetCharts = chartData.charts || [];
+            
+            // Auto load charts if any
+            if (window.supersetCharts.length > 0) {
+              await loadAndDisplayAllCharts(window.supersetCharts);
+            }
+          } else {
+            statusEl.className = 'badge bg-danger';
+            statusEl.textContent = '❌ Kết nối thất bại';
+          }
+        } catch (e) {
+          statusEl.className = 'badge bg-danger';
+          statusEl.textContent = '❌ Superset không chạy';
+          console.error('Superset connection error:', e);
+        }
+      }
+
+      // Load and display all charts from Superset
+      async function loadAndDisplayAllCharts(charts) {
+        const section = document.getElementById('supersetChartsSection');
+        const grid = document.getElementById('supersetChartsGrid');
+        
+        if (charts.length === 0) {
+          section.style.display = 'none';
+          return;
+        }
+        
+        section.style.display = 'block';
+        grid.innerHTML = '';
+        
+        for (const chart of charts) {
+          const chartId = chart.id;
+          const chartName = chart.slice_name || 'Unnamed Chart';
+          const vizType = chart.viz_type || 'bar';
+          
+          // Create chart container
+          const colDiv = document.createElement('div');
+          colDiv.className = 'col-lg-6';
+          colDiv.innerHTML = `
+            <div class="chart-card" style="min-height: 350px;">
+              <h6>${chartName}</h6>
+              <small class="text-muted">Type: ${vizType} | ID: ${chartId}</small>
+              <div class="chart-container mt-3" style="height: 280px;">
+                <canvas id="supersetChart_${chartId}"></canvas>
+              </div>
+              <div id="chartLoading_${chartId}" class="text-center py-3">
+                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                <span class="ms-2">Đang tải...</span>
+              </div>
+            </div>
+          `;
+          grid.appendChild(colDiv);
+          
+          // Load chart data
+          await loadChartDataAndRender(chartId, chartName, vizType);
+        }
+      }
+
+      // Load chart data and render with Chart.js
+      async function loadChartDataAndRender(chartId, chartName, vizType) {
+        const loadingEl = document.getElementById(`chartLoading_${chartId}`);
+        const canvasEl = document.getElementById(`supersetChart_${chartId}`);
+        
+        try {
+          // Lấy dữ liệu đã format từ server
+          const res = await fetch(`/api/superset/chart/${chartId}/render-data`);
+          const result = await res.json();
+          
+          if (loadingEl) loadingEl.style.display = 'none';
+          
+          if (result.success) {
+            let labels = result.data?.labels || [];
+            let dataValues = result.data?.values || [];
+            
+            // Nếu không có data, hiển thị message
+            if (labels.length === 0) {
+              canvasEl.parentElement.innerHTML = `
+                <div class="alert alert-info">
+                  <strong>${result.chart_name}</strong><br>
+                  Chart đã được tạo trong Superset nhưng chưa có dữ liệu để hiển thị.
+                  <br><small>Hãy thêm dữ liệu vào database hoặc cấu hình lại chart trong Superset.</small>
+                </div>
+              `;
+              return;
+            }
+            
+            // Map Superset viz_type to Chart.js type
+            let chartJsType = 'bar';
+            const vt = (result.viz_type || vizType || '').toLowerCase();
+            if (vt.includes('pie') || vt.includes('donut')) {
+              chartJsType = 'doughnut';
+            } else if (vt.includes('line') || vt.includes('area')) {
+              chartJsType = 'line';
+            } else if (vt.includes('bar')) {
+              chartJsType = 'bar';
+            }
+            
+            // Destroy existing chart if any
+            if (supersetChartInstances[chartId]) {
+              supersetChartInstances[chartId].destroy();
+            }
+            
+            // Create Chart.js chart
+            const ctx = canvasEl.getContext('2d');
+            supersetChartInstances[chartId] = new Chart(ctx, {
+              type: chartJsType,
+              data: {
+                labels: labels,
+                datasets: [{
+                  label: result.chart_name || chartName,
+                  data: dataValues,
+                  backgroundColor: [
+                    '#667eea',
+                    '#764ba2',
+                    '#f093fb',
+                    '#4facfe',
+                    '#00f2fe',
+                    '#6dd5ed',
+                    '#2193b0',
+                    '#ee0979',
+                    '#ff6a00'
+                  ],
+                  borderColor: chartJsType === 'line' ? '#667eea' : '#fff',
+                  borderWidth: chartJsType === 'line' ? 3 : 2,
+                  fill: chartJsType === 'line',
+                  tension: 0.4
+                }]
+              },
+              options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    display: chartJsType === 'doughnut',
+                    position: 'bottom'
+                  },
+                  title: {
+                    display: false
+                  }
+                },
+                scales: chartJsType !== 'doughnut' ? {
+                  y: {
+                    beginAtZero: true
+                  }
+                } : {}
+              }
+            });
+            
+            console.log(`✅ Chart "${result.chart_name}" rendered with ${labels.length} data points`);
+          } else {
+            canvasEl.parentElement.innerHTML = `
+              <div class="alert alert-warning">
+                ${result.error || 'Không thể tải dữ liệu chart'}
+              </div>
+            `;
+          }
+        } catch (e) {
+          if (loadingEl) loadingEl.style.display = 'none';
+          canvasEl.parentElement.innerHTML = `
+            <div class="alert alert-danger">
+              Lỗi: ${e.message}
+            </div>
+          `;
+          console.error('Error loading chart:', e);
+        }
+      }
+
+      // Load all Superset charts
+      async function loadSupersetCharts() {
+        const statusEl = document.getElementById('supersetStatus');
+        statusEl.className = 'badge bg-warning';
+        statusEl.textContent = 'Đang load charts...';
+        
+        try {
+          const res = await fetch('/api/superset/charts');
+          const data = await res.json();
+          
+          if (data.charts && data.charts.length > 0) {
+            window.supersetCharts = data.charts;
+            await loadAndDisplayAllCharts(data.charts);
+            statusEl.className = 'badge bg-success';
+            statusEl.textContent = `✅ Loaded ${data.charts.length} charts`;
+          } else {
+            statusEl.className = 'badge bg-info';
+            statusEl.textContent = 'Không có charts';
+          }
+        } catch (e) {
+          statusEl.className = 'badge bg-danger';
+          statusEl.textContent = '❌ Lỗi load charts';
+          console.error('Error loading charts:', e);
+        }
+      }
+
+      // Auto test connection on page load
+      setTimeout(testSupersetConnection, 1000);
+    </script>
 
     <script src="{{ url_for('static', filename='js/user-dropdown.js') }}"></script>
     <script src="{{ url_for('static', filename='js/statistics.js') }}"></script>

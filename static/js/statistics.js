@@ -1,4 +1,4 @@
-// Statistics Charts
+// Statistics Charts - Sử dụng dữ liệu động từ server
 const chartConfig = {
   responsive: true,
   maintainAspectRatio: false,
@@ -14,17 +14,22 @@ const chartConfig = {
   }
 };
 
-// Weekly Progress Chart
+// Lấy dữ liệu từ server (được truyền qua biến statsData)
+const weeklyData = typeof statsData !== 'undefined' ? statsData.weekly : { labels: [], data: [] };
+const favoriteData = typeof statsData !== 'undefined' ? statsData.favorite : { labels: [], data: [] };
+const monthlyData = typeof statsData !== 'undefined' ? statsData.monthly : { labels: [], data: [] };
+
+// Weekly Progress Chart - Dữ liệu từ database
 const weeklyCtx = document.getElementById('weeklyChart');
 if (weeklyCtx) {
   new Chart(weeklyCtx, {
     type: 'bar',
     data: {
-      labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+      labels: weeklyData.labels || ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
       datasets: [
         {
-          label: 'Buổi tập',
-          data: [1, 2, 1, 2, 1, 0, 1],
+          label: 'Hoạt động học tập',
+          data: weeklyData.data || [0, 0, 0, 0, 0, 0, 0],
           backgroundColor: '#667eea',
           borderColor: '#764ba2',
           borderWidth: 1,
@@ -32,20 +37,30 @@ if (weeklyCtx) {
         }
       ]
     },
-    options: chartConfig
+    options: {
+      ...chartConfig,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
+    }
   });
 }
 
-// Favorite Subject Chart
+// Favorite Subject Chart - Dữ liệu từ database
 const bodyPartCtx = document.getElementById('bodyPartChart');
 if (bodyPartCtx) {
   new Chart(bodyPartCtx, {
     type: 'doughnut',
     data: {
-      labels: ['Lập trình Python cơ bản', 'Cấu trúc dữ liệu & Giải thuật', 'Machine Learning cơ bản', 'Lập trình Web cơ bản', 'Cơ sở dữ liệu'],
+      labels: favoriteData.labels || ['Chưa có dữ liệu'],
       datasets: [
         {
-          data: [25, 22, 20, 18, 15],
+          data: favoriteData.data || [1],
           backgroundColor: [
             '#667eea',
             '#764ba2',
@@ -62,17 +77,17 @@ if (bodyPartCtx) {
   });
 }
 
-// Monthly Trend Chart
+// Monthly Trend Chart - Dữ liệu từ database
 const monthlyCtx = document.getElementById('monthlyChart');
 if (monthlyCtx) {
   new Chart(monthlyCtx, {
     type: 'line',
     data: {
-      labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
+      labels: monthlyData.labels || ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
       datasets: [
         {
-          label: 'Buổi tập',
-          data: [5, 7, 6, 8],
+          label: 'Hoạt động học tập',
+          data: monthlyData.data || [0, 0, 0, 0],
           borderColor: '#764ba2',
           backgroundColor: 'rgba(102, 126, 234, 0.1)',
           borderWidth: 3,
