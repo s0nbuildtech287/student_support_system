@@ -4,11 +4,22 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    # MySQL Configuration
+    # Environment
+    ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')  # development/production
+    
+    # MySQL Configuration (Local)
     DB_HOST = os.getenv('DB_HOST', 'localhost')
     DB_USER = os.getenv('DB_USER', 'root')
     DB_PASSWORD = os.getenv('DB_PASSWORD', '')
     DB_NAME = os.getenv('DB_NAME', 'student_support')
+    
+    # PostgreSQL Configuration (Production)
+    POSTGRES_HOST = os.getenv('POSTGRES_HOST', '')
+    POSTGRES_PORT = os.getenv('POSTGRES_PORT', '5432')
+    POSTGRES_USER = os.getenv('POSTGRES_USER', '')
+    POSTGRES_PASSWORD = os.getenv('POSTGRES_PASSWORD', '')
+    POSTGRES_DB = os.getenv('POSTGRES_DB', '')
+    POSTGRES_URL = os.getenv('POSTGRES_URL', '')
     
     # Flask Configuration - đơn giản thôi
     SECRET_KEY = 'my-secret-key-123456'  # Hardcode luôn cho đơn giản
