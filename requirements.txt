@@ -1,7 +1,6 @@
 flask
 requests
 flask-login
-mysql-connector-python
 psycopg2-binary
 python-dotenv
 markdown

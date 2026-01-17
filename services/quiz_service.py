@@ -15,7 +15,7 @@ def get_random_quiz_questions(subject_id, limit=10):
         SELECT id, question, option_a, option_b, option_c, option_d, correct_answer
         FROM quizzes
         WHERE subject_id = %s
-        ORDER BY RAND()
+        ORDER BY RANDOM()
         LIMIT %s
     """
     
@@ -87,14 +87,14 @@ def submit_quiz(user_id, subject_id, answers, plan_id=None):
             (user_id, subject_id, plan_id, score, total_questions, percentage, passed, created_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s, NOW())
         """
-        execute_query(save_query, (user_id, subject_id, plan_id, score, total, percentage, 1 if passed else 0))
+        execute_query(save_query, (user_id, subject_id, plan_id, score, total, percentage, passed))
     else:
         save_query = """
             INSERT INTO quiz_attempts 
             (user_id, subject_id, score, total_questions, percentage, passed, created_at)
             VALUES (%s, %s, %s, %s, %s, %s, NOW())
         """
-        execute_query(save_query, (user_id, subject_id, score, total, percentage, 1 if passed else 0))
+        execute_query(save_query, (user_id, subject_id, score, total, percentage, passed))
     
     return {
         'success': True,
@@ -137,7 +137,7 @@ def has_passed_quiz(user_id, subject_id):
     query = """
         SELECT id
         FROM quiz_attempts
-        WHERE user_id = %s AND subject_id = %s AND passed = 1
+        WHERE user_id = %s AND subject_id = %s AND passed = TRUE
         LIMIT 1
     """
     
@@ -154,7 +154,7 @@ def has_passed_quiz_in_plan(user_id, subject_id, plan_id=None):
         query = """
             SELECT id
             FROM quiz_attempts
-            WHERE user_id = %s AND subject_id = %s AND plan_id = %s AND passed = 1
+            WHERE user_id = %s AND subject_id = %s AND plan_id = %s AND passed = TRUE
             LIMIT 1
         """
         result = fetch_one(query, (user_id, subject_id, plan_id))
@@ -162,7 +162,7 @@ def has_passed_quiz_in_plan(user_id, subject_id, plan_id=None):
         query = """
             SELECT id
             FROM quiz_attempts
-            WHERE user_id = %s AND subject_id = %s AND passed = 1
+            WHERE user_id = %s AND subject_id = %s AND passed = TRUE
             LIMIT 1
         """
         result = fetch_one(query, (user_id, subject_id))

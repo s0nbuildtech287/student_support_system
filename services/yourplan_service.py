@@ -84,19 +84,20 @@ def create_user_plan(user_id, name, description):
     # Insert plan mới
     query = """
         INSERT INTO study_plans (user_id, name, description, is_started, created_at)
-        VALUES (%s, %s, %s, 0, %s)
+        VALUES (%s, %s, %s, FALSE, %s)
     """
     
     if execute_query(query, (user_id, name, description, datetime.now())):
-        # Lấy ID vừa tạo
+        # Lấy ID vừa tạo - PostgreSQL compatible
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT LAST_INSERT_ID() as id")
+        cursor.execute("SELECT id FROM study_plans WHERE user_id = %s ORDER BY id DESC LIMIT 1", (user_id,))
         result = cursor.fetchone()
         cursor.close()
         connection.close()
         
-        return {'success': True, 'message': 'Tạo lộ trình thành công', 'plan_id': result[0]}
+        if result:
+            return {'success': True, 'message': 'Tạo lộ trình thành công', 'plan_id': result[0]}
     
     return {'success': False, 'message': 'Lỗi khi tạo lộ trình'}
 
@@ -149,7 +150,7 @@ def start_user_plan(plan_id, user_id):
     # Update is_started
     query = """
         UPDATE study_plans
-        SET is_started = 1
+        SET is_started = TRUE
         WHERE id = %s AND user_id = %s
     """
     

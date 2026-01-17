@@ -198,7 +198,7 @@ class StatisticsService:
         query = """
             SELECT 
                 COUNT(*) as total_attempts,
-                SUM(CASE WHEN passed = 1 THEN 1 ELSE 0 END) as passed_count,
+                SUM(CASE WHEN passed = TRUE THEN 1 ELSE 0 END) as passed_count,
                 AVG(percentage) as avg_percentage,
                 MAX(percentage) as best_score,
                 MIN(percentage) as worst_score
@@ -323,7 +323,7 @@ class StatisticsService:
         query_quiz = """
             SELECT COUNT(DISTINCT subject_id) as count
             FROM quiz_attempts
-            WHERE user_id = %s AND passed = 1
+            WHERE user_id = %s AND passed = TRUE
         """
         result = fetch_one(query_quiz, (user_id,))
         quiz_passed = result['count'] if result else 0

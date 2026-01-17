@@ -4,16 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    # Environment
-    ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')  # development/production
-    
-    # MySQL Configuration (Local)
-    DB_HOST = os.getenv('DB_HOST', 'localhost')
-    DB_USER = os.getenv('DB_USER', 'root')
-    DB_PASSWORD = os.getenv('DB_PASSWORD', '')
-    DB_NAME = os.getenv('DB_NAME', 'student_support')
-    
-    # PostgreSQL Configuration (Production)
+    # PostgreSQL Configuration
     POSTGRES_HOST = os.getenv('POSTGRES_HOST', '')
     POSTGRES_PORT = os.getenv('POSTGRES_PORT', '5432')
     POSTGRES_USER = os.getenv('POSTGRES_USER', '')

@@ -1,0 +1,130 @@
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    phone VARCHAR(20),
+    avatar VARCHAR(255) DEFAULT '/static/images/avatar.jpg',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE subjects (
+    id INT PRIMARY KEY,
+    subject_name VARCHAR(255),
+    category VARCHAR(100),
+    career_group VARCHAR(100),
+    level VARCHAR(50),
+    prerequisite VARCHAR(255),
+    study_hours INT,
+    description TEXT,
+    resource_type VARCHAR(50),
+    resource_link TEXT,
+    image VARCHAR(255)
+);
+CREATE TABLE study_plans (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    is_started BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    started_at TIMESTAMP,
+    CONSTRAINT fk_study_plans_user
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE plan_subjects (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    plan_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    progress INT DEFAULT 0,
+    status VARCHAR(20) DEFAULT 'not_started'
+        CHECK (status IN ('not_started', 'studying', 'completed')),
+
+    CONSTRAINT fk_plan_subjects_plan
+        FOREIGN KEY (plan_id) REFERENCES study_plans(id) ON DELETE CASCADE,
+    CONSTRAINT fk_plan_subjects_subject
+        FOREIGN KEY (subject_id) REFERENCES subjects(id),
+
+    CONSTRAINT uq_plan_subject UNIQUE (plan_id, subject_id)
+);
+CREATE TABLE quizzes (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    subject_id INT NOT NULL,
+    question TEXT NOT NULL,
+    option_a VARCHAR(255) NOT NULL,
+    option_b VARCHAR(255) NOT NULL,
+    option_c VARCHAR(255) NOT NULL,
+    option_d VARCHAR(255) NOT NULL,
+    correct_answer CHAR(1) NOT NULL,
+
+    CONSTRAINT fk_quizzes_subject
+        FOREIGN KEY (subject_id) REFERENCES subjects(id)
+);
+
+CREATE INDEX idx_quizzes_subject ON quizzes(subject_id);
+CREATE TABLE quiz_attempts (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    plan_id INT,
+    score INT NOT NULL,
+    total_questions INT NOT NULL,
+    percentage DECIMAL(5,2) NOT NULL,
+    passed BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_quiz_attempts_user
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_quiz_attempts_subject
+        FOREIGN KEY (subject_id) REFERENCES subjects(id),
+    CONSTRAINT fk_quiz_attempts_plan
+        FOREIGN KEY (plan_id) REFERENCES study_plans(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_user_subject_plan
+ON quiz_attempts(user_id, subject_id, plan_id);
+
+CREATE TABLE feedbacks (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT,
+    name VARCHAR(150) DEFAULT 'Guest',
+    avatar VARCHAR(255) DEFAULT '/static/images/avatar.jpg',
+    comment TEXT NOT NULL,
+    stars INT DEFAULT 5,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_feedbacks_user
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_feedback_user ON feedbacks(user_id);
+
+CREATE TABLE user_activities (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT,
+    session_id VARCHAR(100),
+    activity_type VARCHAR(50) NOT NULL,
+    target_id INT,
+    target_name VARCHAR(255),
+    page_url VARCHAR(500),
+    ip_address VARCHAR(50),
+    user_agent TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_user_activities_user
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+CREATE INDEX idx_activity_type ON user_activities(activity_type);
+CREATE INDEX idx_created_at ON user_activities(created_at);
+CREATE INDEX idx_user_activity ON user_activities(user_id, activity_type);
+CREATE TABLE admin_users (
+    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id INT NOT NULL,
+    role VARCHAR(50) DEFAULT 'admin',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_admin_users_user
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT uq_admin_user UNIQUE (user_id)
+);

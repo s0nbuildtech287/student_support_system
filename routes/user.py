@@ -6,7 +6,7 @@ from datetime import datetime
 from services.user_service import UserService
 from services.statistics_service import StatisticsService
 from services.superset_service import superset_service
-from n8n.n8n_infouser_service import load_user_from_n8n
+
 user_bp = Blueprint("user", __name__)
 
 # Configuration
@@ -19,15 +19,15 @@ def allowed_file(filename):
 def get_current_user():
     """
     Lấy thông tin user từ session
-    Ưu tiên: n8n (MySQL) -> fallback UserService (MySQL trực tiếp)
+    Dùng UserService trực tiếp
     """
     if 'user_id' not in session:
         return None
     
     user_id = session['user_id']
     
-    # Thử lấy từ n8n trước
-    user = load_user_from_n8n(user_id)
+    # Dùng direct UserService
+    user = UserService.get_user_by_id(user_id)
     if user:
         logging.info(f"✅ Loaded user {user_id} from n8n->MySQL")
         # Convert created_at string to datetime object if needed

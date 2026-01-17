@@ -128,7 +128,7 @@ def apply_roadmap_to_user_plan(user_id: int, roadmap_id: int):
     try:
         query_create = """
             INSERT INTO study_plans (user_id, name, description, is_started, created_at)
-            VALUES (%s, %s, %s, 0, %s)
+            VALUES (%s, %s, %s, FALSE, %s)
         """
         
         cursor.execute(query_create, (user_id, plan_name, plan_description, datetime.now()))

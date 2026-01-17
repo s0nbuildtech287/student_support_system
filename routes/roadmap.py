@@ -1,8 +1,6 @@
 from flask import Blueprint, render_template, abort, jsonify, session, redirect
 from services.roadmap_service import get_all_roadmaps, get_roadmap_by_id, get_roadmap_steps, apply_roadmap_to_user_plan
 from routes.user import get_current_user, login_required
-# Import hàm load_roadmaps_from_n8n từ n8n_roadmap_service.py
-from n8n.n8n_roadmap_service import load_roadmaps_from_n8n
 from GGCloud.services.analytics_service import AnalyticsService
 
 roadmap_bp = Blueprint("roadmap", __name__)

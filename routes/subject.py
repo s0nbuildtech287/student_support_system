@@ -17,8 +17,6 @@ from services.quiz_service import (
     get_best_attempt
 )
 from routes.user import get_current_user, login_required
-# SỬ DỤNG N8N
-from n8n.n8n_subject_service import load_subjects_from_n8n
 
 subject_bp = Blueprint("subject", __name__)
 
@@ -29,28 +27,13 @@ def subject():
     category = request.args.get("category", "").strip()
     level = request.args.get("level", "").strip()
     keyword = request.args.get("keyword", "").strip()
-
-    # Thử n8n trước (có fast-fail)
-    data = load_subjects_from_n8n(
-        page=page,
-        per_page=per_page,
-        category=category,
-        level=level
-    )
-    
-    # Nếu n8n trả về None (down hoặc error), dùng CSV
-    if data is None:
-        logging.info("⚡ Using CSV fallback for subjects")
-        data = load_all_subject_paginated(
+    data = load_all_subject_paginated(
             page=page,
             per_page=per_page,
             category=category,
             level=level
         )
-        source = "csv"
-    else:
-        source = "n8n"
-
+    source = "csv"  # Hoặc "db" nếu dùng database
     # Validate data
     if not data or "subjects" not in data:
         return "DATA ERROR", 500
