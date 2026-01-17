@@ -121,7 +121,7 @@ def apply_roadmap_to_user_plan(user_id: int, roadmap_id: int):
     plan_name = f"🎯 {roadmap.get('roadmap_name', 'Lộ trình')}"
     plan_description = roadmap.get('description', 'Lộ trình được áp dụng từ Roadmap gợi ý')
     
-    # FIX: Dùng connection trực tiếp để insert và lấy LAST_INSERT_ID
+    # FIX: Dùng RETURNING để lấy ID (PostgreSQL way)
     connection = get_db_connection()
     cursor = connection.cursor()
     
@@ -129,31 +129,19 @@ def apply_roadmap_to_user_plan(user_id: int, roadmap_id: int):
         query_create = """
             INSERT INTO study_plans (user_id, name, description, is_started, created_at)
             VALUES (%s, %s, %s, FALSE, %s)
+            RETURNING id
         """
         
         cursor.execute(query_create, (user_id, plan_name, plan_description, datetime.now()))
+        plan_id = cursor.fetchone()[0]  # Get ID from RETURNING
         connection.commit()
-        
-        # Lấy plan_id vừa insert
-        plan_id = cursor.lastrowid
         
         print(f"[DEBUG] Created plan with ID: {plan_id}")
         
-        if not plan_id or plan_id == 0:
+        if not plan_id:
             cursor.close()
             connection.close()
             return {'success': False, 'message': 'Không thể lấy ID lộ trình vừa tạo'}
-        
-        # Verify plan exists
-        cursor.execute("SELECT id FROM study_plans WHERE id = %s", (plan_id,))
-        verify = cursor.fetchone()
-        
-        if not verify:
-            cursor.close()
-            connection.close()
-            return {'success': False, 'message': f'Plan {plan_id} không tồn tại sau khi tạo'}
-        
-        print(f"[DEBUG] ✓ Verified plan {plan_id} exists")
         
     except Exception as e:
         print(f"[DEBUG] Error creating plan: {e}")
@@ -162,70 +150,83 @@ def apply_roadmap_to_user_plan(user_id: int, roadmap_id: int):
         connection.close()
         return {'success': False, 'message': f'Lỗi khi tạo lộ trình: {str(e)}'}
     
-    # Thêm các môn học vào plan theo thứ tự
+    # OPTIMIZATION: Batch verify và batch insert để giảm queries
     added_count = 0
     failed_subjects = []
     
+    # Collect all subject IDs
+    subject_ids = []
     for step in steps:
         subject_id_from_csv = step.get('subject_id')
+        if subject_id_from_csv:
+            try:
+                subject_ids.append(int(subject_id_from_csv))
+            except (ValueError, TypeError):
+                failed_subjects.append(f"Subject ID {subject_id_from_csv} không hợp lệ")
+    
+    if not subject_ids:
+        cursor.close()
+        connection.close()
+        return {'success': False, 'message': 'Không có môn học hợp lệ trong lộ trình'}
+    
+    print(f"[DEBUG] Processing {len(subject_ids)} subjects")
+    
+    try:
+        # BATCH QUERY 1: Verify tất cả subjects exist cùng lúc
+        placeholders = ','.join(['%s'] * len(subject_ids))
+        cursor.execute(
+            f"SELECT id FROM subjects WHERE id IN ({placeholders})",
+            tuple(subject_ids)
+        )
+        existing_subjects = set(row[0] for row in cursor.fetchall())
+        print(f"[DEBUG] ✓ Found {len(existing_subjects)} valid subjects")
         
-        if not subject_id_from_csv:
-            failed_subjects.append(f"Step {step.get('step_order')} - Không có subject_id")
-            continue
+        # BATCH QUERY 2: Check existing plan_subjects để tránh duplicate
+        cursor.execute(
+            f"SELECT subject_id FROM plan_subjects WHERE plan_id = %s AND subject_id IN ({placeholders})",
+            (plan_id,) + tuple(subject_ids)
+        )
+        already_added = set(row[0] for row in cursor.fetchall())
         
-        try:
-            subject_id = int(subject_id_from_csv)
-        except (ValueError, TypeError):
-            failed_subjects.append(f"Subject ID {subject_id_from_csv} không hợp lệ")
-            continue
+        # Filter: chỉ giữ subjects exist và chưa có trong plan
+        valid_subjects = [
+            sid for sid in subject_ids 
+            if sid in existing_subjects and sid not in already_added
+        ]
         
-        subject_info = step.get('subject', {})
-        subject_name = subject_info.get('subject_name', f'ID {subject_id}')
+        if not valid_subjects:
+            cursor.close()
+            connection.close()
+            return {'success': False, 'message': 'Tất cả môn học đã có trong lộ trình hoặc không tồn tại'}
         
-        print(f"[DEBUG] Processing: {subject_name} (ID={subject_id})")
+        # BATCH INSERT: Thêm tất cả subjects cùng lúc
+        values = ','.join(
+            cursor.mogrify("(%s, %s, 0, 'not_started')", (plan_id, sid)).decode('utf-8')
+            for sid in valid_subjects
+        )
         
-        # Kiểm tra subject tồn tại trong DB
-        try:
-            cursor.execute("SELECT id FROM subjects WHERE id = %s", (subject_id,))
-            subject_exists = cursor.fetchone()
-            
-            if not subject_exists:
-                failed_subjects.append(f"{subject_name} (không tồn tại trong DB)")
-                print(f"[DEBUG] ❌ Subject {subject_id} not found")
-                continue
-            
-            print(f"[DEBUG] ✓ Subject {subject_id} exists")
-            
-            # Kiểm tra duplicate
-            cursor.execute(
-                "SELECT id FROM plan_subjects WHERE plan_id = %s AND subject_id = %s",
-                (plan_id, subject_id)
-            )
-            duplicate = cursor.fetchone()
-            
-            if duplicate:
-                print(f"[DEBUG] ⚠ Subject {subject_id} already in plan")
-                continue
-            
-            # Insert vào plan_subjects
-            cursor.execute(
-                """INSERT INTO plan_subjects (plan_id, subject_id, progress, status)
-                   VALUES (%s, %s, 0, 'not_started')""",
-                (plan_id, subject_id)
-            )
-            connection.commit()
-            
-            if cursor.rowcount > 0:
-                added_count += 1
-                print(f"[DEBUG] ✓ Added subject {subject_id}")
-            else:
-                failed_subjects.append(f"{subject_name} (no rows affected)")
+        cursor.execute(
+            f"INSERT INTO plan_subjects (plan_id, subject_id, progress, status) VALUES {values}"
+        )
+        connection.commit()
+        added_count = cursor.rowcount
+        
+        print(f"[DEBUG] ✓ Batch inserted {added_count} subjects")
+        
+        # Track failed subjects
+        for sid in subject_ids:
+            if sid not in existing_subjects:
+                failed_subjects.append(f"Subject ID {sid} không tồn tại")
+            elif sid in already_added:
+                failed_subjects.append(f"Subject ID {sid} đã có trong plan")
                 
-        except Exception as e:
-            error_msg = str(e)[:100]
-            failed_subjects.append(f"{subject_name} ({error_msg})")
-            print(f"[DEBUG] ❌ Error: {error_msg}")
-            connection.rollback()
+    except Exception as e:
+        error_msg = str(e)[:100]
+        print(f"[DEBUG] ❌ Batch insert error: {error_msg}")
+        connection.rollback()
+        cursor.close()
+        connection.close()
+        return {'success': False, 'message': f'Lỗi khi thêm môn học: {error_msg}'}
     
     cursor.close()
     connection.close()
