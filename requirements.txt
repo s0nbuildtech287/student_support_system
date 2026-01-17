@@ -6,3 +6,4 @@ python-dotenv
 markdown
 gunicorn
 Werkzeug
+csv342
