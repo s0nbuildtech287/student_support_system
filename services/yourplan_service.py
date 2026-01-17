@@ -7,15 +7,24 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 SUBJECT_CSV = os.path.join(DATA_DIR, "subject_list.csv")
 
+# Cache for subjects
+_subjects_cache = None
 
 def load_csv(path):
     """Load CSV file"""
     with open(path, newline="", encoding="utf-8") as f:
         return list(csv.DictReader(f))
 
+def get_cached_subjects():
+    """Get cached subjects list"""
+    global _subjects_cache
+    if _subjects_cache is None:
+        _subjects_cache = load_csv(SUBJECT_CSV)
+    return _subjects_cache
+
 
 def get_user_plans(user_id):
-    """Lấy tất cả plans của user"""
+    """Lấy tất cả plans của user (optimized with batch queries)"""
     query = """
         SELECT id, user_id, name, description, is_started, created_at
         FROM study_plans
@@ -24,18 +33,35 @@ def get_user_plans(user_id):
     """
     plans = fetch_all(query, (user_id,))
     
-    # Gắn thông tin subjects vào mỗi plan
-    subjects_data = load_csv(SUBJECT_CSV)
+    if not plans:
+        return []
     
+    # Dùng cached subjects
+    subjects_data = get_cached_subjects()
+    
+    # Batch query: Lấy tất cả plan_subjects cho tất cả plans cùng lúc
+    plan_ids = [p['id'] for p in plans]
+    placeholders = ','.join(['%s'] * len(plan_ids))
+    
+    query_all_subjects = f"""
+        SELECT plan_id, subject_id, progress, status
+        FROM plan_subjects
+        WHERE plan_id IN ({placeholders})
+        ORDER BY plan_id, id
+    """
+    all_plan_subjects = fetch_all(query_all_subjects, tuple(plan_ids))
+    
+    # Group by plan_id
+    plan_subjects_map = {}
+    for ps in all_plan_subjects:
+        plan_id = ps['plan_id']
+        if plan_id not in plan_subjects_map:
+            plan_subjects_map[plan_id] = []
+        plan_subjects_map[plan_id].append(ps)
+    
+    # Gắn subjects vào mỗi plan
     for plan in plans:
-        # Lấy subject_ids và thông tin progress từ plan_subjects
-        query_subjects = """
-            SELECT subject_id, progress, status
-            FROM plan_subjects
-            WHERE plan_id = %s
-            ORDER BY id
-        """
-        plan_subjects_data = fetch_all(query_subjects, (plan['id'],))
+        plan_subjects_data = plan_subjects_map.get(plan['id'], [])
         
         plan_subjects = []
         for ps in plan_subjects_data:
@@ -52,10 +78,46 @@ def get_user_plans(user_id):
         
         plan['subjects'] = plan_subjects
         plan['total_hours'] = sum(int(s.get('study_hours', 0)) for s in plan_subjects)
+    
+    # Tính progress cho tất cả plans cùng lúc (batch query)
+    if plans:
+        plan_ids = [p['id'] for p in plans]
+        placeholders = ','.join(['%s'] * len(plan_ids))
         
-        # Tính progress info
-        from services.progress_service import get_plan_overall_progress
-        plan['progress_info'] = get_plan_overall_progress(plan['id'], user_id)
+        query_progress = f"""
+            SELECT 
+                plan_id,
+                COUNT(*) as total_subjects,
+                SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) as completed_subjects,
+                SUM(CASE WHEN status = 'studying' THEN 1 ELSE 0 END) as studying_subjects,
+                SUM(CASE WHEN status = 'not_started' THEN 1 ELSE 0 END) as not_started_subjects,
+                AVG(progress) as overall_progress
+            FROM plan_subjects
+            WHERE plan_id IN ({placeholders})
+            GROUP BY plan_id
+        """
+        
+        progress_data = fetch_all(query_progress, tuple(plan_ids))
+        progress_map = {p['plan_id']: p for p in progress_data}
+        
+        for plan in plans:
+            progress = progress_map.get(plan['id'])
+            if progress:
+                plan['progress_info'] = {
+                    'total_subjects': progress['total_subjects'] or 0,
+                    'completed_subjects': progress['completed_subjects'] or 0,
+                    'studying_subjects': progress['studying_subjects'] or 0,
+                    'not_started_subjects': progress['not_started_subjects'] or 0,
+                    'overall_progress': round(float(progress['overall_progress']) if progress['overall_progress'] else 0, 1)
+                }
+            else:
+                plan['progress_info'] = {
+                    'total_subjects': 0,
+                    'completed_subjects': 0,
+                    'studying_subjects': 0,
+                    'not_started_subjects': 0,
+                    'overall_progress': 0
+                }
     
     return plans
 
@@ -224,12 +286,18 @@ def remove_subject_from_plan(plan_id, user_id, subject_uid, allow_edit=False):
     return {'success': False, 'message': 'Môn học không có trong lộ trình'}
 
 
+# Cache for subjects to avoid loading CSV every time
+_subjects_cache = None
+
 def get_all_subjects_for_modal():
-    """Lấy tất cả subjects để hiển thị trong modal thêm môn"""
-    subjects = load_csv(SUBJECT_CSV)
+    """Lấy tất cả subjects để hiển thị trong modal thêm môn (cached)"""
+    subjects = get_cached_subjects()
     
-    # Gắn uid cho mỗi subject
+    # Gắn uid cho mỗi subject (nếu chưa có)
+    result = []
     for i, s in enumerate(subjects, start=1):
-        s['uid'] = i
+        s_copy = s.copy()
+        s_copy['uid'] = i
+        result.append(s_copy)
     
-    return subjects
+    return result

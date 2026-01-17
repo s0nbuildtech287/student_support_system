@@ -1,5 +1,5 @@
 # GGCloud/services/auth_service.py
-from database import get_db_connection
+from database import fetch_one
 
 class AdminAuthService:
     
@@ -7,9 +7,6 @@ class AdminAuthService:
     def is_admin(user_id):
         """Kiểm tra user có phải admin không"""
         try:
-            conn = get_db_connection()
-            cursor = conn.cursor(dictionary=True)
-            
             query = """
                 SELECT u.email, a.role
                 FROM users u
@@ -17,12 +14,7 @@ class AdminAuthService:
                 WHERE u.id = %s AND u.email = 'admin@gmail.com'
             """
             
-            cursor.execute(query, (user_id,))
-            result = cursor.fetchone()
-            
-            cursor.close()
-            conn.close()
-            
+            result = fetch_one(query, (user_id,))
             return result is not None
             
         except Exception as e:
