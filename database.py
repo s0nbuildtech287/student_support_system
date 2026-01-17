@@ -9,13 +9,7 @@ def get_db_connection():
             host=Config.DB_HOST,
             user=Config.DB_USER,
             password=Config.DB_PASSWORD,
-            database=Config.DB_NAME,
-            port=int(Config.DB_PORT) if hasattr(Config, 'DB_PORT') else 3306,
-            
-            # Các tùy chọn kết nối:
-            ssl_disabled=True,  # Tắt mã hóa SSL bắt buộc
-            autocommit=True,    # Tự động commit
-            allow_local_infile=True  # Cho phép LOAD DATA LOCAL INFILE
+            database=Config.DB_NAME
         )
         return connection
     except Error as e:

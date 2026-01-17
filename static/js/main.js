@@ -1,20 +1,19 @@
-// placeholder JS
-console.log("Workout app loaded");
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-const firebaseConfig = {
-    apiKey: "AIzaSyCgEQLwL7Ky8yUB26tCbzXuCK0vLJczUZA",
-    authDomain: "login-14735.firebaseapp.com",
-    projectId: "login-14735",
-    storageBucket: "login-14735.firebasestorage.app",
-    messagingSenderId: "655978164276",
-    appId: "1:655978164276:web:e35f54550dc9a0d3d91a61"
-};
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
+const firebaseConfig = {
+    apiKey: "AIzaSyBTEJdQuolqA_yYQBB1ZVLNKJ39KhM1I7o",
+    authDomain: "gg-login-526fa.firebaseapp.com",
+    projectId: "gg-login-526fa",
+    storageBucket: "gg-login-526fa.firebasestorage.app",
+    messagingSenderId: "294580077426",
+    appId: "1:294580077426:web:8db9d39b71916cafced3eb",
+    measurementId: "G-P1CT3D01EF"
+    };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-auth.languageCode = 'en'
+auth.languageCode = 'vi'; // Đổi sang tiếng Việt
 const provider = new GoogleAuthProvider();
 
 const googleLogin = document.getElementById("google-login-btn");
