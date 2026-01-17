@@ -1,0 +1,26 @@
+/* Exercise Page Styles */
+
+.card {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.exercise-img {
+  height: 180px;
+  object-fit: cover;
+  background: #e9ecef;
+}
+.subject-card {
+  border-radius: 12px;
+}
+
+.subject-img {
+  height: 300px; /* gọn lại */
+  object-fit: cover; /* không méo ảnh */
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+}
