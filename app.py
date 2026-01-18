@@ -8,6 +8,13 @@ from routes.feedback import feedback_bp
 from routes.yourplan import yourplan_bp
 from GGCloud.routers.admin import admin_bp 
 from config import Config
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(levelname)s:%(name)s:%(message)s'
+)
 
 app = Flask(__name__)
 app.config.from_object(Config)

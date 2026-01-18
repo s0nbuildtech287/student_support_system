@@ -1,0 +1,142 @@
+{
+    "name": "User Register",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "register",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "id": "webhook-register",
+            "name": "Webhook - Register",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1.1,
+            "position": [
+                240,
+                300
+            ],
+            "webhookId": "register-webhook-001"
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "=INSERT INTO users (name, email, password, phone, created_at) VALUES ('{{ $json.body.name }}', '{{ $json.body.email }}', '{{ $json.body.password }}', '{{ $json.body.phone }}', NOW())"
+            },
+            "id": "mysql-insert-user",
+            "name": "MySQL - Insert User",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2.4,
+            "position": [
+                460,
+                300
+            ],
+            "credentials": {
+                "mySql": {
+                    "name": "MySQL Student Support"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "=SELECT * FROM users WHERE email = '{{ $('Webhook - Register').item.json.body.email }}' LIMIT 1"
+            },
+            "id": "mysql-get-user",
+            "name": "MySQL - Get User",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2.4,
+            "position": [
+                680,
+                300
+            ],
+            "credentials": {
+                "mySql": {
+                    "name": "MySQL Student Support"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Get created user from MySQL\nconst items = $input.all();\n\nif (items.length > 0 && items[0].json) {\n  const user = items[0].json;\n  \n  return {\n    json: {\n      success: true,\n      message: \"Registration successful\",\n      user: {\n        id: user.id,\n        name: user.name,\n        email: user.email,\n        phone: user.phone,\n        created_at: user.created_at\n      }\n    }\n  };\n}\n\n// Failure\nreturn {\n  json: {\n    success: false,\n    message: \"Registration failed\",\n    user: null\n  }\n};"
+            },
+            "id": "code-format-response",
+            "name": "Format Response",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                900,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "id": "respond-webhook",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                1120,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook - Register": {
+            "main": [
+                [
+                    {
+                        "node": "MySQL - Insert User",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "MySQL - Insert User": {
+            "main": [
+                [
+                    {
+                        "node": "MySQL - Get User",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "MySQL - Get User": {
+            "main": [
+                [
+                    {
+                        "node": "Format Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Response": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "register-v1",
+    "id": "register-workflow-001",
+    "meta": {
+        "instanceId": "student-support-system"
+    },
+    "tags": []
+}

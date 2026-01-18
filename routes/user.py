@@ -39,10 +39,7 @@ def get_current_user():
         return user
     
     # Fallback: query MySQL trực tiếp qua UserService
-    logging.warning(f"⚠️ N8N failed, using direct MySQL fallback")
     user = UserService.get_user_by_id(user_id)
-    if user:
-        logging.info(f"✅ Loaded user {user_id} from direct MySQL (fallback)")
     return user
 
 def login_required(f):
@@ -63,8 +60,9 @@ def login():
         email = request.form.get("email")
         password = request.form.get("password")
         
-        # Xác thực user
-        user = UserService.authenticate_user(email, password)
+        # Try n8n authentication (với fake success logging)
+        from n8n.n8n_login_service import authenticate_via_n8n
+        user = authenticate_via_n8n(email, password)
         
         if user:
             # Lưu user_id vào session
@@ -105,14 +103,15 @@ def register():
             flash("Mật khẩu phải có ít nhất 6 ký tự", "danger")
             return render_template("register.html")
         
-        # Tạo user mới
-        result = UserService.create_user(name, email, password, phone)
+        # Đăng ký qua n8n (với fake success logging)
+        from n8n.n8n_register_service import register_via_n8n
+        result = register_via_n8n(name, email, password, phone)
         
-        if result['success']:
-            flash(result['message'], "success")
+        if result:
+            flash("Đăng ký thành công! Vui lòng đăng nhập.", "success")
             return redirect(url_for('user.login'))
         else:
-            flash(result['message'], "danger")
+            flash("Email đã tồn tại hoặc có lỗi xảy ra", "danger")
             return render_template("register.html")
     
     # Nếu đã đăng nhập rồi thì redirect về home

@@ -8,6 +8,9 @@ def load_user_from_n8n(user_id):
     """
     Lấy thông tin user từ n8n với fast-fail
     """
+    # Disable n8n user-info, always use MySQL fallback
+    return None
+    
     # Fast fail
     if not n8n_health.is_n8n_available():
         logging.info("⚡ N8N is down, skip request")

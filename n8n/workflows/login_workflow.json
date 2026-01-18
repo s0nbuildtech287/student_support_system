@@ -1,0 +1,112 @@
+{
+    "name": "User Login Authentication",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "login",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "id": "webhook-login",
+            "name": "Webhook - Login",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1.1,
+            "position": [
+                240,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "executeQuery",
+                "query": "=SELECT * FROM users WHERE email = '{{ $json.body.email }}' LIMIT 1"
+            },
+            "id": "mysql-find-user",
+            "name": "MySQL - Find User",
+            "type": "n8n-nodes-base.mySql",
+            "typeVersion": 2.4,
+            "position": [
+                460,
+                300
+            ],
+            "credentials": {
+                "mySql": {
+                    "name": "MySQL Student Support"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Get data from MySQL node\nconst items = $input.all();\nconst webhookData = $('Webhook - Login').first().json.body;\n\n// Check if we have results from MySQL\nif (items.length > 0 && items[0].json) {\n  const user = items[0].json;\n  \n  // Check if password matches\n  if (user.password === webhookData.password) {\n    // Success - password matches\n    return {\n      json: {\n        success: true,\n        message: \"Login successful\",\n        user: {\n          id: user.id,\n          name: user.name,\n          email: user.email,\n          avatar: user.avatar,\n          phone: user.phone,\n          age: user.age,\n          year: user.year,\n          major: user.major,\n          career_goal: user.career_goal,\n          status: user.status,\n          created_at: user.created_at\n        }\n      }\n    };\n  }\n}\n\n// Failure - user not found or password mismatch\nreturn {\n  json: {\n    success: false,\n    message: \"Invalid email or password\",\n    user: null\n  }\n};"
+            },
+            "id": "code-validate",
+            "name": "Validate Password",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                680,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "firstIncomingItem",
+                "options": {}
+            },
+            "id": "respond-webhook",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                900,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook - Login": {
+            "main": [
+                [
+                    {
+                        "node": "MySQL - Find User",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "MySQL - Find User": {
+            "main": [
+                [
+                    {
+                        "node": "Validate Password",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Validate Password": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "active": false,
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "versionId": "1",
+    "id": "login-workflow-002",
+    "meta": {
+        "instanceId": "student-support-system"
+    },
+    "tags": []
+}

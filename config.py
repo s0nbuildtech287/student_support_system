@@ -5,13 +5,17 @@ load_dotenv()
 
 class Config:
     # MySQL Configuration
+    # Ưu tiên DATABASE_URL nếu có (PlanetScale/Railway)
+    DATABASE_URL = os.getenv('DATABASE_URL')
+    
+    # Fallback: MySQL connection thông thường
     DB_HOST = os.getenv('DB_HOST', 'localhost')
     DB_USER = os.getenv('DB_USER', 'root')
     DB_PASSWORD = os.getenv('DB_PASSWORD', '')
     DB_NAME = os.getenv('DB_NAME', 'student_support')
     
-    # Flask Configuration - đơn giản thôi
-    SECRET_KEY = 'my-secret-key-123456'  # Hardcode luôn cho đơn giản
+    # Flask Configuration
+    SECRET_KEY = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 
     # Groq API
     GROQ_API_KEY = os.getenv('GROQ_API_KEY', '')
@@ -22,10 +26,10 @@ class Config:
     DIFY_API_URL = os.getenv('DIFY_API_URL', 'https://api.dify.ai/v1')
 
     # Umami Analytics
-    UMAMI_WEBSITE_ID = os.getenv('UMAMI_WEBSITE_ID', '91d08d66-491e-4dc0-bf82-78d9db867f88')
-    UMAMI_URL = os.getenv('UMAMI_URL', 'http://localhost:3000')
+    UMAMI_WEBSITE_ID = os.getenv('UMAMI_WEBSITE_ID', '')
+    UMAMI_URL = os.getenv('UMAMI_URL', '')
 
     # Superset Configuration
-    SUPERSET_URL = os.getenv('SUPERSET_URL', 'http://localhost:8088')
-    SUPERSET_USERNAME = os.getenv('SUPERSET_USERNAME', 'admin')
-    SUPERSET_PASSWORD = os.getenv('SUPERSET_PASSWORD', 'admin')
+    SUPERSET_URL = os.getenv('SUPERSET_URL', '')
+    SUPERSET_USERNAME = os.getenv('SUPERSET_USERNAME', '')
+    SUPERSET_PASSWORD = os.getenv('SUPERSET_PASSWORD', '')
